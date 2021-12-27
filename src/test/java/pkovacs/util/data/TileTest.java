@@ -100,4 +100,17 @@ class TileTest {
                 Tile.stream(42, 10, 45, 12).toList());
     }
 
+    @Test
+    void testOrdering() {
+        var a = new Tile(12, 42);
+        var sortedNeighbors = List.of(
+                new Tile(11, 42),
+                new Tile(12, 41),
+                new Tile(12, 43),
+                new Tile(13, 42));
+
+        assertNotEquals(sortedNeighbors, a.neighbors());
+        assertEquals(sortedNeighbors, a.neighbors().stream().sorted().toList());
+    }
+
 }

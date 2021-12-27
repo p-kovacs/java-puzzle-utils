@@ -6,14 +6,15 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Represents a tile (or cell) in a table or matrix as an immutable pair of {@code int} values: row index and column
- * index. Provides methods to get the neighbors of a tile and the Manhattan distance between two tiles.
+ * Represents a tile (or cell) in a table or matrix as an immutable pair of {@code int} values: row index and
+ * column index. Provides methods to get the neighbors of a tile and the Manhattan distance between two tiles.
+ * Lexicographical ordering is also supported (first by row index, then by column index).
  * <p>
- * This class is similar to {@link Point} but with different index order and names.
+ * This record is similar to {@link Point} but with different index order and names.
  *
  * @see Point
  */
-public record Tile(int row, int col) {
+public record Tile(int row, int col) implements Comparable<Tile> {
 
     /**
      * Returns true the indices of this tile are between zero (inclusive) and the given row/column count (exclusive).
@@ -118,6 +119,11 @@ public record Tile(int row, int col) {
      */
     public static int dist(Tile t1, Tile t2) {
         return Math.abs(t1.row - t2.row) + Math.abs(t1.col - t2.col);
+    }
+
+    @Override
+    public int compareTo(Tile other) {
+        return row != other.row ? Integer.compare(row, other.row) : Integer.compare(col, other.col);
     }
 
     /**

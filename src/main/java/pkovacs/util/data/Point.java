@@ -9,14 +9,15 @@ import java.util.stream.Stream;
 /**
  * Represents a point in 2D space as an immutable pair of {@code int} values: x and y coordinates.
  * Provides methods to get the neighbors of a point and the Manhattan distance between two points.
+ * Lexicographical ordering is also supported (first by x coordinate, then by y coordinate).
  * <p>
- * This class is similar to {@link Tile} but with different coordinate order and names. Another related class
+ * This record is similar to {@link Tile} but with different coordinate order and names. Another related class
  * is {@link Vector}, which supports vector operations (addition, rotation, etc.).
  *
  * @see Tile
  * @see Vector
  */
-public record Point(int x, int y) {
+public record Point(int x, int y) implements Comparable<Point> {
 
     /**
      * Returns true if the coordinates of this point are between zero (inclusive) and the given width/height
@@ -64,6 +65,11 @@ public record Point(int x, int y) {
      */
     public static int dist(Point p1, Point p2) {
         return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
+    }
+
+    @Override
+    public int compareTo(Point other) {
+        return x != other.x ? Integer.compare(x, other.x) : Integer.compare(y, other.y);
     }
 
     /**

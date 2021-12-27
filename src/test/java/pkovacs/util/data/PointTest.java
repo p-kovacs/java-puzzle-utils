@@ -54,6 +54,19 @@ class PointTest {
     }
 
     @Test
+    void testOrdering() {
+        var a = new Point(42, 12);
+        var sortedNeighbors = List.of(
+                new Point(41, 12),
+                new Point(42, 11),
+                new Point(42, 13),
+                new Point(43, 12));
+
+        assertNotEquals(sortedNeighbors, a.neighbors());
+        assertEquals(sortedNeighbors, a.neighbors().stream().sorted().toList());
+    }
+
+    @Test
     void testStreamMethods() {
         assertEquals(List.of(
                         new Point(0, 0), new Point(0, 1), new Point(0, 2),

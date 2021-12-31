@@ -184,13 +184,33 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
+     * Returns a new vector obtained by mirroring this 2D vector horizontally.
+     */
+    public Vector mirrorHorizontally() {
+        if (dim() != 2) {
+            throw new UnsupportedOperationException("Supported only for 2D vectors.");
+        }
+        return new Vector(-x(), y());
+    }
+
+    /**
+     * Returns a new vector obtained by mirroring this 2D vector vertically.
+     */
+    public Vector mirrorVertically() {
+        if (dim() != 2) {
+            throw new UnsupportedOperationException("Supported only for 2D vectors.");
+        }
+        return new Vector(x(), -y());
+    }
+
+    /**
      * Returns a new vector obtained by rotating this 2D vector 90 degrees to the right.
      *
      * @throws UnsupportedOperationException if the dimension of this vector is larger than two
      */
     public Vector rotateRight() {
         if (dim() != 2) {
-            throw new UnsupportedOperationException("Only supported for 2D vectors.");
+            throw new UnsupportedOperationException("Supported only for 2D vectors.");
         }
         return new Vector(y(), -x());
     }
@@ -202,7 +222,7 @@ public class Vector implements Comparable<Vector> {
      */
     public Vector rotateLeft() {
         if (dim() != 2) {
-            throw new UnsupportedOperationException("Only supported for 2D vectors.");
+            throw new UnsupportedOperationException("Supported only for 2D vectors.");
         }
         return new Vector(-y(), x());
     }

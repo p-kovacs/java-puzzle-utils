@@ -56,6 +56,13 @@ class VectorTest {
         assertEquals(Vector.fromChar('R'), Vector.fromChar('n').rotateRight());
         assertEquals(Vector.fromChar('L'), Vector.fromChar('s').negate().rotateLeft());
 
+        assertEquals(new Vector(-42, 12), e.mirrorHorizontally());
+        assertEquals(new Vector(42, -12), e.mirrorVertically());
+        assertEquals(e, e.mirrorHorizontally().mirrorHorizontally());
+        assertEquals(e, e.mirrorVertically().mirrorVertically());
+        assertEquals(e.negate(), e.mirrorHorizontally().mirrorVertically());
+        assertEquals(e.negate(), e.mirrorVertically().mirrorHorizontally());
+
         assertEquals("(42, 12)", new Vector(42, 12).toString());
         assertEquals("(0, 1)", Vector.NORTH.toString());
         assertEquals("(0, -1)", Vector.SOUTH.toString());

@@ -1,21 +1,28 @@
 package com.github.pkovacs.util;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Chars;
 
 /**
  * Provides simple utility methods for processing strings and text files.
- * They can be used to parse the input of a coding puzzle conveniently.
+ * They can be used to parse inputs of various coding puzzles.
+ * <p>
+ * For the sake of simplicity, the methods do not throw checked exceptions. {@link IOException}s are wrapped in
+ * {@link UncheckedIOException} objects.
  */
 public final class InputUtils {
 
@@ -28,14 +35,13 @@ public final class InputUtils {
      * Returns a {@code Path} object for the given resource path relative to the given class.
      */
     public static Path getPath(Class<?> clazz, String resourcePath) {
+        var resource = clazz.getResource(resourcePath);
+        if (resource == null) {
+            throw new IllegalArgumentException(String.format("Resource file not found: %s.", resourcePath));
+        }
+
         try {
-            var resource = clazz.getResource(resourcePath);
-            if (resource != null) {
-                return Path.of(resource.toURI());
-            } else {
-                throw new IllegalArgumentException("Resource file not found: \"" + resourcePath + "\" for class: "
-                        + clazz.getName() + ".");
-            }
+            return Path.of(resource.toURI());
         } catch (Exception e) {
             throw new IllegalArgumentException("Resource file not found.", e);
         }
@@ -48,7 +54,7 @@ public final class InputUtils {
         try {
             return Files.readAllLines(path, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -61,20 +67,19 @@ public final class InputUtils {
     }
 
     /**
-     * Reads the given text file into a string. Line separators are converted to UNIX/Mac style (LF).
+     * Reads all characters from the given input file into a string.
+     * Line separators are converted to UNIX/Mac style (LF).
      */
     public static String readString(Path path) {
         try {
-            return Files.readString(path, StandardCharsets.UTF_8)
-                    .replaceAll("\r\n", "\n")
-                    .replaceAll("\r", "\n");
+            return convertLineSeparators(Files.readString(path, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
     /**
-     * Reads the lines of the given input file as a char matrix.
+     * Reads the lines of the given input file into a char matrix.
      */
     public static char[][] readCharMatrix(Path path) {
         var lines = readLines(path);
@@ -86,7 +91,27 @@ public final class InputUtils {
     }
 
     /**
-     * Reads all integers from the given input file as an {@code int} array.
+     * Reads blocks of lines (separated by blank line(s)) from the given input file.
+     */
+    public static List<List<String>> readLineBlocks(Path path) {
+        return collectLineBlocks(readString(path));
+    }
+
+    /**
+     * Collects blocks of lines (separated by blank line(s)) from the given string.
+     */
+    public static List<List<String>> collectLineBlocks(String input) {
+        return Arrays.stream(convertLineSeparators(input).split("\n(\n)+"))
+                .map(block -> List.of(block.split("\n")))
+                .toList();
+    }
+
+    private static String convertLineSeparators(String str) {
+        return str.replace("\r\n", "\n").replace("\r", "\n");
+    }
+
+    /**
+     * Reads all integers from the given input file into an {@code int} array.
      * All other characters are ignored.
      * <p>
      * For example, if the file contains {@code "I have 5 apples and 12 bananas."}, then {@code {5, 12}} is returned.
@@ -96,7 +121,7 @@ public final class InputUtils {
     }
 
     /**
-     * Reads all integers from the given input file as a {@code long} array.
+     * Reads all integers from the given input file into a {@code long} array.
      * All other characters are ignored.
      * <p>
      * For example, if the file contains {@code "I have 5 apples and 12 bananas."}, then {@code {5, 12}} is returned.
@@ -109,7 +134,7 @@ public final class InputUtils {
      * Parses all integers from the given string and returns them as an {@code int} array.
      * All other characters are ignored.
      * <p>
-     * For example, parsing {@code "I have 5 apples and 12 bananas."} will result in {@code {5, 12}}.
+     * For example, parsing {@code "I have 5 apples and 12 bananas."} results in {@code {5, 12}}.
      */
     public static int[] parseInts(String input) {
         return decimalPattern.matcher(input)
@@ -123,7 +148,7 @@ public final class InputUtils {
      * Parses all integers from the given string and returns them as a {@code long} array.
      * All other characters are ignored.
      * <p>
-     * For example, parsing {@code "I have 5 apples and 12 bananas."} will result in {@code {5, 12}}.
+     * For example, parsing {@code "I have 5 apples and 12 bananas."} results in {@code {5, 12}}.
      */
     public static long[] parseLongs(String input) {
         return decimalPattern.matcher(input)
@@ -143,47 +168,55 @@ public final class InputUtils {
     }
 
     /**
-     * Collects blocks of lines (separated by blank line(s)) from the given string.
-     */
-    public static List<List<String>> collectLineBlocks(String input) {
-        return Arrays.stream(input.split("\r?\n(\r?\n)+"))
-                .map(block -> List.of(block.split("\r?\n")))
-                .toList();
-    }
-
-    /**
      * Returns the characters of the given char sequence as a stream.
      */
-    public static Stream<Character> stream(CharSequence s) {
-        return stream(s.toString().toCharArray());
+    public static Stream<Character> streamOf(CharSequence s) {
+        return Lists.charactersOf(s.toString()).stream();
     }
 
     /**
      * Returns the elements of the given char array as a stream.
      */
-    public static Stream<Character> stream(char[] array) {
+    public static Stream<Character> streamOf(char[] array) {
         return Chars.asList(array).stream();
+    }
+
+    /**
+     * Returns the characters of the given char sequence as an unmodifiable list.
+     */
+    public static List<Character> listOf(CharSequence s) {
+        return streamOf(s).toList();
+    }
+
+    /**
+     * Returns the characters of the given char sequence as an unmodifiable set.
+     */
+    public static Set<Character> setOf(CharSequence s) {
+        return streamOf(s).collect(Collectors.toUnmodifiableSet());
     }
 
     /**
      * Scans the given input string according to the given pattern (similarly to scanf method in C) and
      * returns the parsed values.
      * <p>
-     * The given pattern may contain "%d", "%c", "%s". Otherwise, it is considered as a RegEx, so be aware
-     * of escaping special characters like '(', ')', '[', ']', '.', '*', '?' etc.
-     * The returned list contains the parsed values in the order of their occurrence as {@link ParsedValue}s.
+     * The given pattern may contain "%d", "%c", "%s". Otherwise, it is considered as a regular expression,
+     * so be aware of escaping special characters like '(', ')', '[', ']', '.', '*', '?' etc. Furthermore,
+     * it must not contain capturing groups (unescaped '(' and ')').
+     * <p>
+     * The returned list contains the parsed values as {@link ParsedValue} objects in the order of their occurrence
+     * in the input.
      *
      * @param str input string
-     * @param pattern pattern string: a RegEx that may contain "%d", "%c", "%s", but must not contain capturing
-     *         groups (unescaped '(' and ')'). For example, "Product %s: .* %d out of %d".
+     * @param pattern pattern string: a regular expression that may contain "%d", "%c", "%s", but must not
+     *         contain capturing groups (unescaped '(' and ')'). For example, "Product %s: .* %d out of %d".
      * @return the list of {@link ParsedValue} objects, which can be obtained as int, long, char, or String
      */
-    public static List<ParsedValue> scan(String str, String pattern) throws IllegalArgumentException {
+    public static List<ParsedValue> scan(String str, String pattern) {
         var groupPatterns = RegexUtils.findAll("%.", pattern);
 
-        var regex = pattern.replaceAll("%d", "(\\\\d+)")
-                .replaceAll("%c", "(.)")
-                .replaceAll("%s", "(.*)");
+        var regex = pattern.replace("%d", "(\\d+)")
+                .replace("%c", "(.)")
+                .replace("%s", "(.*)");
 
         var result = new ArrayList<ParsedValue>();
         var matcher = Pattern.compile(regex).matcher(str);
@@ -195,13 +228,13 @@ public final class InputUtils {
                 }
             } else {
                 throw new IllegalArgumentException(String.format(
-                        "Input string '%s' has %d groups instead of expected %d for RegEx '%s'"
+                        "Input string '%s' has %d groups instead of expected %d for regular expression '%s'"
                                 + " (created from pattern '%s').",
                         str, matcher.groupCount(), groupPatterns.size(), regex, pattern));
             }
         } else {
             throw new IllegalArgumentException(String.format(
-                    "Input string '%s' does not match the RegEx '%s' (created from pattern '%s').",
+                    "Input string '%s' does not match the regular expression '%s' (created from pattern '%s').",
                     str, regex, pattern));
         }
 
@@ -227,27 +260,7 @@ public final class InputUtils {
             };
         }
 
-        public int asInt() {
-            return (int) (long) value;
-        }
-
-        public long asLong() {
-            return (long) value;
-        }
-
-        public char asChar() {
-            return (char) value;
-        }
-
-        public String asString() {
-            return value.toString();
-        }
-
-        public String get() {
-            return value.toString();
-        }
-
-        public boolean isInteger() {
+        public boolean isLong() {
             return value.getClass().equals(Long.class);
         }
 
@@ -259,9 +272,25 @@ public final class InputUtils {
             return value.getClass().equals(String.class);
         }
 
+        public String get() {
+            return String.valueOf(value);
+        }
+
+        public int toInt() {
+            return (int) toLong();
+        }
+
+        public long toLong() {
+            return (long) value;
+        }
+
+        public char toChar() {
+            return (char) value;
+        }
+
         @Override
         public String toString() {
-            return "ParsedValue(" + value.getClass().getSimpleName() + ": " + value + ")";
+            return String.valueOf(value);
         }
 
     }

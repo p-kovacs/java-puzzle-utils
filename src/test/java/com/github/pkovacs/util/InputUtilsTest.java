@@ -1,6 +1,7 @@
 package com.github.pkovacs.util;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,25 +49,29 @@ class InputUtilsTest {
     }
 
     @Test
-    void testStream() {
-        assertEquals(2, InputUtils.stream("hello").filter(c -> c == 'l').count());
-        assertEquals(3, InputUtils.stream("hello".toCharArray()).filter(c -> c != 'l').count());
+    void testCharactersOfStrings() {
+        assertEquals(List.of('h', 'e', 'l', 'l', 'o'), InputUtils.listOf("hello"));
+        assertEquals(Set.of('h', 'e', 'l', 'o'), InputUtils.setOf("hello"));
+
+        assertEquals(2, InputUtils.streamOf("hello").filter(c -> c == 'l').count());
+        assertEquals(3, InputUtils.streamOf("hello".toCharArray()).filter(c -> c != 'l').count());
     }
 
     @Test
     void testScan() {
         var values = InputUtils.scan("Product PID_4242X is ordered.", ".*PID_%d%c is %s[.]");
 
+        assertEquals("[4242, X, ordered]", values.toString());
+
         assertEquals(3, values.size());
-        assertTrue(values.get(0).isInteger());
-        assertEquals(4242, values.get(0).asInt());
+        assertTrue(values.get(0).isLong());
+        assertEquals(4242, values.get(0).toInt());
+        assertEquals(4242L, values.get(0).toLong());
         assertTrue(values.get(1).isChar());
-        assertEquals('X', values.get(1).asChar());
+        assertEquals('X', values.get(1).toChar());
         assertTrue(values.get(2).isString());
         assertEquals("ordered", values.get(2).get());
-
-        assertEquals("[ParsedValue(Long: 4242), ParsedValue(Character: X), ParsedValue(String: ordered)]",
-                values.toString());
+        assertEquals("ordered", values.get(2).toString());
     }
 
 }

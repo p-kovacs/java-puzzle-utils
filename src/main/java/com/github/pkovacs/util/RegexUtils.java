@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * Provides simple utility methods for working with regular expressions.
- * These methods are just convenient shortcuts to the features of {@link Pattern} and {@link Matcher}.
+ * They are just convenient wrappers for the features of {@link Pattern} and {@link Matcher}.
  */
 public final class RegexUtils {
 
@@ -16,7 +16,7 @@ public final class RegexUtils {
     }
 
     /**
-     * Returns the {@link Matcher} object to match the given RegEx and input sequence.
+     * Returns the {@link Matcher} object to match the given regular expression and input sequence.
      */
     public static Matcher matcher(String regex, CharSequence input) {
         return Pattern.compile(regex).matcher(input);
@@ -39,6 +39,16 @@ public final class RegexUtils {
     }
 
     /**
+     * Returns the first match of the given regular expression within the given input sequence as a {@link MatchResult}
+     * object.
+     *
+     * @return the first {@link MatchResult} or null if no matches found
+     */
+    public static MatchResult findFirstMatch(String regex, CharSequence input) {
+        return matcher(regex, input).results().findFirst().orElse(null);
+    }
+
+    /**
      * Returns all matches of the given regular expression within the given input sequence as strings.
      */
     public static List<String> findAll(String regex, CharSequence input) {
@@ -49,7 +59,7 @@ public final class RegexUtils {
      * Returns all matches of the given regular expression within the given input sequence as {@link MatchResult}
      * objects.
      */
-    public static List<MatchResult> allMatches(String regex, CharSequence input) {
+    public static List<MatchResult> findAllMatches(String regex, CharSequence input) {
         return matcher(regex, input).results().toList();
     }
 

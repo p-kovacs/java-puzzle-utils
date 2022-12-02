@@ -1,8 +1,8 @@
 package com.github.pkovacs.util.data;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,16 +41,15 @@ class PointTest {
                         new Point(43, 12),
                         new Point(42, 13),
                         new Point(41, 12)),
-                new HashSet<>(a.neighbors()));
-        assertEquals(Set.of(new Point(42, 11), new Point(41, 12)),
-                new HashSet<>(a.neighbors(n -> n.x() <= a.x() && n.y() <= a.y())));
+                a.neighbors().collect(Collectors.toSet()));
 
-        assertTrue(a.neighbors().stream().allMatch(n -> Point.dist(a, n) == 1));
-        assertEquals(4, a.validNeighbors(44, 14).size());
-        assertEquals(2, a.validNeighbors(43, 13).size());
-        assertEquals(1, a.validNeighbors(43, 12).size());
-        assertEquals(1, a.validNeighbors(42, 13).size());
-        assertEquals(0, a.validNeighbors(42, 12).size());
+        assertTrue(a.neighbors().allMatch(n -> Point.dist(a, n) == 1));
+        assertTrue(a.neighbors().mapToInt(a::dist).allMatch(d -> d == 1));
+        assertEquals(4, a.validNeighbors(44, 14).count());
+        assertEquals(2, a.validNeighbors(43, 13).count());
+        assertEquals(1, a.validNeighbors(43, 12).count());
+        assertEquals(1, a.validNeighbors(42, 13).count());
+        assertEquals(0, a.validNeighbors(42, 12).count());
     }
 
     @Test
@@ -62,8 +61,8 @@ class PointTest {
                 new Point(42, 13),
                 new Point(43, 12));
 
-        assertNotEquals(sortedNeighbors, a.neighbors());
-        assertEquals(sortedNeighbors, a.neighbors().stream().sorted().toList());
+        assertNotEquals(sortedNeighbors, a.neighbors().toList());
+        assertEquals(sortedNeighbors, a.neighbors().sorted().toList());
     }
 
     @Test

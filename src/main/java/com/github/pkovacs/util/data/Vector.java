@@ -6,7 +6,7 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.joining;
 
 /**
- * Represents a position vector in D-dimension space as an immutable array of {@code long} coordinates.
+ * Represents a position vector in D-dimensional space as an immutable array of {@code long} coordinates.
  * Provides methods for various vector operations and for obtaining the Manhattan distance between two vectors.
  * Lexicographical ordering is also supported.
  * <p>
@@ -52,7 +52,7 @@ public class Vector implements Comparable<Vector> {
      */
     public Vector(long... coords) {
         if (coords.length <= 1) {
-            throw new IllegalArgumentException("At least two coordinates are required");
+            throw new IllegalArgumentException("At least two coordinates are required.");
         }
         this.coords = coords.clone();
     }
@@ -125,14 +125,57 @@ public class Vector implements Comparable<Vector> {
         return coords[k];
     }
 
-    private static void checkSameDimensions(Vector a, Vector b) {
+    /**
+     * Creates a new vector by adding the given vector to this one.
+     */
+    public Vector add(Vector v) {
+        return newInstance(checkDimensions(this, v), i -> coords[i] + v.coords[i]);
+    }
+
+    /**
+     * Creates a new vector by adding the given two vectors.
+     */
+    public static Vector add(Vector a, Vector b) {
+        return a.add(b);
+    }
+
+    /**
+     * Creates a new vector by subtracting the given vector from this one.
+     */
+    public Vector sub(Vector v) {
+        return newInstance(checkDimensions(this, v), i -> coords[i] - v.coords[i]);
+    }
+
+    /**
+     * Creates a new vector by subtracting the given second vector from the first one.
+     */
+    public static Vector sub(Vector a, Vector b) {
+        return a.sub(b);
+    }
+
+    /**
+     * Creates a new vector by negating this vector.
+     */
+    public Vector negate() {
+        return newInstance(dim(), i -> -coords[i]);
+    }
+
+    /**
+     * Creates a new vector by multiplying this vector by the given scalar factor.
+     */
+    public Vector multiply(long factor) {
+        return newInstance(dim(), i -> factor * coords[i]);
+    }
+
+    private static int checkDimensions(Vector a, Vector b) {
         if (a.coords.length != b.coords.length) {
             throw new IllegalArgumentException("Vector dimensions mismatch.");
         }
+        return a.coords.length;
     }
 
-    private Vector newVector(Function<Integer, Long> function) {
-        long newCoords[] = new long[coords.length];
+    private static Vector newInstance(int dim, Function<Integer, Long> function) {
+        long[] newCoords = new long[dim];
         for (int i = 0; i < newCoords.length; i++) {
             newCoords[i] = function.apply(i);
         }
@@ -140,51 +183,7 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns a new vector obtained by adding the given vector to this one.
-     */
-    public Vector add(Vector v) {
-        checkSameDimensions(this, v);
-        return newVector(i -> coords[i] + v.coords[i]);
-    }
-
-    /**
-     * Returns a new vector obtained by adding the given two vectors.
-     */
-    public static Vector add(Vector a, Vector b) {
-        return a.add(b);
-    }
-
-    /**
-     * Returns a new vector obtained by subtracting the given vector from this one.
-     */
-    public Vector sub(Vector v) {
-        checkSameDimensions(this, v);
-        return newVector(i -> coords[i] - v.coords[i]);
-    }
-
-    /**
-     * Returns a new vector obtained by subtracting the given second vector from the first one.
-     */
-    public static Vector sub(Vector a, Vector b) {
-        return a.sub(b);
-    }
-
-    /**
-     * Returns a new vector obtained by negating this vector.
-     */
-    public Vector negate() {
-        return newVector(i -> -coords[i]);
-    }
-
-    /**
-     * Returns a new vector obtained by multiplying this vector by the given scalar factor.
-     */
-    public Vector multiply(long factor) {
-        return newVector(i -> factor * coords[i]);
-    }
-
-    /**
-     * Returns a new vector obtained by mirroring this 2D vector horizontally.
+     * Creates a new vector by mirroring this 2D vector horizontally.
      */
     public Vector mirrorHorizontally() {
         if (dim() != 2) {
@@ -194,7 +193,7 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns a new vector obtained by mirroring this 2D vector vertically.
+     * Creates a new vector by mirroring this 2D vector vertically.
      */
     public Vector mirrorVertically() {
         if (dim() != 2) {
@@ -204,7 +203,7 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns a new vector obtained by rotating this 2D vector 90 degrees to the right.
+     * Creates a new vector by rotating this 2D vector 90 degrees to the right.
      *
      * @throws UnsupportedOperationException if the dimension of this vector is larger than two
      */
@@ -216,7 +215,7 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns a new vector obtained by rotating this 2D vector 90 degrees to the left.
+     * Creates a new vector by rotating this 2D vector 90 degrees to the left.
      *
      * @throws UnsupportedOperationException if the dimension of this vector is larger than two
      */

@@ -1,7 +1,5 @@
 package com.github.pkovacs.util.data;
 
-import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -17,7 +15,8 @@ import java.util.stream.Stream;
 public record Tile(int row, int col) implements Comparable<Tile> {
 
     /**
-     * Returns true the indices of this tile are between zero (inclusive) and the given row/column count (exclusive).
+     * Returns true if the indices of this tile are between zero (inclusive) and the given row/column count
+     * (exclusive).
      */
     public boolean isValid(int rowCount, int colCount) {
         return row >= 0 && row < rowCount && col >= 0 && col < colCount;
@@ -38,11 +37,10 @@ public record Tile(int row, int col) implements Comparable<Tile> {
     }
 
     /**
-     * Returns the neighbor in the given direction. The tile (0, 0) represents the upper-left corner among the
-     * tiles with non-negative indices. The directions are interpreted accordingly, so "north" or "up" means lower
-     * row index, while "south" or "down" means higher row index.
+     * Returns the neighbor in the given direction.
+     * This is only a shortcut for {@link #neighbor(Direction)} and {@link Direction#fromChar(char)}.
      *
-     * @param dir the direction. One of 'N' (north), 'E' (east), 'S' (south), 'W' (west),
+     * @param dir the direction character. One of 'N' (north), 'E' (east), 'S' (south), 'W' (west),
      *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
      */
     public Tile neighbor(char dir) {
@@ -54,8 +52,8 @@ public record Tile(int row, int col) implements Comparable<Tile> {
      *
      * @return the four neighbor tiles in clockwise order (N, E, S, W)
      */
-    public List<Tile> neighbors() {
-        return List.of(
+    public Stream<Tile> neighbors() {
+        return Stream.of(
                 new Tile(row - 1, col),
                 new Tile(row, col + 1),
                 new Tile(row + 1, col),
@@ -63,31 +61,22 @@ public record Tile(int row, int col) implements Comparable<Tile> {
     }
 
     /**
-     * Returns the neighbors of this tile that are accepted by the given predicate.
-     *
-     * @return the accepted neighbors (at most four tiles) in clockwise order (N, E, S, W)
-     */
-    public List<Tile> neighbors(Predicate<Tile> predicate) {
-        return neighbors().stream().filter(predicate).toList();
-    }
-
-    /**
      * Returns the {@link #isValid(int, int) valid} neighbors of this tile with respect to the given row count and
      * column count.
      *
-     * @return the valid neighbors (at most four tiles) in clockwise order (N, E, S, W)
+     * @return the valid neighbors in clockwise order (N, E, S, W)
      */
-    public List<Tile> validNeighbors(int rowCount, int colCount) {
-        return neighbors(t -> t.isValid(rowCount, colCount));
+    public Stream<Tile> validNeighbors(int rowCount, int colCount) {
+        return neighbors().filter(t -> t.isValid(rowCount, colCount));
     }
 
     /**
-     * Returns the eight "extended" neighbors of this tile, including the diagonal ones.
+     * Returns the eight "extended" neighbors of this tile, also including the diagonal ones.
      *
      * @return the eight "extended" neighbor tiles in clockwise order (N, NE, E, SE, S, SW, W, NW)
      */
-    public List<Tile> extendedNeighbors() {
-        return List.of(
+    public Stream<Tile> extendedNeighbors() {
+        return Stream.of(
                 new Tile(row - 1, col),
                 new Tile(row - 1, col + 1),
                 new Tile(row, col + 1),
@@ -96,15 +85,6 @@ public record Tile(int row, int col) implements Comparable<Tile> {
                 new Tile(row + 1, col - 1),
                 new Tile(row, col - 1),
                 new Tile(row - 1, col - 1));
-    }
-
-    /**
-     * Returns the "extended" neighbors of this tile that are accepted by the given predicate, including diagonal ones.
-     *
-     * @return the accepted "extended" neighbors (at most eight tiles) in clockwise order (N, NE, E, SE, S, SW, W, NW)
-     */
-    public List<Tile> extendedNeighbors(Predicate<Tile> predicate) {
-        return extendedNeighbors().stream().filter(predicate).toList();
     }
 
     /**
@@ -127,9 +107,9 @@ public record Tile(int row, int col) implements Comparable<Tile> {
     }
 
     /**
-     * Returns an ordered stream of valid tiles within the given bounds.
-     * If both arguments are positive, then the first element of the stream will be (0, 0), and the last element
-     * will be (rowCount - 1, colCount - 1). Otherwise, an empty stream is returned.
+     * Returns an ordered stream of tiles within the given bounds.
+     * If both arguments are positive, then the first element of the returned stream is {@code (0, 0)}, and the
+     * last element is {@code (rowCount - 1, colCount - 1)}. Otherwise, an empty stream is returned.
      */
     public static Stream<Tile> stream(int rowCount, int colCount) {
         return stream(0, 0, rowCount, colCount);
@@ -137,20 +117,19 @@ public record Tile(int row, int col) implements Comparable<Tile> {
 
     /**
      * Returns an ordered stream of tiles within the given bounds.
-     * If {@code startRow < endRow} and {@code startCol < endCol}, then the first element of the stream will be
-     * (startRow, startCol), and the last element will be (endRow - 1, endCol - 1). Otherwise, an empty stream
-     * is returned.
+     * If {@code startRow < endRow} and {@code startCol < endCol}, then the first element of the returned stream is
+     * {@code (startRow, startCol)}, and the last element is {@code (endRow - 1, endCol - 1)}.
+     * Otherwise, an empty stream is returned.
      */
     public static Stream<Tile> stream(int startRow, int startCol, int endRow, int endCol) {
         int rowCount = endRow - startRow;
         int colCount = endCol - startCol;
-
         if (rowCount <= 0 || colCount <= 0) {
             return Stream.empty();
-        } else {
-            return IntStream.range(0, rowCount * colCount)
-                    .mapToObj(i -> new Tile(startRow + i / colCount, startCol + i % colCount));
         }
+
+        return IntStream.range(0, rowCount * colCount)
+                .mapToObj(i -> new Tile(startRow + i / colCount, startCol + i % colCount));
     }
 
 }

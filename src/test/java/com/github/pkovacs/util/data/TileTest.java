@@ -39,9 +39,9 @@ class TileTest {
                         new Tile(12, 43),
                         new Tile(13, 42),
                         new Tile(12, 41)),
-                a.neighbors());
+                a.neighbors().toList());
         assertEquals(List.of(new Tile(11, 42), new Tile(12, 41)),
-                a.neighbors(n -> n.row() <= a.row() && n.col() <= a.col()));
+                a.neighbors().filter(n1 -> n1.row() <= a.row() && n1.col() <= a.col()).toList());
 
         assertEquals(new Tile(11, 42), a.neighbor(Direction.NORTH));
         assertEquals(new Tile(12, 43), a.neighbor(Direction.EAST));
@@ -67,19 +67,18 @@ class TileTest {
                         new Tile(13, 41),
                         new Tile(12, 41),
                         new Tile(11, 41)),
-                a.extendedNeighbors());
-        assertEquals(List.of(new Tile(11, 42), new Tile(12, 41), new Tile(11, 41)),
-                a.extendedNeighbors(n -> n.row() <= a.row() && n.col() <= a.col()));
+                a.extendedNeighbors().toList());
 
-        assertTrue(a.neighbors().stream().allMatch(n -> Tile.dist(a, n) == 1));
-        assertEquals(4, a.validNeighbors(14, 44).size());
-        assertEquals(2, a.validNeighbors(13, 43).size());
-        assertEquals(1, a.validNeighbors(12, 43).size());
-        assertEquals(1, a.validNeighbors(13, 42).size());
-        assertEquals(0, a.validNeighbors(12, 42).size());
+        assertTrue(a.neighbors().allMatch(n -> Tile.dist(a, n) == 1));
+        assertTrue(a.neighbors().mapToInt(a::dist).allMatch(d -> d == 1));
+        assertEquals(4, a.validNeighbors(14, 44).count());
+        assertEquals(2, a.validNeighbors(13, 43).count());
+        assertEquals(1, a.validNeighbors(12, 43).count());
+        assertEquals(1, a.validNeighbors(13, 42).count());
+        assertEquals(0, a.validNeighbors(12, 42).count());
 
-        assertTrue(a.extendedNeighbors().stream().allMatch(n -> Tile.dist(a, n) <= 2));
-        assertEquals(12, a.extendedNeighbors().stream().mapToInt(a::dist).sum());
+        assertTrue(a.extendedNeighbors().allMatch(n -> a.dist(n) <= 2));
+        assertEquals(12, a.extendedNeighbors().mapToInt(a::dist).sum());
     }
 
     @Test
@@ -109,8 +108,8 @@ class TileTest {
                 new Tile(12, 43),
                 new Tile(13, 42));
 
-        assertNotEquals(sortedNeighbors, a.neighbors());
-        assertEquals(sortedNeighbors, a.neighbors().stream().sorted().toList());
+        assertNotEquals(sortedNeighbors, a.neighbors().toList());
+        assertEquals(sortedNeighbors, a.neighbors().sorted().toList());
     }
 
 }

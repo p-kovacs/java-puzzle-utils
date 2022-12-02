@@ -14,6 +14,8 @@ class VectorTest {
         var a = Vector.ORIGIN;
         var b = new Vector(42, 12);
 
+        assertEquals(b.x(), 42);
+        assertEquals(b.y(), 12);
         assertEquals(b, a.add(b));
 
         a = a.add(b).sub(new Vector(2, 2));
@@ -75,6 +77,10 @@ class VectorTest {
 
         assertEquals(3, a.dim());
         assertEquals(3, b.dim());
+
+        assertEquals(b.x(), 42);
+        assertEquals(b.y(), 12);
+        assertEquals(b.z(), 314);
         assertEquals(b, a.add(b));
 
         a = a.add(b).sub(new Vector(2, 2, 14));
@@ -101,7 +107,7 @@ class VectorTest {
     @Test
     void testGeneral() {
         var a = Vector.origin(12);
-        var b = new Vector(new long[] { 0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11 });
+        var b = new Vector(0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11);
 
         assertEquals(12, a.dim());
         assertEquals(12, b.dim());

@@ -79,7 +79,7 @@ public abstract class AbstractTable<T> {
      * Returns an ordered stream of the neighbors of the given cell in clockwise order (at most four cells).
      */
     public Stream<Tile> neighborCells(Tile cell) {
-        return cell.neighbors(c -> c.isValid(rowCount(), colCount())).stream();
+        return cell.neighbors().filter(c -> c.isValid(rowCount(), colCount()));
     }
 
     /**
@@ -87,7 +87,7 @@ public abstract class AbstractTable<T> {
      * (at most eight cells, including the diagonal ones).
      */
     public Stream<Tile> extendedNeighborCells(Tile cell) {
-        return cell.extendedNeighbors(c -> c.isValid(rowCount(), colCount())).stream();
+        return cell.extendedNeighbors().filter(c -> c.isValid(rowCount(), colCount()));
     }
 
     /**

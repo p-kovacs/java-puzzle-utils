@@ -20,8 +20,8 @@ import com.github.pkovacs.util.InputUtils;
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a nicely formatted compact result, which can be useful for debugging.
  * <p>
- * If your table is going to be "sparse", then consider using Guava's {@link com.google.common.collect.Table} or a
- * Map structure with {@link Tile} keys instead.
+ * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
+ * with {@link Tile} keys instead of this class.
  *
  * @see IntTable
  * @see Table
@@ -32,7 +32,7 @@ public class CharTable extends AbstractTable<Character> {
 
     /**
      * Creates a new table by wrapping the given {@code char[][]} array.
-     * The array is used directly, so changes to it are reflected in the table, and vice-versa.
+     * The array is used directly, so changes to it are reflected in the table and vice versa.
      * The "rows" of the given matrix must have the same length.
      */
     public CharTable(char[][] data) {
@@ -43,7 +43,7 @@ public class CharTable extends AbstractTable<Character> {
     }
 
     /**
-     * Creates a new table from a list of strings. The rows of the table will represent the strings in the list,
+     * Creates a new table from a list of strings. The rows of the returned table represent the strings in the list,
      * which must have the same length.
      */
     public CharTable(List<String> data) {
@@ -51,7 +51,7 @@ public class CharTable extends AbstractTable<Character> {
     }
 
     /**
-     * Creates a new table with the given number of rows and columns and the given initial value.
+     * Creates a new table with the given number of rows and columns, filled with the given initial value.
      */
     public CharTable(int rowCount, int colCount, char initialValue) {
         data = new char[rowCount][colCount];
@@ -60,7 +60,7 @@ public class CharTable extends AbstractTable<Character> {
 
     /**
      * Creates a new table with the given number of rows and columns, and calculates initial values by applying
-     * the given function to the row and column indices of each cell.
+     * the given function to the indices of each cell.
      */
     public CharTable(int rowCount, int colCount, BiFunction<Integer, Integer, Character> function) {
         data = new char[rowCount][colCount];
@@ -72,7 +72,7 @@ public class CharTable extends AbstractTable<Character> {
     }
 
     /**
-     * Creates a new table as a copy of the given table.
+     * Creates a new table as a deep copy of the given table.
      */
     public CharTable(CharTable other) {
         data = new char[other.data.length][];
@@ -108,7 +108,7 @@ public class CharTable extends AbstractTable<Character> {
 
     /**
      * Returns the {@code char[][]} array that backs this table. Changes to the returned array are reflected in the
-     * table, and vice-versa.
+     * table, and vice versa.
      */
     public char[][] asArray() {
         return data;
@@ -171,7 +171,7 @@ public class CharTable extends AbstractTable<Character> {
     }
 
     /**
-     * Returns an ordered stream of the values contained in the given part of this table (row by row).
+     * Returns an ordered stream of the values contained in the specified part of this table (row by row).
      * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
      */
     public Stream<Character> values(int startRow, int startCol, int endRow, int endCol) {

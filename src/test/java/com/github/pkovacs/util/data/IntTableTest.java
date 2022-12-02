@@ -37,7 +37,7 @@ class IntTableTest extends AbstractTableTest<Integer> {
 
         assertContentEquals(new int[][] { { 50, 2, 4, 6 }, { 200, 202, 204, 206 }, { 400, 402, -10, 406 } }, table);
 
-        table.updateAll(v -> v / 2);
+        table.cells().forEach(t -> table.update(t, v -> v / 2));
 
         assertContentEquals(new int[][] { { 25, 1, 2, 3 }, { 100, 101, 102, 103 }, { 200, 201, -5, 203 } }, table);
         assertEquals(1, table.count(101));

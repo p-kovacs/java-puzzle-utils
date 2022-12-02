@@ -65,7 +65,7 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Returns an ordered stream of the cells in the given part of this table (row by row).
+     * Returns an ordered stream of the cells in the specified part of this table (row by row).
      * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
      */
     public Stream<Tile> cells(int startRow, int startCol, int endRow, int endCol) {
@@ -83,8 +83,8 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Returns an ordered stream of the "extended" neighbors of the given cell in clockwise order
-     * (at most eight cells, including the diagonal ones).
+     * Returns an ordered stream of the "extended" neighbors of the given cell in clockwise order (at most eight
+     * cells, also including the diagonal ones).
      */
     public Stream<Tile> extendedNeighborCells(Tile cell) {
         return cell.extendedNeighbors().filter(c -> c.isValid(rowCount(), colCount()));
@@ -109,21 +109,8 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Updates all values stored in this table by applying the given function to each of them. The function
-     * should not depend on the current state of this table besides its own argument, the update operations
-     * should be independent.
-     */
-    public void updateAll(Function<? super T, ? extends T> function) {
-        for (int i = 0, rowCount = rowCount(); i < rowCount; i++) {
-            for (int j = 0, colCount = colCount(); j < colCount; j++) {
-                set0(i, j, function.apply(get0(i, j)));
-            }
-        }
-    }
-
-    /**
-     * Mirrors this table horizontally: the row indices remain the same, while column indices are flipped.
-     * A new table is generated and returned, this table is not changed.
+     * Creates a new table by mirroring this one horizontally: row indices remain the same, while column indices
+     * are flipped.
      */
     public AbstractTable<T> mirrorHorizontally() {
         int colCount = colCount();
@@ -131,8 +118,8 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Mirrors this table vertically: the column indices remain the same, while the row indices are flipped.
-     * A new table is generated and returned, this table is not changed.
+     * Creates a new table by mirroring this one vertically: column indices remain the same, while row indices
+     * are flipped.
      */
     public AbstractTable<T> mirrorVertically() {
         int rowCount = rowCount();
@@ -140,8 +127,7 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Rotates this table to the right (clockwise).
-     * A new table is generated and returned, this table is not changed.
+     * Creates a new table by rotating this one to the right (clockwise).
      */
     public AbstractTable<T> rotateRight() {
         int rowCount = rowCount();
@@ -149,8 +135,7 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Rotates this table to the left (counter-clockwise).
-     * A new table is generated and returned, this table is not changed.
+     * Creates a new table by rotating this one to the left (counter-clockwise).
      */
     public AbstractTable<T> rotateLeft() {
         int colCount = colCount();
@@ -158,8 +143,7 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Transposes this table: turns rows into columns and vice versa.
-     * A new table is generated and returned, this table is not changed.
+     * Creates a new table by transposing this one: turns rows into columns and vice versa.
      */
     public AbstractTable<T> transpose() {
         return newInstance(colCount(), rowCount(), (i, j) -> get0(j, i));

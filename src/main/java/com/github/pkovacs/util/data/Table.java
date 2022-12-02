@@ -15,8 +15,8 @@ import java.util.stream.Stream;
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a formatted result, which can be useful for debugging.
  * <p>
- * If your table is going to be "sparse", then consider using Guava's {@link com.google.common.collect.Table} or a
- * Map structure with {@link Tile} keys instead.
+ * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
+ * with {@link Tile} keys instead of this class.
  *
  * @see IntTable
  * @see CharTable
@@ -27,7 +27,7 @@ public class Table<T> extends AbstractTable<T> {
 
     /**
      * Creates a new table by wrapping the given {@code T[][]} array.
-     * The array is used directly, so changes to it are reflected in the table, and vice-versa.
+     * The array is used directly, so changes to it are reflected in the table and vice versa.
      * The "rows" of the given matrix must have the same length.
      */
     public Table(T[][] data) {
@@ -39,7 +39,7 @@ public class Table<T> extends AbstractTable<T> {
 
     /**
      * Creates a new table with the given number of rows and columns.
-     * The initial value for each cell will be {@code null}.
+     * The initial value for each cell is {@code null}.
      */
     public Table(int rowCount, int colCount) {
         data = new Object[rowCount][colCount];
@@ -47,7 +47,7 @@ public class Table<T> extends AbstractTable<T> {
 
     /**
      * Creates a new table with the given number of rows and columns, and calculates initial values by applying
-     * the given function to the row and column indices of each cell.
+     * the given function to the indices of each cell.
      */
     public Table(int rowCount, int colCount, BiFunction<Integer, Integer, ? extends T> function) {
         data = new Object[rowCount][colCount];
@@ -59,7 +59,7 @@ public class Table<T> extends AbstractTable<T> {
     }
 
     /**
-     * Creates a new table as a copy of the given table.
+     * Creates a new table as a deep copy of the given table.
      */
     public Table(Table<? extends T> other) {
         data = new Object[other.data.length][];
@@ -151,7 +151,7 @@ public class Table<T> extends AbstractTable<T> {
     }
 
     /**
-     * Returns an ordered stream of the values contained in the given part of this table (row by row).
+     * Returns an ordered stream of the values contained in the specified part of this table (row by row).
      * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
      */
     public Stream<T> values(int startRow, int startCol, int endRow, int endCol) {

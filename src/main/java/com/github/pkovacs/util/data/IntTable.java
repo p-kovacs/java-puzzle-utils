@@ -17,8 +17,8 @@ import java.util.stream.IntStream;
  * provides a nicely formatted result, with the values aligned in columns appropriately, which can be useful for
  * debugging.
  * <p>
- * If your table is going to be "sparse", then consider using Guava's {@link com.google.common.collect.Table} or a
- * Map structure with {@link Tile} keys instead.
+ * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
+ * with {@link Tile} keys instead of this class.
  *
  * @see CharTable
  * @see Table
@@ -29,7 +29,7 @@ public class IntTable extends AbstractTable<Integer> {
 
     /**
      * Creates a new table by wrapping the given {@code int[][]} array.
-     * The array is used directly, so changes to it are reflected in the table, and vice-versa.
+     * The array is used directly, so changes to it are reflected in the table and vice versa.
      * The "rows" of the given matrix must have the same length.
      */
     public IntTable(int[][] data) {
@@ -40,8 +40,7 @@ public class IntTable extends AbstractTable<Integer> {
     }
 
     /**
-     * Creates a new table with the given number of rows and columns
-     * The initial value for each cell will be zero.
+     * Creates a new table with the given number of rows and columns, filled with zeros.
      */
     public IntTable(int rowCount, int colCount) {
         data = new int[rowCount][colCount];
@@ -49,7 +48,7 @@ public class IntTable extends AbstractTable<Integer> {
 
     /**
      * Creates a new table with the given number of rows and columns, and calculates initial values by applying
-     * the given function to the row and column indices of each cell.
+     * the given function to the indices of each cell.
      */
     public IntTable(int rowCount, int colCount, BiFunction<Integer, Integer, Integer> function) {
         data = new int[rowCount][colCount];
@@ -61,7 +60,7 @@ public class IntTable extends AbstractTable<Integer> {
     }
 
     /**
-     * Creates a new table as a copy of the given table.
+     * Creates a new table as a deep copy of the given table.
      */
     public IntTable(IntTable other) {
         data = new int[other.data.length][];
@@ -97,7 +96,7 @@ public class IntTable extends AbstractTable<Integer> {
 
     /**
      * Returns the {@code int[][]} array that backs this table. Changes to the returned array are reflected in the
-     * table, and vice-versa.
+     * table, and vice versa.
      */
     public int[][] asArray() {
         return data;
@@ -139,7 +138,7 @@ public class IntTable extends AbstractTable<Integer> {
     }
 
     /**
-     * Increments the value associated with the specified cell and returns the new value;
+     * Increments the value associated with the specified cell and returns the new value.
      */
     public int inc(Tile cell) {
         return ++data[cell.row()][cell.col()];
@@ -174,18 +173,11 @@ public class IntTable extends AbstractTable<Integer> {
     }
 
     /**
-     * Returns an ordered {@link IntStream} of the values contained in the given part of this table (row by row).
+     * Returns an ordered {@link IntStream} of the values contained in the specified part of this table (row by row).
      * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
      */
     public IntStream values(int startRow, int startCol, int endRow, int endCol) {
         return cells(startRow, startCol, endRow, endCol).mapToInt(this::get);
-    }
-
-    /**
-     * Returns the sum of the values contained in this table.
-     */
-    public long sum() {
-        return values().mapToLong(i -> i).sum();
     }
 
     /**
@@ -200,6 +192,13 @@ public class IntTable extends AbstractTable<Integer> {
      */
     public int max() {
         return values().max().orElseThrow();
+    }
+
+    /**
+     * Returns the sum of the values contained in this table.
+     */
+    public long sum() {
+        return values().mapToLong(i -> i).sum();
     }
 
     /**

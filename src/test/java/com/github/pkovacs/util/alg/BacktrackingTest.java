@@ -12,7 +12,7 @@ class BacktrackingTest {
 
     @Test
     void testPermutations() {
-        var permutations = Backtracking.findAll(6, Backtracking::distinct);
+        var permutations = Backtracking.findAll(6, 6, Backtracking::distinct);
         assertEquals(720, permutations.size());
         assertTrue(permutations.stream().allMatch(x -> Arrays.stream(x).allMatch(v -> v >= 0 && v < 6)));
     }
@@ -26,14 +26,14 @@ class BacktrackingTest {
 
     @Test
     void testEightQueens() {
-        assertTrue(Backtracking.findFirst(1, BacktrackingTest::safeQueen).isPresent());
-        assertTrue(Backtracking.findFirst(2, BacktrackingTest::safeQueen).isEmpty());
-        assertTrue(Backtracking.findFirst(3, BacktrackingTest::safeQueen).isEmpty());
-        assertTrue(Backtracking.findFirst(4, BacktrackingTest::safeQueen).isPresent());
+        assertTrue(Backtracking.findFirst(1, 1, BacktrackingTest::safeQueen).isPresent());
+        assertTrue(Backtracking.findFirst(2, 2, BacktrackingTest::safeQueen).isEmpty());
+        assertTrue(Backtracking.findFirst(3, 3, BacktrackingTest::safeQueen).isEmpty());
+        assertTrue(Backtracking.findFirst(4, 4, BacktrackingTest::safeQueen).isPresent());
 
         assertArrayEquals(new int[] { 0, 4, 7, 5, 2, 6, 1, 3 },
-                Backtracking.findFirst(8, BacktrackingTest::safeQueen).orElseThrow());
-        assertEquals(92, Backtracking.findAll(8, BacktrackingTest::safeQueen).size());
+                Backtracking.findFirst(8, 8, BacktrackingTest::safeQueen).orElseThrow());
+        assertEquals(92, Backtracking.findAll(8, 8, BacktrackingTest::safeQueen).size());
     }
 
     private static boolean safeQueen(int[] array, int k) {

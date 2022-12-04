@@ -18,15 +18,15 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Chars;
 
 /**
- * Provides simple utility methods for processing strings and text files.
- * They can be used to parse inputs of various coding puzzles.
+ * Provides simple utility methods for processing strings and text files. They can be used to parse inputs of various
+ * coding puzzles.
  * <p>
  * For the sake of simplicity, the methods do not throw checked exceptions. {@link IOException}s are wrapped in
  * {@link UncheckedIOException} objects.
  */
 public final class InputUtils {
 
-    private static final Pattern decimalPattern = Pattern.compile("-?\\d+");
+    private static final Pattern integerPattern = Pattern.compile("(?:(?<![a-zA-Z0-9])-)?\\d+");
 
     private InputUtils() {
     }
@@ -114,7 +114,7 @@ public final class InputUtils {
      * Reads all integers from the given input file into an {@code int} array.
      * All other characters are ignored.
      * <p>
-     * For example, if the file contains {@code "I have 5 apples and 12 bananas."}, then {@code {5, 12}} is returned.
+     * See {@link #parseInts(String)} for more details.
      */
     public static int[] readInts(Path path) {
         return parseInts(readString(path));
@@ -124,7 +124,7 @@ public final class InputUtils {
      * Reads all integers from the given input file into a {@code long} array.
      * All other characters are ignored.
      * <p>
-     * For example, if the file contains {@code "I have 5 apples and 12 bananas."}, then {@code {5, 12}} is returned.
+     * See {@link #parseLongs(String)} for more details.
      */
     public static long[] readLongs(Path path) {
         return parseLongs(readString(path));
@@ -132,13 +132,20 @@ public final class InputUtils {
 
     /**
      * Parses all integers from the given string and returns them as an {@code int} array.
-     * All other characters are ignored.
+     * All other characters are ignored. A "-" character is considered as a minus sign if and only if
+     * it is not directly preceded by a letter or digit.
      * <p>
-     * For example, parsing {@code "I have 5 apples and 12 bananas."} results in {@code {5, 12}}.
+     * Examples:
+     * <pre>
+     * "5 apples and 12 bananas"  --> {5, 12}
+     * "A-10, B20"                --> {10, 20}
+     * "[-10,20]"                 --> {-10, 20}
+     * "5-3"                      --> {5, 3}
+     * "5+-3"                     --> {5, -3}
+     * </pre>
      */
     public static int[] parseInts(String input) {
-        return decimalPattern.matcher(input)
-                .results()
+        return integerPattern.matcher(input).results()
                 .map(MatchResult::group)
                 .mapToInt(Integer::parseInt)
                 .toArray();
@@ -146,13 +153,20 @@ public final class InputUtils {
 
     /**
      * Parses all integers from the given string and returns them as a {@code long} array.
-     * All other characters are ignored.
+     * All other characters are ignored. A "-" character is considered as a minus sign if and only if
+     * it is not directly preceded by a letter or digit.
      * <p>
-     * For example, parsing {@code "I have 5 apples and 12 bananas."} results in {@code {5, 12}}.
+     * Examples:
+     * <pre>
+     * "5 apples and 12 bananas"  --> {5, 12}
+     * "A-10, B20"                --> {10, 20}
+     * "[-10,20]"                 --> {-10, 20}
+     * "5-3"                      --> {5, 3}
+     * "5+-3"                     --> {5, -3}
+     * </pre>
      */
     public static long[] parseLongs(String input) {
-        return decimalPattern.matcher(input)
-                .results()
+        return integerPattern.matcher(input).results()
                 .map(MatchResult::group)
                 .mapToLong(Long::parseLong)
                 .toArray();

@@ -31,9 +31,12 @@ class InputUtilsTest {
 
     @Test
     void testParseIntegers() {
-        String input = "I have 5 apples and 12 bananas. -42 is the opposite of 42.";
-        assertArrayEquals(new int[] { 5, 12, -42, 42 }, InputUtils.parseInts(input));
-        assertArrayEquals(new long[] { 5, 12, -42, 42 }, InputUtils.parseLongs(input));
+        String input1 = "5 apples and 12 bananas. -42 is the opposite of 42.";
+        String input2 = "-1-2+3, 5-10, 6+-12. A23, B-34. [-100,+200]";
+        assertArrayEquals(new int[] { 5, 12, -42, 42 }, InputUtils.parseInts(input1));
+        assertArrayEquals(new long[] { 5, 12, -42, 42 }, InputUtils.parseLongs(input1));
+        assertArrayEquals(new int[] { -1, 2, 3, 5, 10, 6, -12, 23, 34, -100, 200 }, InputUtils.parseInts(input2));
+        assertArrayEquals(new long[] { -1, 2, 3, 5, 10, 6, -12, 23, 34, -100, 200 }, InputUtils.parseLongs(input2));
     }
 
     @Test

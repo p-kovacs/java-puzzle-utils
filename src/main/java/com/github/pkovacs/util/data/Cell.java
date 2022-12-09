@@ -8,7 +8,8 @@ import java.util.stream.Stream;
  * column index. It provides methods to get the neighbors of a cell and the Manhattan distance between two cells.
  * Lexicographical ordering is also supported (first by row index, then by column index).
  * <p>
- * This record is similar to {@link Point} but with different order and names of components.
+ * {@link Point} is a similar class with different order and names of the components: {@code (x, y)} instead of
+ * {@code (row, col)}.
  *
  * @see Point
  * @see Table
@@ -24,9 +25,9 @@ public record Cell(int row, int col) implements Comparable<Cell> {
     }
 
     /**
-     * Returns the neighbor of this cell in the given direction. (0, 0) represents the upper-left cell among
-     * the ones with non-negative indices. The directions are interpreted accordingly, so "north" or "up" means
-     * lower row index, while "south" or "down" means higher row index.
+     * Returns the neighbor of this cell in the given direction. (0, 0) represents the top left cell among the ones
+     * with non-negative indices. The directions are interpreted accordingly, so "north" or "up" means decreasing
+     * row index, while "south" or "down" means increasing row index.
      */
     public Cell neighbor(Direction dir) {
         return switch (dir) {
@@ -38,9 +39,9 @@ public record Cell(int row, int col) implements Comparable<Cell> {
     }
 
     /**
-     * Returns the neighbor of this cell in the given direction. (0, 0) represents the upper-left cell among
-     * the ones with non-negative indices. The directions are interpreted accordingly, so "north" or "up" means
-     * lower row index, while "south" or "down" means higher row index.
+     * Returns the neighbor of this cell in the given direction. (0, 0) represents the top left cell among the ones
+     * with non-negative indices. The directions are interpreted accordingly, so "north" or "up" means decreasing
+     * row index, while "south" or "down" means increasing row index.
      *
      * @param dir the direction character. One of 'N' (north), 'E' (east), 'S' (south), 'W' (west),
      *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
@@ -66,7 +67,7 @@ public record Cell(int row, int col) implements Comparable<Cell> {
      * Returns the {@link #isValid(int, int) valid} neighbors of this cell with respect to the given row count and
      * column count.
      *
-     * @return the valid neighbors in clockwise order (N, E, S, W)
+     * @return the valid neighbor cells in clockwise order (at most four cells in N, E, S, W order)
      */
     public Stream<Cell> validNeighbors(int rowCount, int colCount) {
         return neighbors().filter(cell -> cell.isValid(rowCount, colCount));
@@ -90,17 +91,37 @@ public record Cell(int row, int col) implements Comparable<Cell> {
     }
 
     /**
-     * Returns the Manhattan distance between this cell and the given cell.
+     * Returns true if the given cell is a neighbor of this cell.
      */
-    public int dist(Cell other) {
-        return dist(this, other);
+    public boolean isNeighbor(Cell other) {
+        return (row == other.row && Math.abs(col - other.col) == 1)
+                || (col == other.col && Math.abs(row - other.row) == 1);
     }
 
     /**
-     * Returns the Manhattan distance between the given two cells.
+     * Returns true if the given cell is an "extended" neighbor of this cell, also including the diagonal ones.
      */
-    public static int dist(Cell cell1, Cell cell2) {
-        return Math.abs(cell1.row - cell2.row) + Math.abs(cell1.col - cell2.col);
+    public boolean isExtendedNeighbor(Cell other) {
+        return !equals(other) && Math.abs(row - other.row) <= 1 && Math.abs(col - other.col) <= 1;
+    }
+
+    /**
+     * Returns the Manhattan distance (aka. "taxicab" distance) between this cell and (0, 0).
+     */
+    public int dist() {
+        return Math.abs(row) + Math.abs(col);
+    }
+
+    /**
+     * Returns the Manhattan distance (aka. "taxicab" distance) between this cell and the given cell.
+     */
+    public int dist(Cell other) {
+        return Math.abs(row - other.row) + Math.abs(col - other.col);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + row + ", " + col + ")";
     }
 
     @Override
@@ -118,7 +139,7 @@ public record Cell(int row, int col) implements Comparable<Cell> {
     }
 
     /**
-     * Returns an ordered stream of cells within the given bounds.
+     * Returns an ordered stream of cells within the given bounds (the upper bounds are exclusive).
      * If {@code startRow < endRow} and {@code startCol < endCol}, then the first element of the returned stream is
      * {@code (startRow, startCol)}, and the last element is {@code (endRow - 1, endCol - 1)}.
      * Otherwise, an empty stream is returned.

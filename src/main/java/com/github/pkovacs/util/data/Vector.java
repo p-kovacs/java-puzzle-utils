@@ -6,13 +6,13 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.joining;
 
 /**
- * Represents a position vector in D-dimensional space as an immutable array of {@code long} coordinates.
- * Provides methods for various vector operations and for obtaining the Manhattan distance between two vectors.
- * Lexicographical ordering is also supported.
+ * Represents a position vector in D-dimensional coordinate space with integer precision. It is an immutable array of
+ * {@code long} coordinates. It provides methods for various vector operations and for obtaining the Manhattan
+ * distance between two vectors. Lexicographical ordering is also supported.
  * <p>
- * Some features are specific to 2D vectors, e.g., directions and rotation. The coordinates are interpreted
- * as usual in Math: (0, 1) means {@link #NORTH}, (0, -1) means {@link #SOUTH}, (1, 0) means {@link #EAST},
- * (-1, 0) means {@link #WEST}, and (0, 0) is the {@link #ORIGIN}.
+ * Some features are specific to 2D vectors, e.g., the four directions and rotation. The coordinates are interpreted
+ * as usual in Math: (0, 0) is the {@link #ORIGIN}, (0, 1) means {@link #NORTH}, (0, -1) means {@link #SOUTH},
+ * (1, 0) means {@link #EAST}, (-1, 0) means {@link #WEST}.
  */
 public class Vector implements Comparable<Vector> {
 
@@ -133,30 +133,16 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Creates a new vector by adding the given two vectors.
-     */
-    public static Vector add(Vector a, Vector b) {
-        return a.add(b);
-    }
-
-    /**
      * Creates a new vector by subtracting the given vector from this one.
      */
-    public Vector sub(Vector v) {
+    public Vector subtract(Vector v) {
         return newInstance(checkDimensions(this, v), i -> coords[i] - v.coords[i]);
     }
 
     /**
-     * Creates a new vector by subtracting the given second vector from the first one.
+     * Creates a new vector that is the opposite of this vector.
      */
-    public static Vector sub(Vector a, Vector b) {
-        return a.sub(b);
-    }
-
-    /**
-     * Creates a new vector by negating this vector.
-     */
-    public Vector negate() {
+    public Vector opposite() {
         return newInstance(dim(), i -> -coords[i]);
     }
 
@@ -227,24 +213,18 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns the Manhattan distance between this vector and the {@link #origin(int) origin}.
+     * Returns the Manhattan distance (aka. "taxicab" distance) between this vector and the
+     * {@link #origin(int) origin}.
      */
     public long dist() {
         return Arrays.stream(coords).map(Math::abs).sum();
     }
 
     /**
-     * Returns the Manhattan distance between this vector and the given vector.
+     * Returns the Manhattan distance (aka. "taxicab" distance) between this vector and the given vector.
      */
     public long dist(Vector v) {
-        return sub(this, v).dist();
-    }
-
-    /**
-     * Returns the Manhattan distance between the given two vectors.
-     */
-    public static long dist(Vector a, Vector b) {
-        return a.dist(b);
+        return subtract(v).dist();
     }
 
     @Override

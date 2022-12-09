@@ -18,11 +18,11 @@ class VectorTest {
         assertEquals(b.y(), 12);
         assertEquals(b, a.add(b));
 
-        a = a.add(b).sub(new Vector(2, 2));
+        a = a.add(b).subtract(new Vector(2, 2));
         assertEquals(new Vector(40, 10), a);
         assertEquals(50, a.dist());
-        assertEquals(new Vector(-40, -10), a.negate());
-        assertEquals(50, a.negate().dist());
+        assertEquals(new Vector(-40, -10), a.opposite());
+        assertEquals(50, a.opposite().dist());
 
         assertEquals(new Vector(10, -40), a.rotateRight());
         assertEquals(new Vector(-40, -10), a.rotateRight().rotateRight());
@@ -36,12 +36,12 @@ class VectorTest {
 
         var c = new Vector(42, 12);
         var d = new Vector(42, 12);
-        assertEquals(0, Vector.dist(c, d));
+        assertEquals(0, c.dist(d));
         d = d.rotateRight();
-        assertEquals(42 + 12 + 30, Vector.dist(c, d));
+        assertEquals(42 + 12 + 30, c.dist(d));
         c = c.rotateLeft();
         assertEquals(c.dist() + d.dist(), c.dist(d));
-        c = c.negate();
+        c = c.opposite();
         assertEquals(0, c.dist(d));
 
         var e = new Vector(42, 12);
@@ -51,19 +51,19 @@ class VectorTest {
         assertEquals(e.add(e).add(e).add(e).add(e), e.multiply(5));
 
         assertEquals(Vector.ORIGIN, Vector.origin(2));
-        assertEquals(Vector.ORIGIN, Vector.ORIGIN.negate());
+        assertEquals(Vector.ORIGIN, Vector.ORIGIN.opposite());
         assertEquals(Vector.ORIGIN, Vector.ORIGIN.rotateRight());
         assertEquals(Vector.NORTH, Vector.ORIGIN.add(Vector.NORTH));
         assertEquals(Vector.SOUTH, Vector.fromDirection(Direction.SOUTH).add(Vector.ORIGIN));
         assertEquals(Vector.fromChar('R'), Vector.fromChar('n').rotateRight());
-        assertEquals(Vector.fromChar('L'), Vector.fromChar('s').negate().rotateLeft());
+        assertEquals(Vector.fromChar('L'), Vector.fromChar('s').opposite().rotateLeft());
 
         assertEquals(new Vector(-42, 12), e.mirrorHorizontally());
         assertEquals(new Vector(42, -12), e.mirrorVertically());
         assertEquals(e, e.mirrorHorizontally().mirrorHorizontally());
         assertEquals(e, e.mirrorVertically().mirrorVertically());
-        assertEquals(e.negate(), e.mirrorHorizontally().mirrorVertically());
-        assertEquals(e.negate(), e.mirrorVertically().mirrorHorizontally());
+        assertEquals(e.opposite(), e.mirrorHorizontally().mirrorVertically());
+        assertEquals(e.opposite(), e.mirrorVertically().mirrorHorizontally());
 
         assertEquals("(42, 12)", new Vector(42, 12).toString());
         assertEquals("(0, 1)", Vector.NORTH.toString());
@@ -83,20 +83,20 @@ class VectorTest {
         assertEquals(b.z(), 314);
         assertEquals(b, a.add(b));
 
-        a = a.add(b).sub(new Vector(2, 2, 14));
+        a = a.add(b).subtract(new Vector(2, 2, 14));
         assertEquals(new Vector(40, 10, 300), a);
-        assertEquals(new Vector(-40, -10, -300), a.negate());
+        assertEquals(new Vector(-40, -10, -300), a.opposite());
 
         var c = new Vector(42, 12, -3);
         assertEquals(Vector.origin(c.dim()), c.multiply(0));
         assertEquals(c, c.multiply(1));
         assertEquals(c.add(c), c.multiply(2));
         assertEquals(c.add(c).add(c).add(c).add(c), c.multiply(5));
-        assertEquals(c.add(c.multiply(7)).sub(c.multiply(4)), c.multiply(4));
+        assertEquals(c.add(c.multiply(7)).subtract(c.multiply(4)), c.multiply(4));
 
         assertEquals(42 + 12 + 3, c.dist());
-        assertEquals(c.dist(), c.negate().dist());
-        assertEquals(c.dist() * 3, c.negate().add(c.multiply(4)).dist());
+        assertEquals(c.dist(), c.opposite().dist());
+        assertEquals(c.dist() * 3, c.opposite().add(c.multiply(4)).dist());
 
         assertEquals("(42, 12, -3)", c.toString());
 
@@ -122,11 +122,11 @@ class VectorTest {
         assertEquals(c, c.multiply(1));
         assertEquals(c.add(c), c.multiply(2));
         assertEquals(c.add(c).add(c).add(c).add(c), c.multiply(5));
-        assertEquals(c.add(c.multiply(7)).sub(c.multiply(4)), c.multiply(4));
+        assertEquals(c.add(c.multiply(7)).subtract(c.multiply(4)), c.multiply(4));
 
         assertEquals(42 + 12 + 3, c.dist());
-        assertEquals(c.dist(), c.negate().dist());
-        assertEquals(c.dist() * 3, c.negate().add(c.multiply(4)).dist());
+        assertEquals(c.dist(), c.opposite().dist());
+        assertEquals(c.dist() * 3, c.opposite().add(c.multiply(4)).dist());
 
         assertEquals("(0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11)", b.toString());
 

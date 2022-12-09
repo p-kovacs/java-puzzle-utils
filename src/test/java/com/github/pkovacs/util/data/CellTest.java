@@ -26,6 +26,7 @@ class CellTest {
         assertFalse(a.isValid(12, 43));
         assertFalse(a.isValid(13, 42));
 
+        assertEquals(54, a.dist());
         assertEquals(60, a.dist(b));
         assertEquals(0, b.dist(c));
     }
@@ -69,8 +70,14 @@ class CellTest {
                         new Cell(11, 41)),
                 a.extendedNeighbors().toList());
 
-        assertTrue(a.neighbors().allMatch(n -> Cell.dist(a, n) == 1));
+        assertTrue(a.neighbors().allMatch(a::isNeighbor));
+        assertTrue(a.neighbors().allMatch(a::isExtendedNeighbor));
+        assertEquals(4, a.extendedNeighbors().filter(a::isNeighbor).count());
+        assertEquals(8, a.extendedNeighbors().filter(a::isExtendedNeighbor).count());
+
+        assertTrue(a.neighbors().allMatch(n -> n.dist(a) == 1));
         assertTrue(a.neighbors().mapToInt(a::dist).allMatch(d -> d == 1));
+
         assertEquals(4, a.validNeighbors(14, 44).count());
         assertEquals(2, a.validNeighbors(13, 43).count());
         assertEquals(1, a.validNeighbors(12, 43).count());
@@ -79,6 +86,25 @@ class CellTest {
 
         assertTrue(a.extendedNeighbors().allMatch(n -> a.dist(n) <= 2));
         assertEquals(12, a.extendedNeighbors().mapToInt(a::dist).sum());
+    }
+
+    @Test
+    void testToString() {
+        assertEquals("(12, 42)", new Cell(12, 42).toString());
+        assertEquals("(-3, -5)", new Cell(-3, -5).toString());
+    }
+
+    @Test
+    void testOrdering() {
+        var a = new Cell(12, 42);
+        var sortedNeighbors = List.of(
+                new Cell(11, 42),
+                new Cell(12, 41),
+                new Cell(12, 43),
+                new Cell(13, 42));
+
+        assertNotEquals(sortedNeighbors, a.neighbors().toList());
+        assertEquals(sortedNeighbors, a.neighbors().sorted().toList());
     }
 
     @Test
@@ -97,19 +123,6 @@ class CellTest {
                         new Cell(43, 10), new Cell(43, 11),
                         new Cell(44, 10), new Cell(44, 11)),
                 Cell.stream(42, 10, 45, 12).toList());
-    }
-
-    @Test
-    void testOrdering() {
-        var a = new Cell(12, 42);
-        var sortedNeighbors = List.of(
-                new Cell(11, 42),
-                new Cell(12, 41),
-                new Cell(12, 43),
-                new Cell(13, 42));
-
-        assertNotEquals(sortedNeighbors, a.neighbors().toList());
-        assertEquals(sortedNeighbors, a.neighbors().sorted().toList());
     }
 
 }

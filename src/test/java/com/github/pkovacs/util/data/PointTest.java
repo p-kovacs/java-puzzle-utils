@@ -1,8 +1,6 @@
 package com.github.pkovacs.util.data;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PointTest {
 
     @Test
-    void test() {
+    void testBasicMethods() {
         var a = new Point(42, 12);
         var b = new Point(12, 42);
         var c = new Point(12, 42);
@@ -28,6 +26,7 @@ class PointTest {
         assertFalse(a.isValid(43, 12));
         assertFalse(a.isValid(42, 13));
 
+        assertEquals(54, a.dist());
         assertEquals(60, a.dist(b));
         assertEquals(0, b.dist(c));
     }
@@ -36,20 +35,78 @@ class PointTest {
     void testNeighborMethods() {
         var a = new Point(42, 12);
 
-        assertEquals(Set.of(
+        assertEquals(List.of(
                         new Point(42, 11),
                         new Point(43, 12),
                         new Point(42, 13),
                         new Point(41, 12)),
-                a.neighbors().collect(Collectors.toSet()));
+                a.neighbors().toList());
+        assertEquals(List.of(new Point(42, 11), new Point(41, 12)),
+                a.neighbors().filter(p -> p.x() <= a.x() && p.y() <= a.y()).toList());
 
-        assertTrue(a.neighbors().allMatch(n -> Point.dist(a, n) == 1));
+        assertEquals(new Point(42, 11), a.neighbor(Direction.NORTH));
+        assertEquals(new Point(43, 12), a.neighbor(Direction.EAST));
+        assertEquals(new Point(42, 13), a.neighbor(Direction.SOUTH));
+        assertEquals(new Point(41, 12), a.neighbor(Direction.WEST));
+
+        assertEquals(new Point(42, 11), a.neighbor('n'));
+        assertEquals(new Point(43, 12), a.neighbor('E'));
+        assertEquals(new Point(42, 13), a.neighbor('s'));
+        assertEquals(new Point(41, 12), a.neighbor('W'));
+
+        assertEquals(new Point(42, 11), a.neighbor('u'));
+        assertEquals(new Point(43, 12), a.neighbor('R'));
+        assertEquals(new Point(42, 13), a.neighbor('d'));
+        assertEquals(new Point(41, 12), a.neighbor('L'));
+
+        assertEquals(new Point(42, 13), a.neighborWithUpwardY(Direction.NORTH));
+        assertEquals(new Point(43, 12), a.neighborWithUpwardY(Direction.EAST));
+        assertEquals(new Point(42, 11), a.neighborWithUpwardY(Direction.SOUTH));
+        assertEquals(new Point(41, 12), a.neighborWithUpwardY(Direction.WEST));
+
+        assertEquals(new Point(42, 13), a.neighborWithUpwardY('n'));
+        assertEquals(new Point(43, 12), a.neighborWithUpwardY('E'));
+        assertEquals(new Point(42, 11), a.neighborWithUpwardY('s'));
+        assertEquals(new Point(41, 12), a.neighborWithUpwardY('W'));
+
+        assertEquals(new Point(42, 13), a.neighborWithUpwardY('u'));
+        assertEquals(new Point(43, 12), a.neighborWithUpwardY('R'));
+        assertEquals(new Point(42, 11), a.neighborWithUpwardY('d'));
+        assertEquals(new Point(41, 12), a.neighborWithUpwardY('L'));
+
+        assertEquals(List.of(
+                        new Point(42, 11),
+                        new Point(43, 11),
+                        new Point(43, 12),
+                        new Point(43, 13),
+                        new Point(42, 13),
+                        new Point(41, 13),
+                        new Point(41, 12),
+                        new Point(41, 11)),
+                a.extendedNeighbors().toList());
+
+        assertTrue(a.neighbors().allMatch(a::isNeighbor));
+        assertTrue(a.neighbors().allMatch(a::isExtendedNeighbor));
+        assertEquals(4, a.extendedNeighbors().filter(a::isNeighbor).count());
+        assertEquals(8, a.extendedNeighbors().filter(a::isExtendedNeighbor).count());
+
+        assertTrue(a.neighbors().allMatch(p -> p.dist(a) == 1));
         assertTrue(a.neighbors().mapToInt(a::dist).allMatch(d -> d == 1));
+
         assertEquals(4, a.validNeighbors(44, 14).count());
         assertEquals(2, a.validNeighbors(43, 13).count());
         assertEquals(1, a.validNeighbors(43, 12).count());
         assertEquals(1, a.validNeighbors(42, 13).count());
         assertEquals(0, a.validNeighbors(42, 12).count());
+
+        assertTrue(a.extendedNeighbors().allMatch(n -> a.dist(n) <= 2));
+        assertEquals(12, a.extendedNeighbors().mapToInt(a::dist).sum());
+    }
+
+    @Test
+    void testToString() {
+        assertEquals("(12, 42)", new Point(12, 42).toString());
+        assertEquals("(-3, -5)", new Point(-3, -5).toString());
     }
 
     @Test

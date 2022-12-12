@@ -22,11 +22,11 @@ import java.util.stream.Stream;
  * For the sake of simplicity, the methods do not throw checked exceptions. {@link IOException}s are wrapped in
  * {@link UncheckedIOException} objects.
  */
-public final class InputUtils {
+public class InputUtils {
 
     private static final Pattern integerPattern = Pattern.compile("(?:(?<![a-zA-Z0-9])-)?\\d+");
 
-    private InputUtils() {
+    protected InputUtils() {
     }
 
     /**

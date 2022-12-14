@@ -1,6 +1,7 @@
 package pkovacs.util.alg;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,7 +59,7 @@ public final class Dijkstra {
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
         var map = run(Collections.singleton(source), edgeProvider, targetPredicate);
-        return map.values().stream().filter(PathResult::isTarget).findFirst();
+        return map.values().stream().filter(PathResult::isTarget).min(Comparator.comparing(PathResult::dist));
     }
 
     /**

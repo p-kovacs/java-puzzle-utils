@@ -1,8 +1,11 @@
 package pkovacs.util.alg;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -87,6 +90,23 @@ abstract class AbstractShortestPathTest {
 
         assertTrue(result.isPresent());
         return result.get();
+    }
+
+    @Test
+    void testMultipleTargets() {
+        var nodes = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
+        Collections.shuffle(nodes, new Random(123456789));
+
+        var result = findPath(nodes.get(0),
+                i -> IntStream.rangeClosed(nodes.indexOf(i), nodes.indexOf(i) + 7)
+                        .filter(j -> j < 100)
+                        .mapToObj(j -> new Edge<>(nodes.get(j), 1))
+                        .toList(),
+                i -> nodes.indexOf(i) >= 42);
+
+        assertTrue(result.isPresent());
+        assertTrue(result.get().isTarget());
+        assertEquals(6, result.get().dist());
     }
 
     @Test

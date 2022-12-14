@@ -2,6 +2,7 @@ package pkovacs.util.alg;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public final class ShortestPath {
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
         var map = run(Collections.singleton(source), edgeProvider, targetPredicate);
-        return map.values().stream().filter(PathResult::isTarget).findFirst();
+        return map.values().stream().filter(PathResult::isTarget).min(Comparator.comparing(PathResult::dist));
     }
 
     /**

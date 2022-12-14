@@ -1,6 +1,7 @@
 package pkovacs.util.alg;
 
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public final class Bfs {
             Function<? super T, ? extends Iterable<T>> neighborProvider,
             Predicate<? super T> targetPredicate) {
         var map = run(List.of(source), neighborProvider, targetPredicate);
-        return map.values().stream().filter(PathResult::isTarget).findFirst();
+        return map.values().stream().filter(PathResult::isTarget).min(Comparator.comparing(PathResult::dist));
     }
 
     /**

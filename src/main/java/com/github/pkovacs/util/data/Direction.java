@@ -53,14 +53,14 @@ public enum Direction {
     }
 
     /**
-     * Rotates this direction 90 degrees to the right.
+     * Returns the opposite of this direction.
      */
-    public Direction rotateRight() {
+    public Direction opposite() {
         return switch (this) {
-            case NORTH -> EAST;
-            case EAST -> SOUTH;
-            case SOUTH -> WEST;
-            case WEST -> NORTH;
+            case NORTH -> SOUTH;
+            case EAST -> WEST;
+            case SOUTH -> NORTH;
+            case WEST -> EAST;
         };
     }
 
@@ -77,15 +77,38 @@ public enum Direction {
     }
 
     /**
-     * Returns the opposite of this direction.
+     * Rotates this direction 90 degrees to the right.
      */
-    public Direction opposite() {
+    public Direction rotateRight() {
+        return switch (this) {
+            case NORTH -> EAST;
+            case EAST -> SOUTH;
+            case SOUTH -> WEST;
+            case WEST -> NORTH;
+        };
+    }
+
+    /**
+     * Mirrors this direction horizontally.
+     */
+    public Direction mirrorHorizontally() {
+        return switch (this) {
+            case EAST -> WEST;
+            case WEST -> EAST;
+            default -> this;
+        };
+    }
+
+    /**
+     * Mirrors this direction vertically.
+     */
+    public Direction mirrorVertically() {
         return switch (this) {
             case NORTH -> SOUTH;
-            case EAST -> WEST;
             case SOUTH -> NORTH;
-            case WEST -> EAST;
+            default -> this;
         };
+
     }
 
 }

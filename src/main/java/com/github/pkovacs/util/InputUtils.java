@@ -12,10 +12,8 @@ import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import com.google.common.collect.Lists;
-import com.google.common.primitives.Chars;
 
 /**
  * Provides simple utility methods for processing strings and text files. They can be used to parse inputs of various
@@ -185,14 +183,14 @@ public final class InputUtils {
      * Returns the characters of the given char sequence as a stream.
      */
     public static Stream<Character> streamOf(CharSequence s) {
-        return Lists.charactersOf(s.toString()).stream();
+        return s.toString().chars().mapToObj(i -> (char) i);
     }
 
     /**
      * Returns the elements of the given char array as a stream.
      */
     public static Stream<Character> streamOf(char[] array) {
-        return Chars.asList(array).stream();
+        return IntStream.range(0, array.length).mapToObj(i -> array[i]);
     }
 
     /**

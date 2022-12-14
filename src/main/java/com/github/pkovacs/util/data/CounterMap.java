@@ -8,9 +8,9 @@ import java.util.stream.LongStream;
  * A long-valued {@link HashMap} storing counters associated with keys. This class provides additional methods to
  * operate on the counter values conveniently, assuming the default initial value of each counter to be zero.
  * <p>
- * For example, if you call {@link #inc(Object)} on an empty map, it will associate {@code 1} with the given key.
+ * For example, if you call {@link #inc(Object)} on an empty map, it associates {@code 1} with the given key.
  * However, all standard methods of {@link java.util.Map} work identically, so {@link #get(Object)} returns
- * {@code null} for a key that is not contained by the map explicitly. Use {@link #getValue(Object)} when you
+ * {@code null} for a key that is not contained in the map explicitly. Use {@link #getValue(Object)} when you
  * would like to exploit the default value.
  */
 public class CounterMap<K> extends HashMap<K, Long> {
@@ -32,12 +32,11 @@ public class CounterMap<K> extends HashMap<K, Long> {
     }
 
     /**
-     * Associates the given {@code int} value with the given key. This method is equivalent to the standard
-     * {@link #put(Object, Long)} method, but it can be directly called with integer literals.
+     * Associates the given value with the given key. This method uses the standard {@link #put(Object, Long)}
+     * method, but it can also be called with {@code int} parameters directly.
      */
-    public long put(K key, int value) {
+    public void put(K key, long value) {
         put(key, Long.valueOf(value));
-        return value;
     }
 
     /**
@@ -81,10 +80,10 @@ public class CounterMap<K> extends HashMap<K, Long> {
     }
 
     /**
-     * Updates the value associated with the given key by applying the given function to the current value. If the map
-     * did not contain the key, the old value is assumed to be zero.
+     * Updates the value associated with the given key by applying the given function to the current value.
+     * If the map did not contain the key, the old value is assumed to be zero.
      *
-     * @return the new value associated with the given key after the update
+     * @return the new value associated with the key after the update
      */
     public long update(K key, UnaryOperator<Long> function) {
         long newValue = function.apply(getValue(key));
@@ -93,21 +92,7 @@ public class CounterMap<K> extends HashMap<K, Long> {
     }
 
     /**
-     * Returns a {@link LongStream} view of the values contained in this map.
-     */
-    public LongStream valueStream() {
-        return values().stream().mapToLong(Long::longValue);
-    }
-
-    /**
-     * Returns the sum of the values contained in this map.
-     */
-    public long sum() {
-        return valueStream().sum();
-    }
-
-    /**
-     * Returns the minimum of the values contained in this map.
+     * Returns the minimum of the values contained in this map explicitly.
      *
      * @throws java.util.NoSuchElementException if the map is empty
      */
@@ -116,7 +101,7 @@ public class CounterMap<K> extends HashMap<K, Long> {
     }
 
     /**
-     * Returns the maximum of the values contained in this map.
+     * Returns the maximum of the values contained in this map explicitly.
      *
      * @throws java.util.NoSuchElementException if the map is empty
      */
@@ -125,10 +110,24 @@ public class CounterMap<K> extends HashMap<K, Long> {
     }
 
     /**
-     * Returns the count of the given value among all values contained in this map.
+     * Returns the sum of the values stored in this map explicitly.
+     */
+    public long sum() {
+        return valueStream().sum();
+    }
+
+    /**
+     * Returns the count of the given value among all values contained in this map explicitly.
      */
     public long count(long value) {
         return valueStream().filter(v -> v == value).count();
+    }
+
+    /**
+     * Returns a {@link LongStream} view of the values contained in this map explicitly.
+     */
+    public LongStream valueStream() {
+        return values().stream().mapToLong(Long::longValue);
     }
 
 }

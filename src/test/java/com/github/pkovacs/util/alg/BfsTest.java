@@ -37,7 +37,7 @@ class BfsTest {
         graph.put("F", "B");
         graph.put("F", "G");
 
-        var map = Bfs.run("A", graph::get);
+        var map = Bfs.run(List.of("A"), graph::get);
 
         assertEquals(7, map.size());
         assertEquals(0, map.get("A").dist());
@@ -51,7 +51,6 @@ class BfsTest {
         assertEquals("G", result1.get().node());
         assertEquals(2, result1.get().dist());
         assertEquals(List.of("A", "D", "G"), result1.get().path());
-        assertTrue(result1.get().isTarget());
 
         graph.put("A", "G");
         var result2 = Bfs.findPath("A", graph::get, "G"::equals);
@@ -60,7 +59,6 @@ class BfsTest {
         assertEquals("G", result2.get().node());
         assertEquals(1, result2.get().dist());
         assertEquals(List.of("A", "G"), result2.get().path());
-        assertTrue(result2.get().isTarget());
 
         var result3 = Bfs.findPath("A", graph::get, "A"::equals);
 
@@ -161,8 +159,18 @@ class BfsTest {
                 i -> nodes.indexOf(i) >= 42);
 
         assertTrue(result.isPresent());
-        assertTrue(result.get().isTarget());
         assertEquals(6, result.get().dist());
+    }
+
+    @Test
+    void testMultipleSources() {
+        var result = Bfs.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
+                i -> List.of(i - 3, i - 7),
+                i -> i == 42);
+
+        assertTrue(result.isPresent());
+        assertEquals(6, result.get().dist());
+        assertEquals(List.of(84, 77, 70, 63, 56, 49, 42), result.get().path());
     }
 
     @Test

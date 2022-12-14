@@ -105,7 +105,6 @@ abstract class AbstractShortestPathTest {
                 i -> nodes.indexOf(i) >= 42);
 
         assertTrue(result.isPresent());
-        assertTrue(result.get().isTarget());
         assertEquals(6, result.get().dist());
     }
 
@@ -121,7 +120,7 @@ abstract class AbstractShortestPathTest {
         var target = List.of(1, 0, 1, 0, 0, 1, 2);
         Predicate<Collection<Integer>> predicate = target::equals;
 
-        var path = ShortestPath.findPath(start, neighborProvider, predicate);
+        var path = findPath(start, neighborProvider, predicate);
 
         assertTrue(path.isPresent());
         assertEquals(42, path.get().dist());

@@ -9,9 +9,9 @@ import java.util.stream.Stream;
  * Abstract base class of table data structures. A table has a fixed number of rows and columns. A cell of a table
  * is identified by a {@link Cell} object or two integer indices, and it has an associated value.
  *
- * @param <T> the type of the values associated with the cells of this table
+ * @param <V> the type of the values associated with the cells of this table
  */
-public abstract class AbstractTable<T> {
+public abstract class AbstractTable<V> {
 
     /**
      * Returns the number of rows in this table.
@@ -30,11 +30,11 @@ public abstract class AbstractTable<T> {
         return rowCount() * colCount();
     }
 
-    abstract T get0(int row, int col);
+    abstract V get0(int row, int col);
 
-    abstract void set0(int row, int col, T value);
+    abstract void set0(int row, int col, V value);
 
-    abstract AbstractTable<T> newInstance(int rowCount, int colCount, BiFunction<Integer, Integer, T> function);
+    abstract AbstractTable<V> newInstance(int rowCount, int colCount, BiFunction<Integer, Integer, V> function);
 
     /**
      * Returns true if this table contains the given cell.
@@ -96,8 +96,8 @@ public abstract class AbstractTable<T> {
      * Updates the value associated with the specified cell by applying the given function to the current value
      * and returns the new value.
      */
-    public T update(int row, int col, Function<? super T, ? extends T> function) {
-        T value = function.apply(get0(row, col));
+    public V update(int row, int col, Function<? super V, ? extends V> function) {
+        V value = function.apply(get0(row, col));
         set0(row, col, value);
         return value;
     }
@@ -106,7 +106,7 @@ public abstract class AbstractTable<T> {
      * Updates the value associated with the specified cell by applying the given function to the current value
      * and returns the new value.
      */
-    public T update(Cell cell, Function<? super T, ? extends T> function) {
+    public V update(Cell cell, Function<? super V, ? extends V> function) {
         return update(cell.row(), cell.col(), function);
     }
 
@@ -114,7 +114,7 @@ public abstract class AbstractTable<T> {
      * Creates a new table by mirroring this one horizontally: row indices remain the same, while column indices
      * are flipped.
      */
-    public AbstractTable<T> mirrorHorizontally() {
+    public AbstractTable<V> mirrorHorizontally() {
         int colCount = colCount();
         return newInstance(rowCount(), colCount, (i, j) -> get0(i, colCount - 1 - j));
     }
@@ -123,7 +123,7 @@ public abstract class AbstractTable<T> {
      * Creates a new table by mirroring this one vertically: column indices remain the same, while row indices
      * are flipped.
      */
-    public AbstractTable<T> mirrorVertically() {
+    public AbstractTable<V> mirrorVertically() {
         int rowCount = rowCount();
         return newInstance(rowCount, colCount(), (i, j) -> get0(rowCount - 1 - i, j));
     }
@@ -131,7 +131,7 @@ public abstract class AbstractTable<T> {
     /**
      * Creates a new table by rotating this one to the right (clockwise).
      */
-    public AbstractTable<T> rotateRight() {
+    public AbstractTable<V> rotateRight() {
         int rowCount = rowCount();
         return newInstance(colCount(), rowCount(), (i, j) -> get0(rowCount - 1 - j, i));
     }
@@ -139,7 +139,7 @@ public abstract class AbstractTable<T> {
     /**
      * Creates a new table by rotating this one to the left (counter-clockwise).
      */
-    public AbstractTable<T> rotateLeft() {
+    public AbstractTable<V> rotateLeft() {
         int colCount = colCount();
         return newInstance(colCount(), rowCount(), (i, j) -> get0(j, colCount - 1 - i));
     }
@@ -147,7 +147,7 @@ public abstract class AbstractTable<T> {
     /**
      * Creates a new table by transposing this one: turns rows into columns and vice versa.
      */
-    public AbstractTable<T> transpose() {
+    public AbstractTable<V> transpose() {
         return newInstance(colCount(), rowCount(), (i, j) -> get0(j, i));
     }
 

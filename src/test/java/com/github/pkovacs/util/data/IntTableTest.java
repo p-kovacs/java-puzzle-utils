@@ -20,24 +20,24 @@ class IntTableTest extends AbstractTableTest<Integer> {
 
         assertContentEquals(new int[][] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, table);
 
-        table.cells().forEach(t -> table.set(t, t.row() * 100 + t.col()));
+        table.cells().forEach(c -> table.set(c, c.row() * 100 + c.col()));
 
         assertContentEquals(new int[][] { { 0, 1, 2, 3 }, { 100, 101, 102, 103 }, { 200, 201, 202, 203 } }, table);
 
-        table.cells().forEach(t -> table.update(t, x -> 2 * x));
+        table.cells().forEach(c -> table.update(c, x -> 2 * x));
         table.set(0, 0, 42);
-        table.set(new Tile(2, 2), -1);
+        table.set(new Cell(2, 2), -1);
 
         assertContentEquals(new int[][] { { 42, 2, 4, 6 }, { 200, 202, 204, 206 }, { 400, 402, -1, 406 } }, table);
 
         table.update(0, 0, v -> v + 6);
         assertEquals(49, table.inc(0, 0));
-        assertEquals(50, table.inc(new Tile(0, 0)));
-        assertEquals(-10, table.update(new Tile(2, 2), v -> v * 10));
+        assertEquals(50, table.inc(new Cell(0, 0)));
+        assertEquals(-10, table.update(new Cell(2, 2), v -> v * 10));
 
         assertContentEquals(new int[][] { { 50, 2, 4, 6 }, { 200, 202, 204, 206 }, { 400, 402, -10, 406 } }, table);
 
-        table.cells().forEach(t -> table.update(t, v -> v / 2));
+        table.cells().forEach(c -> table.update(c, v -> v / 2));
 
         assertContentEquals(new int[][] { { 25, 1, 2, 3 }, { 100, 101, 102, 103 }, { 200, 201, -5, 203 } }, table);
         assertEquals(1, table.count(101));

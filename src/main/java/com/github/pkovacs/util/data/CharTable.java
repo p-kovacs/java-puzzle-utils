@@ -12,7 +12,7 @@ import com.github.pkovacs.util.InputUtils;
 /**
  * Represents a table (or matrix) of {@code char} values with fixed number of rows and columns. This class is
  * essentially a wrapper for a {@code char[][]} array that provides various convenient methods to access and modify
- * the data. A cell of the table is identified by a {@link Tile} object or two integer indices.
+ * the data. A cell of the table is identified by a {@link Cell} object or two integer indices.
  * <p>
  * This class is the primitive type specialization of {@link Table} for {@code char}. Most methods are defined in
  * the {@link AbstractTable abstract base class}.
@@ -21,7 +21,7 @@ import com.github.pkovacs.util.InputUtils;
  * provides a nicely formatted compact result, which can be useful for debugging.
  * <p>
  * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
- * with {@link Tile} keys instead of this class.
+ * with {@link Cell} keys instead of this class.
  *
  * @see IntTable
  * @see Table
@@ -124,7 +124,7 @@ public class CharTable extends AbstractTable<Character> {
     /**
      * Returns the value associated with the specified cell.
      */
-    public char get(Tile cell) {
+    public char get(Cell cell) {
         return data[cell.row()][cell.col()];
     }
 
@@ -138,7 +138,7 @@ public class CharTable extends AbstractTable<Character> {
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(Tile cell, char value) {
+    public void set(Cell cell, char value) {
         data[cell.row()][cell.col()] = value;
     }
 

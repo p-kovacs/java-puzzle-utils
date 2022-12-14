@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 /**
  * Represents a table (or matrix) of {@code int} values with fixed number of rows and columns. This class is
  * essentially a wrapper for an {@code int[][]} array that provides various convenient methods to access and modify
- * the data. A cell of the table is identified by a {@link Tile} object or two integer indices.
+ * the data. A cell of the table is identified by a {@link Cell} object or two integer indices.
  * <p>
  * This class is the primitive type specialization of {@link Table} for {@code int}. Most methods are defined in
  * the {@link AbstractTable abstract base class}.
@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
  * debugging.
  * <p>
  * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
- * with {@link Tile} keys instead of this class.
+ * with {@link Cell} keys instead of this class.
  *
  * @see CharTable
  * @see Table
@@ -112,7 +112,7 @@ public class IntTable extends AbstractTable<Integer> {
     /**
      * Returns the value associated with the specified cell.
      */
-    public int get(Tile cell) {
+    public int get(Cell cell) {
         return data[cell.row()][cell.col()];
     }
 
@@ -126,7 +126,7 @@ public class IntTable extends AbstractTable<Integer> {
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(Tile cell, int value) {
+    public void set(Cell cell, int value) {
         data[cell.row()][cell.col()] = value;
     }
 
@@ -140,7 +140,7 @@ public class IntTable extends AbstractTable<Integer> {
     /**
      * Increments the value associated with the specified cell and returns the new value.
      */
-    public int inc(Tile cell) {
+    public int inc(Cell cell) {
         return ++data[cell.row()][cell.col()];
     }
 

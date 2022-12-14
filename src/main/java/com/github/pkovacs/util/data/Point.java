@@ -4,14 +4,15 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Represents a point in 2D space as an immutable pair of {@code int} values: x and y coordinates.
- * Provides methods to get the neighbors of a point and the Manhattan distance between two points.
- * Lexicographical ordering is also supported (first by x coordinate, then by y coordinate).
+ * Represents a point (or position) in 2D coordinate space with integer precision. It is an immutable pair of
+ * {@code int} values: x and y coordinates. It provides methods to get the neighbors of a point and the Manhattan
+ * distance between two points. Lexicographical ordering is also supported (first by x coordinate, then by
+ * y coordinate).
  * <p>
- * This record is similar to {@link Tile} but with different coordinate order and names.
+ * This record is similar to {@link Cell} but with different order and names of components.
  * Another related class is {@link Vector}, which supports vector operations (addition, rotation, etc.).
  *
- * @see Tile
+ * @see Cell
  * @see Vector
  */
 public record Point(int x, int y) implements Comparable<Point> {

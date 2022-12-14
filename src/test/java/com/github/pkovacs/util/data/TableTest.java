@@ -39,16 +39,16 @@ class TableTest extends AbstractTableTest<String> {
                 Arrays.asList(new String[4]),
                 Arrays.asList(new String[4])), table);
 
-        table.cells().forEach(t -> table.set(t, String.valueOf((char) ('A' + t.row())) + (t.col() + 1)));
+        table.cells().forEach(c -> table.set(c, String.valueOf((char) ('A' + c.row())) + (c.col() + 1)));
 
         assertContentEquals(List.of(
                 List.of("A1", "A2", "A3", "A4"),
                 List.of("B1", "B2", "B3", "B4"),
                 List.of("C1", "C2", "C3", "C4")), table);
 
-        table.cells().forEach(t -> table.update(t, x -> x + "!"));
+        table.cells().forEach(c -> table.update(c, x -> x + "!"));
         table.set(0, 0, "xyz");
-        table.set(new Tile(2, 2), "abc");
+        table.set(new Cell(2, 2), "abc");
 
         assertContentEquals(List.of(
                 List.of("xyz", "A2!", "A3!", "A4!"),

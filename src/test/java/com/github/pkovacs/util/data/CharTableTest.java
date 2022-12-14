@@ -22,13 +22,13 @@ class CharTableTest extends AbstractTableTest<Character> {
         assertContentEquals(List.of("    ", "    ", "    "), table);
 
         var table2 = createTestTable(3, 4);
-        table.cells().forEach(t -> table.set(t, table2.get(t))); // deliberately copied this way to test get-set
+        table.cells().forEach(c -> table.set(c, table2.get(c))); // deliberately copied this way to test get-set
 
         assertContentEquals(List.of("0123", "abcd", "ABCD"), table);
 
-        table.cells().forEach(t -> table.update(t, c -> (char) (c + 1)));
+        table.cells().forEach(cell -> table.update(cell, c -> (char) (c + 1)));
         table.set(0, 0, '#');
-        table.set(new Tile(2, 2), '@');
+        table.set(new Cell(2, 2), '@');
 
         assertContentEquals(List.of("#234", "bcde", "BC@E"), table);
         assertEquals(1, table.count('@'));

@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 /**
  * Abstract base class of table data structures. A table has a fixed number of rows and columns. A cell of a table
- * is identified by a {@link Tile} object or two integer indices.
+ * is identified by a {@link Cell} object or two integer indices.
  *
  * @param <T> the type of the elements stored in this table
  */
@@ -39,28 +39,28 @@ public abstract class AbstractTable<T> {
     /**
      * Returns true if this table contains the given cell.
      */
-    public boolean containsCell(Tile cell) {
+    public boolean containsCell(Cell cell) {
         return cell.isValid(rowCount(), colCount());
     }
 
     /**
      * Returns an ordered stream of the cells in the specified row of this table.
      */
-    public Stream<Tile> row(int i) {
-        return IntStream.range(0, colCount()).mapToObj(j -> new Tile(i, j));
+    public Stream<Cell> row(int i) {
+        return IntStream.range(0, colCount()).mapToObj(j -> new Cell(i, j));
     }
 
     /**
      * Returns an ordered stream of the cells in the specified column of this table.
      */
-    public Stream<Tile> col(int j) {
-        return IntStream.range(0, rowCount()).mapToObj(i -> new Tile(i, j));
+    public Stream<Cell> col(int j) {
+        return IntStream.range(0, rowCount()).mapToObj(i -> new Cell(i, j));
     }
 
     /**
      * Returns an ordered stream of all cells in this table (row by row).
      */
-    public Stream<Tile> cells() {
+    public Stream<Cell> cells() {
         return cells(0, 0, rowCount(), colCount());
     }
 
@@ -68,17 +68,17 @@ public abstract class AbstractTable<T> {
      * Returns an ordered stream of the cells in the specified part of this table (row by row).
      * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
      */
-    public Stream<Tile> cells(int startRow, int startCol, int endRow, int endCol) {
+    public Stream<Cell> cells(int startRow, int startCol, int endRow, int endCol) {
         if (startRow < 0 || startCol < 0 || endRow > rowCount() || endCol > colCount()) {
             throw new IndexOutOfBoundsException("Cell range out of bounds.");
         }
-        return Tile.stream(startRow, startCol, endRow, endCol);
+        return Cell.stream(startRow, startCol, endRow, endCol);
     }
 
     /**
      * Returns an ordered stream of the neighbors of the given cell in clockwise order (at most four cells).
      */
-    public Stream<Tile> neighborCells(Tile cell) {
+    public Stream<Cell> neighborCells(Cell cell) {
         return cell.neighbors().filter(c -> c.isValid(rowCount(), colCount()));
     }
 
@@ -86,7 +86,7 @@ public abstract class AbstractTable<T> {
      * Returns an ordered stream of the "extended" neighbors of the given cell in clockwise order (at most eight
      * cells, also including the diagonal ones).
      */
-    public Stream<Tile> extendedNeighborCells(Tile cell) {
+    public Stream<Cell> extendedNeighborCells(Cell cell) {
         return cell.extendedNeighbors().filter(c -> c.isValid(rowCount(), colCount()));
     }
 
@@ -104,7 +104,7 @@ public abstract class AbstractTable<T> {
      * Updates the value associated with the specified cell by applying the given function to the current value
      * and returns the new value.
      */
-    public T update(Tile cell, Function<? super T, ? extends T> function) {
+    public T update(Cell cell, Function<? super T, ? extends T> function) {
         return update(cell.row(), cell.col(), function);
     }
 

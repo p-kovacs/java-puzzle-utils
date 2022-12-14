@@ -27,15 +27,15 @@ abstract class AbstractTableTest<T> {
         assertEquals(12, table.size());
         assertEquals(12, table.cells().count());
 
-        assertTrue(table.containsCell(new Tile(2, 3)));
-        assertFalse(table.containsCell(new Tile(3, 3)));
-        assertFalse(table.containsCell(new Tile(2, 4)));
+        assertTrue(table.containsCell(new Cell(2, 3)));
+        assertFalse(table.containsCell(new Cell(3, 3)));
+        assertFalse(table.containsCell(new Cell(2, 4)));
 
         var table2 = createTestTable(4, 3);
-        table2.cells().forEach(t -> table2.set0(t.row(), t.col(), table.get0(t.col(), t.row())));
+        table2.cells().forEach(c -> table2.set0(c.row(), c.col(), table.get0(c.col(), c.row())));
 
-        assertEquals(table.cells().map(t -> table.get0(t.row(), t.col())).collect(Collectors.toSet()),
-                table2.cells().map(t -> table2.get0(t.row(), t.col())).collect(Collectors.toSet()));
+        assertEquals(table.cells().map(c -> table.get0(c.row(), c.col())).collect(Collectors.toSet()),
+                table2.cells().map(c -> table2.get0(c.row(), c.col())).collect(Collectors.toSet()));
     }
 
     @Test
@@ -59,43 +59,43 @@ abstract class AbstractTableTest<T> {
         var table = createTestTable(3, 4);
 
         assertEquals(List.of(
-                        new Tile(0, 2),
-                        new Tile(1, 3),
-                        new Tile(2, 2),
-                        new Tile(1, 1)),
-                table.neighborCells(new Tile(1, 2)).toList());
+                        new Cell(0, 2),
+                        new Cell(1, 3),
+                        new Cell(2, 2),
+                        new Cell(1, 1)),
+                table.neighborCells(new Cell(1, 2)).toList());
         assertEquals(List.of(
-                        new Tile(0, 1),
-                        new Tile(1, 0)),
-                table.neighborCells(new Tile(0, 0)).toList());
+                        new Cell(0, 1),
+                        new Cell(1, 0)),
+                table.neighborCells(new Cell(0, 0)).toList());
         assertEquals(List.of(
-                        new Tile(1, 1),
-                        new Tile(2, 2),
-                        new Tile(2, 0)),
-                table.neighborCells(new Tile(2, 1)).toList());
+                        new Cell(1, 1),
+                        new Cell(2, 2),
+                        new Cell(2, 0)),
+                table.neighborCells(new Cell(2, 1)).toList());
 
         assertEquals(List.of(
-                        new Tile(0, 2),
-                        new Tile(0, 3),
-                        new Tile(1, 3),
-                        new Tile(2, 3),
-                        new Tile(2, 2),
-                        new Tile(2, 1),
-                        new Tile(1, 1),
-                        new Tile(0, 1)),
-                table.extendedNeighborCells(new Tile(1, 2)).toList());
+                        new Cell(0, 2),
+                        new Cell(0, 3),
+                        new Cell(1, 3),
+                        new Cell(2, 3),
+                        new Cell(2, 2),
+                        new Cell(2, 1),
+                        new Cell(1, 1),
+                        new Cell(0, 1)),
+                table.extendedNeighborCells(new Cell(1, 2)).toList());
         assertEquals(List.of(
-                        new Tile(0, 1),
-                        new Tile(1, 1),
-                        new Tile(1, 0)),
-                table.extendedNeighborCells(new Tile(0, 0)).toList());
+                        new Cell(0, 1),
+                        new Cell(1, 1),
+                        new Cell(1, 0)),
+                table.extendedNeighborCells(new Cell(0, 0)).toList());
         assertEquals(List.of(
-                        new Tile(1, 1),
-                        new Tile(1, 2),
-                        new Tile(2, 2),
-                        new Tile(2, 0),
-                        new Tile(1, 0)),
-                table.extendedNeighborCells(new Tile(2, 1)).toList());
+                        new Cell(1, 1),
+                        new Cell(1, 2),
+                        new Cell(2, 2),
+                        new Cell(2, 0),
+                        new Cell(1, 0)),
+                table.extendedNeighborCells(new Cell(2, 1)).toList());
     }
 
     @Test

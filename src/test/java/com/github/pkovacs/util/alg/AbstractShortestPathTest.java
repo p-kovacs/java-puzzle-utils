@@ -11,13 +11,13 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.github.pkovacs.util.InputUtils;
+import com.github.pkovacs.util.alg.Dijkstra.Edge;
+import com.github.pkovacs.util.data.Cell;
+import com.github.pkovacs.util.data.CharTable;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
-import com.github.pkovacs.util.InputUtils;
-import com.github.pkovacs.util.alg.Dijkstra.Edge;
-import com.github.pkovacs.util.data.CharTable;
-import com.github.pkovacs.util.data.Tile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,8 +55,8 @@ abstract class AbstractShortestPathTest {
 
         var input = InputUtils.readLines(InputUtils.getPath(getClass(), "maze.txt"));
         var maze = new CharTable(input);
-        var start = new Tile(0, 0);
-        var end = new Tile(maze.rowCount() - 1, maze.colCount() - 1);
+        var start = new Cell(0, 0);
+        var end = new Cell(maze.rowCount() - 1, maze.colCount() - 1);
 
         // Find path with large detonationTime --> same as BFS
         long detonationTime = 32;
@@ -81,10 +81,10 @@ abstract class AbstractShortestPathTest {
         assertEquals(start.dist(end), result.dist());
     }
 
-    private PathResult<Tile> findPathInMaze(CharTable maze, Tile start, Tile end, long detonationTime) {
+    private PathResult<Cell> findPathInMaze(CharTable maze, Cell start, Cell end, long detonationTime) {
         var result = findPath(start,
-                tile -> maze.neighborCells(tile)
-                        .map(t -> new Edge<>(t, maze.get(t) == '.' ? 1 : detonationTime))
+                cell -> maze.neighborCells(cell)
+                        .map(n -> new Edge<>(n, maze.get(n) == '.' ? 1 : detonationTime))
                         .toList(),
                 end::equals);
 

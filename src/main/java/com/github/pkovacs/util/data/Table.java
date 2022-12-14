@@ -8,16 +8,18 @@ import java.util.stream.Stream;
 
 /**
  * Represents a table (or matrix) with fixed number of rows and columns. This class is essentially a wrapper for a
- * {@code T[][]} array that provides various convenient methods to access and modify the data. A cell of the table
+ * {@code T[][]} array providing various convenient methods to access and modify the data. A cell of the table
  * is identified by a {@link Cell} object or two integer indices. Most methods of this class are defined in the
  * {@link AbstractTable abstract base class}.
  * <p>
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a formatted result, which can be useful for debugging.
  * <p>
- * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
- * with {@link Cell} keys instead of this class.
+ * For storing a table of {@code int} or {@code char} values, use {@link IntTable} or {@link CharTable} instead of
+ * this general class. Furthermore, if your table is "sparse", consider using a {@code Map} with {@link Cell} or
+ * {@link Point} keys instead (or Guava's {@code Table} class).
  *
+ * @param <T> the type of the values associated with the cells of this table
  * @see IntTable
  * @see CharTable
  */

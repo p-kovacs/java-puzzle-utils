@@ -11,7 +11,7 @@ import com.github.pkovacs.util.InputUtils;
 
 /**
  * Represents a table (or matrix) of {@code char} values with fixed number of rows and columns. This class is
- * essentially a wrapper for a {@code char[][]} array that provides various convenient methods to access and modify
+ * essentially a wrapper for a {@code char[][]} array providing various convenient methods to access and modify
  * the data. A cell of the table is identified by a {@link Cell} object or two integer indices.
  * <p>
  * This class is the primitive type specialization of {@link Table} for {@code char}. Most methods are defined in
@@ -20,8 +20,8 @@ import com.github.pkovacs.util.InputUtils;
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a nicely formatted compact result, which can be useful for debugging.
  * <p>
- * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
- * with {@link Cell} keys instead of this class.
+ * If your table is "sparse", consider using a {@code Map} with {@link Cell} keys (or Guava's {@code Table})
+ * instead of this class.
  *
  * @see IntTable
  * @see Table

@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 
 /**
  * Represents a table (or matrix) of {@code int} values with fixed number of rows and columns. This class is
- * essentially a wrapper for an {@code int[][]} array that provides various convenient methods to access and modify
+ * essentially a wrapper for an {@code int[][]} array providing various convenient methods to access and modify
  * the data. A cell of the table is identified by a {@link Cell} object or two integer indices.
  * <p>
  * This class is the primitive type specialization of {@link Table} for {@code int}. Most methods are defined in
@@ -17,8 +17,8 @@ import java.util.stream.IntStream;
  * provides a nicely formatted result, with the values aligned in columns appropriately, which can be useful for
  * debugging.
  * <p>
- * If your table is "sparse", consider using Guava's {@link com.google.common.collect.Table} or a {@link java.util.Map}
- * with {@link Cell} keys instead of this class.
+ * If your table is "sparse", consider using a {@code Map} with {@link Cell} keys (or Guava's {@code Table})
+ * instead of this class.
  *
  * @see CharTable
  * @see Table
@@ -47,11 +47,19 @@ public class IntTable extends AbstractTable<Integer> {
     }
 
     /**
+     * Creates a new table with the given number of rows and columns, filled with the given initial value.
+     */
+    public IntTable(int rowCount, int colCount, int initialValue) {
+        this(rowCount, colCount);
+        fill(initialValue);
+    }
+
+    /**
      * Creates a new table with the given number of rows and columns, and calculates initial values by applying
      * the given function to the indices of each cell.
      */
     public IntTable(int rowCount, int colCount, BiFunction<Integer, Integer, Integer> function) {
-        data = new int[rowCount][colCount];
+        this(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 data[i][j] = function.apply(i, j);

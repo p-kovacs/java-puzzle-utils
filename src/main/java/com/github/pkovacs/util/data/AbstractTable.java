@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 
 /**
  * Abstract base class of table data structures. A table has a fixed number of rows and columns. A cell of a table
- * is identified by a {@link Cell} object or two integer indices.
+ * is identified by a {@link Cell} object or two integer indices, and it has an associated value.
  *
- * @param <T> the type of the elements stored in this table
+ * @param <T> the type of the values associated with the cells of this table
  */
 public abstract class AbstractTable<T> {
 
@@ -76,17 +76,19 @@ public abstract class AbstractTable<T> {
     }
 
     /**
-     * Returns an ordered stream of the neighbors of the given cell in clockwise order (at most four cells).
+     * Returns an ordered stream of the neighbors of the given cell within this table in clockwise order
+     * (at most four cells). Only those cells are included that are contained in this table.
      */
-    public Stream<Cell> neighborCells(Cell cell) {
+    public Stream<Cell> neighbors(Cell cell) {
         return cell.neighbors().filter(c -> c.isValid(rowCount(), colCount()));
     }
 
     /**
-     * Returns an ordered stream of the "extended" neighbors of the given cell in clockwise order (at most eight
-     * cells, also including the diagonal ones).
+     * Returns an ordered stream of the "extended" neighbors of the given cell within this table in clockwise order
+     * (at most eight cells, also including the diagonal ones). Only those cells are included that are contained in
+     * this table.
      */
-    public Stream<Cell> extendedNeighborCells(Cell cell) {
+    public Stream<Cell> extendedNeighbors(Cell cell) {
         return cell.extendedNeighbors().filter(c -> c.isValid(rowCount(), colCount()));
     }
 

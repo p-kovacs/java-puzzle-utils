@@ -39,7 +39,7 @@ abstract class AbstractTableTest<T> {
     }
 
     @Test
-    void testCellStreamMethods() {
+    void testCellAccessMethods() {
         var table = createTestTable(3, 4);
 
         assertEquals(Stream.concat(table.row(0), Stream.concat(table.row(1), table.row(2))).toList(),
@@ -55,7 +55,7 @@ abstract class AbstractTableTest<T> {
     }
 
     @Test
-    void testCellNeighbors() {
+    void testNeighbors() {
         var table = createTestTable(3, 4);
 
         assertEquals(List.of(
@@ -63,16 +63,16 @@ abstract class AbstractTableTest<T> {
                         new Cell(1, 3),
                         new Cell(2, 2),
                         new Cell(1, 1)),
-                table.neighborCells(new Cell(1, 2)).toList());
+                table.neighbors(new Cell(1, 2)).toList());
         assertEquals(List.of(
                         new Cell(0, 1),
                         new Cell(1, 0)),
-                table.neighborCells(new Cell(0, 0)).toList());
+                table.neighbors(new Cell(0, 0)).toList());
         assertEquals(List.of(
                         new Cell(1, 1),
                         new Cell(2, 2),
                         new Cell(2, 0)),
-                table.neighborCells(new Cell(2, 1)).toList());
+                table.neighbors(new Cell(2, 1)).toList());
 
         assertEquals(List.of(
                         new Cell(0, 2),
@@ -83,19 +83,19 @@ abstract class AbstractTableTest<T> {
                         new Cell(2, 1),
                         new Cell(1, 1),
                         new Cell(0, 1)),
-                table.extendedNeighborCells(new Cell(1, 2)).toList());
+                table.extendedNeighbors(new Cell(1, 2)).toList());
         assertEquals(List.of(
                         new Cell(0, 1),
                         new Cell(1, 1),
                         new Cell(1, 0)),
-                table.extendedNeighborCells(new Cell(0, 0)).toList());
+                table.extendedNeighbors(new Cell(0, 0)).toList());
         assertEquals(List.of(
                         new Cell(1, 1),
                         new Cell(1, 2),
                         new Cell(2, 2),
                         new Cell(2, 0),
                         new Cell(1, 0)),
-                table.extendedNeighborCells(new Cell(2, 1)).toList());
+                table.extendedNeighbors(new Cell(2, 1)).toList());
     }
 
     @Test

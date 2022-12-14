@@ -13,6 +13,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CharTableTest extends AbstractTableTest<Character> {
 
     @Test
+    void testConstructors() {
+        var t1 = new CharTable(3, 2, 'a');
+
+        var t2 = new CharTable(t1);
+        t2.set(1, 1, '@');
+
+        assertEquals('a', t1.get(1, 1));
+        assertEquals('@', t2.get(1, 1));
+
+        var t3 = new CharTable(t2.asArray());
+        t3.set(0, 0, 'x');
+        t2.set(0, 1, 'y');
+
+        assertEquals('a', t1.get(0, 0));
+        assertEquals('x', t2.get(0, 0));
+        assertEquals('x', t3.get(0, 0));
+        assertEquals('a', t1.get(0, 1));
+        assertEquals('y', t2.get(0, 1));
+        assertEquals('y', t3.get(0, 1));
+    }
+
+    @Test
     void testGettersAndSetters() {
         var table = new CharTable(3, 4, ' ');
 

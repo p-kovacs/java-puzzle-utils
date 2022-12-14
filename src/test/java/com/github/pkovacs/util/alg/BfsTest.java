@@ -85,7 +85,7 @@ class BfsTest {
         var end = new Cell(maze.rowCount() - 1, maze.colCount() - 1);
 
         var result = Bfs.findPath(start,
-                cell -> maze.neighborCells(cell).filter(n -> maze.get(n) == '.').toList(),
+                cell -> maze.neighbors(cell).filter(n -> maze.get(n) == '.').toList(),
                 end::equals);
 
         assertTrue(result.isPresent());

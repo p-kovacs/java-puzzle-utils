@@ -12,6 +12,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IntTableTest extends AbstractTableTest<Integer> {
 
     @Test
+    void testConstructors() {
+        var t1 = new IntTable(3, 2, 42);
+
+        var t2 = new IntTable(t1);
+        t2.set(1, 1, 0);
+
+        assertEquals(42, t1.get(1, 1));
+        assertEquals(0, t2.get(1, 1));
+
+        var t3 = new IntTable(t2.asArray());
+        t3.set(0, 0, -1);
+        t2.set(0, 1, -2);
+
+        assertEquals(42, t1.get(0, 0));
+        assertEquals(-1, t2.get(0, 0));
+        assertEquals(-1, t3.get(0, 0));
+        assertEquals(42, t1.get(0, 1));
+        assertEquals(-2, t2.get(0, 1));
+        assertEquals(-2, t3.get(0, 1));
+    }
+
+    @Test
     void testGettersAndSetters() {
         var table = new IntTable(3, 4);
 

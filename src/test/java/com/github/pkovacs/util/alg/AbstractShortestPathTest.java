@@ -83,7 +83,7 @@ abstract class AbstractShortestPathTest {
 
     private PathResult<Cell> findPathInMaze(CharTable maze, Cell start, Cell end, long detonationTime) {
         var result = findPath(start,
-                cell -> maze.neighborCells(cell)
+                cell -> maze.neighbors(cell)
                         .map(n -> new Edge<>(n, maze.get(n) == '.' ? 1 : detonationTime))
                         .toList(),
                 end::equals);

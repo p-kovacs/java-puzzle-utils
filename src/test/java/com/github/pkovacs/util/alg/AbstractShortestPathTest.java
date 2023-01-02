@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractShortestPathTest {
 
-    abstract <T> Optional<PathResult<T>> findPath(T source,
+    abstract <T> Optional<Path<T>> findPath(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate);
 
@@ -42,7 +42,7 @@ abstract class AbstractShortestPathTest {
         var result = findPath("A", graph::get, "E"::equals);
         assertTrue(result.isPresent());
         assertEquals(10, result.get().dist());
-        assertEquals(List.of("A", "D", "B", "C", "E"), result.get().path());
+        assertEquals(List.of("A", "D", "B", "C", "E"), result.get().nodes());
     }
 
     @Test
@@ -63,9 +63,9 @@ abstract class AbstractShortestPathTest {
         var result = findPathInMaze(maze, start, end, detonationTime);
 
         assertEquals(50, result.dist());
-        assertEquals(51, result.path().size());
-        assertEquals(start, result.path().get(0));
-        assertEquals(end, result.path().get(result.path().size() - 1));
+        assertEquals(51, result.nodes().size());
+        assertEquals(start, result.nodes().get(0));
+        assertEquals(end, result.nodes().get(result.nodes().size() - 1));
 
         // Find path with smaller detonationTime --> better than BFS
         detonationTime = 30;
@@ -81,7 +81,7 @@ abstract class AbstractShortestPathTest {
         assertEquals(start.dist(end), result.dist());
     }
 
-    private PathResult<Cell> findPathInMaze(CharTable maze, Cell start, Cell end, long detonationTime) {
+    private Path<Cell> findPathInMaze(CharTable maze, Cell start, Cell end, long detonationTime) {
         var result = findPath(start,
                 cell -> maze.neighbors(cell)
                         .map(n -> new Edge<>(n, maze.get(n) == '.' ? 1 : detonationTime))
@@ -124,7 +124,7 @@ abstract class AbstractShortestPathTest {
 
         assertTrue(path.isPresent());
         assertEquals(42, path.get().dist());
-        assertEquals(target, path.get().node());
+        assertEquals(target, path.get().endNode());
     }
 
     private static Stream<Integer> concat(Collection<Integer> collection, int i) {

@@ -51,10 +51,10 @@ public final class Dijkstra {
      * @param targetPredicate a predicate that returns true for the target node(s). It can accept multiple
      *         nodes, in which case a shortest path to one of the nearest target nodes is to be found.
      *         However, for a single target node {@code t}, you can simply use {@code t::equals}.
-     * @return a {@link PathResult} specifying a shortest path to the nearest target node or an empty optional if
-     *         no target nodes are reachable from the source node.
+     * @return a shortest {@link Path} to the nearest target node or an empty optional if no target nodes are
+     *         reachable from the source node.
      */
-    public static <T> Optional<PathResult<T>> findPath(T source,
+    public static <T> Optional<Path<T>> findPath(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
         return findPathFromAny(List.of(source), edgeProvider, targetPredicate);
@@ -69,13 +69,13 @@ public final class Dijkstra {
      * @param targetPredicate a predicate that returns true for the target node(s). It can accept multiple
      *         nodes, in which case a shortest path to one of the nearest target nodes is to be found.
      *         However, for a single target node {@code t}, you can simply use {@code t::equals}.
-     * @return a {@link PathResult} specifying a shortest path to the nearest target node or an empty optional if
-     *         no target nodes are reachable from the source nodes.
+     * @return a shortest {@link Path} to the nearest target node or an empty optional if no target nodes are
+     *         reachable from the source nodes.
      */
-    public static <T> Optional<PathResult<T>> findPathFromAny(Iterable<? extends T> sources,
+    public static <T> Optional<Path<T>> findPathFromAny(Iterable<? extends T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
-        var results = new HashMap<T, PathResult<T>>();
+        var results = new HashMap<T, Path<T>>();
         return run(sources, edgeProvider, targetPredicate, results);
     }
 
@@ -85,23 +85,23 @@ public final class Dijkstra {
      * @param sources the source nodes.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
      *         edges of {@code u} as a collection of {@link Edge} objects.
-     * @return a map that associates a {@link PathResult} with each node reachable from the source nodes.
+     * @return a map that associates a {@link Path} with each node reachable from the source nodes.
      */
-    public static <T> Map<T, PathResult<T>> run(Iterable<? extends T> sources,
+    public static <T> Map<T, Path<T>> run(Iterable<? extends T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
-        var results = new HashMap<T, PathResult<T>>();
+        var results = new HashMap<T, Path<T>>();
         run(sources, edgeProvider, n -> false, results);
         return results;
     }
 
-    private static <T> Optional<PathResult<T>> run(Iterable<? extends T> sources,
+    private static <T> Optional<Path<T>> run(Iterable<? extends T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate,
-            HashMap<T, PathResult<T>> results) {
+            HashMap<T, Path<T>> results) {
 
-        var queue = new PriorityQueue<PathResult<T>>(Comparator.comparing(PathResult::dist));
+        var queue = new PriorityQueue<Path<T>>(Comparator.comparing(Path::dist));
         for (var source : sources) {
-            var path = new PathResult<T>(source, 0, null);
+            var path = new Path<T>(source, 0, null);
             results.put(source, path);
             queue.add(path);
         }
@@ -109,19 +109,19 @@ public final class Dijkstra {
         var processed = new HashSet<T>();
         while (!queue.isEmpty()) {
             var path = queue.poll();
-            if (targetPredicate.test(path.node())) {
+            if (targetPredicate.test(path.endNode())) {
                 return Optional.of(path);
             }
-            if (!processed.add(path.node())) {
+            if (!processed.add(path.endNode())) {
                 continue;
             }
 
-            for (var edge : edgeProvider.apply(path.node())) {
+            for (var edge : edgeProvider.apply(path.endNode())) {
                 var neighbor = edge.endNode();
                 var dist = path.dist() + edge.weight();
                 var current = results.get(neighbor);
                 if (current == null || dist < current.dist()) {
-                    var p = new PathResult<>(neighbor, dist, path);
+                    var p = new Path<>(neighbor, dist, path);
                     results.put(neighbor, p);
                     queue.add(p);
                 }

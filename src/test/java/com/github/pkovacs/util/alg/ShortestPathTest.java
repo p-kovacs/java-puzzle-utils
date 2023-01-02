@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ShortestPathTest extends AbstractShortestPathTest {
 
     @Override
-    <T> Optional<PathResult<T>> findPath(T source,
+    <T> Optional<Path<T>> findPath(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
         return ShortestPath.findPath(source, edgeProvider, targetPredicate);
@@ -31,7 +31,7 @@ class ShortestPathTest extends AbstractShortestPathTest {
 
         assertTrue(result.isPresent());
         assertEquals(12, result.get().dist());
-        assertEquals(List.of(84, 77, 70, 63, 56, 49, 42), result.get().path());
+        assertEquals(List.of(84, 77, 70, 63, 56, 49, 42), result.get().nodes());
     }
 
 }

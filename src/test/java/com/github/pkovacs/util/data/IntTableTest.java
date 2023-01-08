@@ -123,19 +123,6 @@ class IntTableTest extends AbstractTableTest<Integer> {
         assertEquals(15, table.col(1).mapToInt(table::get).sum());
         assertEquals(18, table.col(2).mapToInt(table::get).sum());
         assertEquals(21, table.col(3).mapToInt(table::get).sum());
-
-        assertEquals(66, table.values(0, 0, 3, 4).sum());
-        assertEquals(0, table.values(0, 0, 3, 4).min().orElseThrow());
-        assertEquals(11, table.values(0, 0, 3, 4).max().orElseThrow());
-        assertEquals(24, table.values(1, 1, 3, 4).sum());
-        assertEquals(1, table.values(1, 1, 3, 4).min().orElseThrow());
-        assertEquals(7, table.values(1, 1, 3, 4).max().orElseThrow());
-        assertEquals(14, table.values(1, 1, 3, 3).sum());
-        assertEquals(1, table.values(1, 1, 3, 3).min().orElseThrow());
-        assertEquals(6, table.values(1, 1, 3, 3).max().orElseThrow());
-        assertEquals(11, table.values(2, 1, 3, 3).sum());
-        assertEquals(5, table.values(2, 1, 3, 3).min().orElseThrow());
-        assertEquals(6, table.values(2, 1, 3, 3).max().orElseThrow());
     }
 
     @Test

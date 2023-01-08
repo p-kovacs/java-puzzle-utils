@@ -108,21 +108,24 @@ class CellTest {
     }
 
     @Test
-    void testStreamMethods() {
+    void testBoxMethods() {
+        assertEquals(List.of(), Cell.box(0, 3).toList());
+        assertEquals(List.of(), Cell.box(1, -1).toList());
+        assertEquals(List.of(Cell.ORIGIN), Cell.box(1, 1).toList());
         assertEquals(List.of(
                         new Cell(0, 0), new Cell(0, 1), new Cell(0, 2),
                         new Cell(1, 0), new Cell(1, 1), new Cell(1, 2)),
-                Cell.stream(2, 3).toList());
-        assertEquals(List.of(
-                        new Cell(0, 0), new Cell(0, 1),
-                        new Cell(1, 0), new Cell(1, 1),
-                        new Cell(2, 0), new Cell(2, 1)),
-                Cell.stream(3, 2).toList());
+                Cell.box(2, 3).toList());
+
+        assertEquals(List.of(),
+                Cell.box(new Cell(40, 20), new Cell(40, 19)).toList());
+        assertEquals(List.of(new Cell(40, 20), new Cell(41, 20), new Cell(42, 20)),
+                Cell.box(new Cell(40, 20), new Cell(42, 20)).toList());
         assertEquals(List.of(
                         new Cell(42, 10), new Cell(42, 11),
                         new Cell(43, 10), new Cell(43, 11),
                         new Cell(44, 10), new Cell(44, 11)),
-                Cell.stream(42, 10, 45, 12).toList());
+                Cell.box(new Cell(42, 10), new Cell(44, 11)).toList());
     }
 
 }

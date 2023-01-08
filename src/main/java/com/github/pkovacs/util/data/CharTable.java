@@ -171,14 +171,6 @@ public class CharTable extends AbstractTable<Character> {
     }
 
     /**
-     * Returns an ordered stream of the values contained in the specified part of this table (row by row).
-     * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
-     */
-    public Stream<Character> values(int startRow, int startCol, int endRow, int endCol) {
-        return cells(startRow, startCol, endRow, endCol).map(this::get);
-    }
-
-    /**
      * Returns the count of the given value among all values contained in this table.
      */
     public int count(char value) {

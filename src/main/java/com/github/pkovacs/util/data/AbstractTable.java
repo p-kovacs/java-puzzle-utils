@@ -61,18 +61,7 @@ public abstract class AbstractTable<V> {
      * Returns an ordered stream of all cells in this table (row by row).
      */
     public Stream<Cell> cells() {
-        return cells(0, 0, rowCount(), colCount());
-    }
-
-    /**
-     * Returns an ordered stream of the cells in the specified part of this table (row by row).
-     * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
-     */
-    public Stream<Cell> cells(int startRow, int startCol, int endRow, int endCol) {
-        if (startRow < 0 || startCol < 0 || endRow > rowCount() || endCol > colCount()) {
-            throw new IndexOutOfBoundsException("Cell range out of bounds.");
-        }
-        return Cell.stream(startRow, startCol, endRow, endCol);
+        return Cell.box(rowCount(), colCount());
     }
 
     /**

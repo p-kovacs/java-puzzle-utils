@@ -152,14 +152,6 @@ public class Table<V> extends AbstractTable<V> {
         return cells().map(this::get);
     }
 
-    /**
-     * Returns an ordered stream of the values contained in the specified part of this table (row by row).
-     * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
-     */
-    public Stream<V> values(int startRow, int startCol, int endRow, int endCol) {
-        return cells(startRow, startCol, endRow, endCol).map(this::get);
-    }
-
     @Override
     public Table<V> mirrorHorizontally() {
         return (Table<V>) super.mirrorHorizontally();

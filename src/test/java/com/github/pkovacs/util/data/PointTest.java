@@ -123,21 +123,24 @@ class PointTest {
     }
 
     @Test
-    void testStreamMethods() {
+    void testBoxMethods() {
+        assertEquals(List.of(), Point.box(0, 3).toList());
+        assertEquals(List.of(), Point.box(1, -1).toList());
+        assertEquals(List.of(Point.ORIGIN), Point.box(1, 1).toList());
         assertEquals(List.of(
                         new Point(0, 0), new Point(0, 1), new Point(0, 2),
                         new Point(1, 0), new Point(1, 1), new Point(1, 2)),
-                Point.stream(2, 3).toList());
-        assertEquals(List.of(
-                        new Point(0, 0), new Point(0, 1),
-                        new Point(1, 0), new Point(1, 1),
-                        new Point(2, 0), new Point(2, 1)),
-                Point.stream(3, 2).toList());
+                Point.box(2, 3).toList());
+
+        assertEquals(List.of(),
+                Point.box(new Point(40, 20), new Point(40, 19)).toList());
+        assertEquals(List.of(new Point(40, 20), new Point(41, 20), new Point(42, 20)),
+                Point.box(new Point(40, 20), new Point(42, 20)).toList());
         assertEquals(List.of(
                         new Point(42, 10), new Point(42, 11),
                         new Point(43, 10), new Point(43, 11),
                         new Point(44, 10), new Point(44, 11)),
-                Point.stream(42, 10, 45, 12).toList());
+                Point.box(new Point(42, 10), new Point(44, 11)).toList());
     }
 
 }

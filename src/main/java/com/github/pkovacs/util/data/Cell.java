@@ -16,6 +16,9 @@ import java.util.stream.Stream;
  */
 public record Cell(int row, int col) implements Comparable<Cell> {
 
+    /** The origin cell: (0, 0). */
+    public static final Cell ORIGIN = new Cell(0, 0);
+
     /**
      * Returns true if the indices of this cell are between zero (inclusive) and the given row/column count
      * (exclusive).
@@ -130,29 +133,30 @@ public record Cell(int row, int col) implements Comparable<Cell> {
     }
 
     /**
-     * Returns an ordered stream of cells within the given bounds.
-     * If both arguments are positive, then the first element of the returned stream is {@code (0, 0)}, and the
-     * last element is {@code (rowCount - 1, colCount - 1)}. Otherwise, an empty stream is returned.
+     * Returns an ordered stream of {@link #isValid(int, int) valid} cells within the given bounds.
+     * If both arguments are positive, then the first element of the stream is (0, 0), the last element is
+     * {@code (rowCount - 1, colCount - 1)}, and the stream is lexicographically sorted.
+     * Otherwise, an empty stream is returned.
      */
-    public static Stream<Cell> stream(int rowCount, int colCount) {
-        return stream(0, 0, rowCount, colCount);
+    public static Stream<Cell> box(int rowCount, int colCount) {
+        return box(ORIGIN, new Cell(rowCount - 1, colCount - 1));
     }
 
     /**
-     * Returns an ordered stream of cells within the given bounds (the upper bounds are exclusive).
-     * If {@code startRow < endRow} and {@code startCol < endCol}, then the first element of the returned stream is
-     * {@code (startRow, startCol)}, and the last element is {@code (endRow - 1, endCol - 1)}.
+     * Returns an ordered stream of cells within the closed box {@code [min..max]}.
+     * If {@code min.row <= max.row} and {@code min.col <= max.col}, then the first element of the stream is
+     * {@code min}, the last element is {@code max}, and the stream is lexicographically sorted.
      * Otherwise, an empty stream is returned.
      */
-    public static Stream<Cell> stream(int startRow, int startCol, int endRow, int endCol) {
-        int rowCount = endRow - startRow;
-        int colCount = endCol - startCol;
+    public static Stream<Cell> box(Cell min, Cell max) {
+        int rowCount = max.row - min.row + 1;
+        int colCount = max.col - min.col + 1;
         if (rowCount <= 0 || colCount <= 0) {
             return Stream.empty();
         }
 
         return IntStream.range(0, rowCount * colCount)
-                .mapToObj(i -> new Cell(startRow + i / colCount, startCol + i % colCount));
+                .mapToObj(i -> new Cell(min.row + i / colCount, min.col + i % colCount));
     }
 
 }

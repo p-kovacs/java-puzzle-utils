@@ -181,14 +181,6 @@ public class IntTable extends AbstractTable<Integer> {
     }
 
     /**
-     * Returns an ordered {@link IntStream} of the values contained in the specified part of this table (row by row).
-     * The given lower bounds for row and column indices are inclusive, but the upper bounds are exclusive.
-     */
-    public IntStream values(int startRow, int startCol, int endRow, int endCol) {
-        return cells(startRow, startCol, endRow, endCol).mapToInt(this::get);
-    }
-
-    /**
      * Returns the minimum of the values contained in this table.
      */
     public int min() {

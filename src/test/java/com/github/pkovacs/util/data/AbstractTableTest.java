@@ -44,14 +44,6 @@ abstract class AbstractTableTest<T> {
 
         assertEquals(Stream.concat(table.row(0), Stream.concat(table.row(1), table.row(2))).toList(),
                 table.cells().toList());
-        assertEquals(Stream.concat(table.row(1), table.row(2)).toList(),
-                table.cells(1, 0, 3, 4).toList());
-        assertEquals(table.row(1).toList(),
-                table.cells(1, 0, 2, 4).toList());
-        assertEquals(Stream.concat(table.row(1).limit(3), table.row(2).limit(3)).toList(),
-                table.cells(1, 0, 3, 3).toList());
-        assertEquals(Stream.concat(table.row(1).skip(1).limit(2), table.row(2).skip(1).limit(2)).toList(),
-                table.cells(1, 1, 3, 3).toList());
     }
 
     @Test

@@ -17,6 +17,9 @@ import java.util.stream.Stream;
  */
 public record Point(int x, int y) implements Comparable<Point> {
 
+    /** The origin point: (0, 0). */
+    public static final Point ORIGIN = new Point(0, 0);
+
     /**
      * Returns true if the coordinates of this point are between zero (inclusive) and the given width/height
      * (exclusive).
@@ -164,29 +167,30 @@ public record Point(int x, int y) implements Comparable<Point> {
     }
 
     /**
-     * Returns an ordered stream of points within the given bounds.
-     * If both arguments are positive, then the first element of the returned stream is {@code (0, 0)}, and the
-     * last element is {@code (width - 1, height - 1)}. Otherwise, an empty stream is returned.
+     * Returns an ordered stream of {@link #isValid(int, int) valid} points within the given bounds.
+     * If both arguments are positive, then the first element of the stream is (0, 0), the last element is
+     * {@code (width - 1, height - 1)}, and the stream is lexicographically sorted.
+     * Otherwise, an empty stream is returned.
      */
-    public static Stream<Point> stream(int width, int height) {
-        return stream(0, 0, width, height);
+    public static Stream<Point> box(int width, int height) {
+        return box(ORIGIN, new Point(width - 1, height - 1));
     }
 
     /**
-     * Returns an ordered stream of points within the given bounds (the upper bounds are exclusive).
-     * If {@code startX < endX} and {@code startY < endY}, then the first element of the returned stream is
-     * {@code (startX, startY)}, and the last element is {@code (endX - 1, endY - 1)}.
+     * Returns an ordered stream of points within the closed box {@code [min..max]}.
+     * If {@code min.x <= max.x} and {@code min.y <= max.y}, then the first element of the stream is {@code min},
+     * the last element is {@code max}, and the stream is lexicographically sorted.
      * Otherwise, an empty stream is returned.
      */
-    public static Stream<Point> stream(int startX, int startY, int endX, int endY) {
-        int width = endX - startX;
-        int height = endY - startY;
-        if (endX <= startX || endY <= startY) {
+    public static Stream<Point> box(Point min, Point max) {
+        int width = max.x - min.x + 1;
+        int height = max.y - min.y + 1;
+        if (width <= 0 || height <= 0) {
             return Stream.empty();
         }
 
         return IntStream.range(0, width * height)
-                .mapToObj(i -> new Point(startX + i / height, startY + i % height));
+                .mapToObj(i -> new Point(min.x + i / height, min.y + i % height));
     }
 
 }

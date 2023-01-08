@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @see Bfs
  * @see Dijkstra
- * @see ShortestPath
+ * @see BellmanFord
  */
 public final class Path<T> {
 

@@ -12,18 +12,18 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShortestPathTest extends AbstractShortestPathTest {
+class BellmanFordTest extends AbstractShortestPathTest {
 
     @Override
     <T> Optional<Path<T>> findPath(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
-        return ShortestPath.findPath(source, edgeProvider, targetPredicate);
+        return BellmanFord.findPath(source, edgeProvider, targetPredicate);
     }
 
     @Test
     void testMultipleSources() {
-        var result = ShortestPath.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
+        var result = BellmanFord.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
                 i -> i >= 0
                         ? List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2))
                         : List.of(),

@@ -24,7 +24,7 @@ import java.util.function.Predicate;
  * all possible (and reachable) states in advance.
  *
  * @see Dijkstra
- * @see ShortestPath
+ * @see BellmanFord
  */
 public final class Bfs {
 

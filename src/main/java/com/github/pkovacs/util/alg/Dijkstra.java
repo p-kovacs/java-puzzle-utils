@@ -20,7 +20,7 @@ import java.util.function.Predicate;
  * This function is applied at most once for each node, when the algorithm advances from that node.
  * <p>
  * This algorithm only supports non-negative edge weights. If you also need negative edge weights, use
- * {@link ShortestPath} instead.
+ * {@link BellmanFord} instead.
  * <p>
  * A target predicate can also be used in order to find path to a single target node instead of all nodes. The
  * algorithm terminates when a shortest path is found for a target node having minimum distance from the (nearest)
@@ -30,7 +30,7 @@ import java.util.function.Predicate;
  * all possible (and reachable) states in advance.
  *
  * @see Bfs
- * @see ShortestPath
+ * @see BellmanFord
  */
 public final class Dijkstra {
 

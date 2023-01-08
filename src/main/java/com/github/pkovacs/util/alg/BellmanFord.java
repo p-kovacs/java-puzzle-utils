@@ -12,8 +12,7 @@ import java.util.function.Predicate;
 import com.github.pkovacs.util.alg.Dijkstra.Edge;
 
 /**
- * Implements a general algorithm for finding shortest paths, which is a more efficient version of the classic
- * Bellman-Ford algorithm. Namely, it is the
+ * Implements an efficient version of the Bellman-Ford algorithm, which is known as the
  * <a href="https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm">SPFA algorithm</a>.
  * This algorithm is significantly slower than {@link Dijkstra}, but it also supports negative edge weights.
  * <p>
@@ -33,9 +32,9 @@ import com.github.pkovacs.util.alg.Dijkstra.Edge;
  * @see Dijkstra
  * @see Bfs
  */
-public final class ShortestPath {
+public final class BellmanFord {
 
-    private ShortestPath() {
+    private BellmanFord() {
     }
 
     /**

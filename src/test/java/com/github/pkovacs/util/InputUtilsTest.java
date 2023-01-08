@@ -51,8 +51,8 @@ class InputUtilsTest {
     }
 
     @Test
-    void testScan() {
-        var values = InputUtils.scan("Product PID_4242X is ordered.", ".*PID_%d%c is %s[.]");
+    void testParse() {
+        var values = InputUtils.parse("Product PID_4242X is ordered.", ".*PID_%d%c is %s[.]");
 
         assertEquals("[4242, X, ordered]", values.toString());
 

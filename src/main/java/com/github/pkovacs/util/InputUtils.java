@@ -176,22 +176,21 @@ public class InputUtils {
     }
 
     /**
-     * Scans the given input string according to the given pattern (similarly to scanf method in C) and
-     * returns the parsed values.
+     * Parses the given input string according to the given pattern (similarly to the {@code scanf} method in C)
+     * and returns the parsed values.
      * <p>
      * The given pattern may contain "%d", "%c", "%s". Otherwise, it is considered as a regular expression,
      * so be aware of escaping special characters like '(', ')', '[', ']', '.', '*', '?' etc. Furthermore,
      * it must not contain capturing groups (unescaped '(' and ')').
      * <p>
-     * The returned list contains the parsed values as {@link ParsedValue} objects in the order of their occurrence
-     * in the input.
+     * The returned list contains the parsed values in the order of their occurrence in the input.
      *
      * @param str input string
      * @param pattern pattern string: a regular expression that may contain "%d", "%c", "%s", but must not
      *         contain capturing groups (unescaped '(' and ')'). For example, "Product %s: .* %d out of %d".
      * @return the list of {@link ParsedValue} objects, which can be obtained as int, long, char, or String
      */
-    public static List<ParsedValue> scan(String str, String pattern) {
+    public static List<ParsedValue> parse(String str, String pattern) {
         var groupPatterns = RegexUtils.findAll("%.", pattern);
 
         var regex = pattern.replace("%d", "(\\d+)")
@@ -222,7 +221,7 @@ public class InputUtils {
     }
 
     /**
-     * Represents a value parsed by {@link #scan(String, String)}.
+     * Represents a value parsed by {@link #parse(String, String)}.
      */
     public final static class ParsedValue {
 

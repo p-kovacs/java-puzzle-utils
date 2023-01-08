@@ -4,10 +4,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Represents a point (or position) in 2D coordinate space with integer precision. It is an immutable pair of
- * {@code int} values: x and y coordinates. It provides methods to get the neighbors of a point and the Manhattan
- * distance between two points. Lexicographical ordering is also supported (first by x coordinate, then by
- * y coordinate).
+ * Represents a point (or position vector) in 2D coordinate space as an immutable pair of {@code int} values:
+ * {@code (x, y)}. This class provides various useful methods and also supports lexicographical ordering
+ * (first by x coordinate, then by y coordinate).
  * <p>
  * {@link Cell} is a similar class with different order and names of the components: {@code (row, col)} instead of
  * {@code (x, y)}. Another related class is {@link Vector}, which is the D-dimensional generalization of {@link Point}.
@@ -15,7 +14,7 @@ import java.util.stream.Stream;
  * @see Cell
  * @see Vector
  */
-public record Point(int x, int y) implements Comparable<Point> {
+public record Point(int x, int y) implements Position, Comparable<Point> {
 
     /** The origin point: (0, 0). */
     public static final Point ORIGIN = new Point(0, 0);
@@ -115,20 +114,6 @@ public record Point(int x, int y) implements Comparable<Point> {
     }
 
     /**
-     * Returns true if the given point is a neighbor of this point.
-     */
-    public boolean isNeighbor(Point other) {
-        return (x == other.x && Math.abs(y - other.y) == 1) || (y == other.y && Math.abs(x - other.x) == 1);
-    }
-
-    /**
-     * Returns true if the given point is an "extended" neighbor of this point, also including the diagonal ones.
-     */
-    public boolean isExtendedNeighbor(Point other) {
-        return !equals(other) && Math.abs(x - other.x) <= 1 && Math.abs(y - other.y) <= 1;
-    }
-
-    /**
      * Creates a new point by adding the coordinates of given point to the coordinates of this point.
      */
     public Point add(Point other) {
@@ -140,20 +125,6 @@ public record Point(int x, int y) implements Comparable<Point> {
      */
     public Point subtract(Point other) {
         return new Point(x - other.x, y - other.y);
-    }
-
-    /**
-     * Returns the Manhattan distance (aka. "taxicab" distance) between this point and (0, 0).
-     */
-    public int dist() {
-        return Math.abs(x) + Math.abs(y);
-    }
-
-    /**
-     * Returns the Manhattan distance (aka. "taxicab" distance) between this point and the given point.
-     */
-    public int dist(Point other) {
-        return subtract(other).dist();
     }
 
     @Override

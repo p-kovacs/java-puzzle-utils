@@ -25,10 +25,28 @@ class PointTest {
         assertTrue(a.isValid(43, 13));
         assertFalse(a.isValid(43, 12));
         assertFalse(a.isValid(42, 13));
+    }
 
-        assertEquals(54, a.dist());
-        assertEquals(60, a.dist(b));
-        assertEquals(0, b.dist(c));
+    @Test
+    void testDistances() {
+        var a = new Point(42, 12);
+        var b = new Point(30, 30);
+
+        assertEquals(54, a.dist1());
+        assertEquals(30, a.dist1(b));
+        assertEquals(0, a.dist1(a));
+
+        assertEquals(42, a.distMax());
+        assertEquals(18, a.distMax(b));
+        assertEquals(0, a.distMax(a));
+
+        assertEquals(12 * 12 + 42 * 42, a.distSq());
+        assertEquals(12 * 12 + 18 * 18, a.distSq(b));
+        assertEquals(0, a.distSq(a));
+
+        assertEquals(Math.sqrt(12 * 12 + 42 * 42), a.dist2(), 1e-10);
+        assertEquals(Math.sqrt(12 * 12 + 18 * 18), a.dist2(b), 1e-10);
+        assertEquals(0, a.dist2(a), 1e-10);
     }
 
     @Test
@@ -90,8 +108,8 @@ class PointTest {
         assertEquals(4, a.extendedNeighbors().filter(a::isNeighbor).count());
         assertEquals(8, a.extendedNeighbors().filter(a::isExtendedNeighbor).count());
 
-        assertTrue(a.neighbors().allMatch(p -> p.dist(a) == 1));
-        assertTrue(a.neighbors().mapToInt(a::dist).allMatch(d -> d == 1));
+        assertTrue(a.neighbors().mapToInt(a::dist1).allMatch(d -> d == 1));
+        assertTrue(a.neighbors().mapToInt(a::distMax).allMatch(d -> d == 1));
 
         assertEquals(4, a.validNeighbors(44, 14).count());
         assertEquals(2, a.validNeighbors(43, 13).count());
@@ -99,8 +117,9 @@ class PointTest {
         assertEquals(1, a.validNeighbors(42, 13).count());
         assertEquals(0, a.validNeighbors(42, 12).count());
 
-        assertTrue(a.extendedNeighbors().allMatch(n -> a.dist(n) <= 2));
-        assertEquals(12, a.extendedNeighbors().mapToInt(a::dist).sum());
+        assertTrue(a.extendedNeighbors().mapToInt(a::dist1).allMatch(d -> d <= 2));
+        assertTrue(a.extendedNeighbors().mapToInt(a::distMax).allMatch(d -> d == 1));
+        assertEquals(12, a.extendedNeighbors().mapToInt(a::dist1).sum());
     }
 
     @Test

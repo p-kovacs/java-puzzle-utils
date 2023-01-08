@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class VectorTest {
@@ -20,9 +21,9 @@ class VectorTest {
 
         a = a.add(b).subtract(new Vector(2, 2));
         assertEquals(new Vector(40, 10), a);
-        assertEquals(50, a.dist());
+        assertEquals(50, a.dist1());
         assertEquals(new Vector(-40, -10), a.opposite());
-        assertEquals(50, a.opposite().dist());
+        assertEquals(50, a.opposite().dist1());
 
         assertEquals(new Vector(10, -40), a.rotateRight());
         assertEquals(new Vector(-40, -10), a.rotateRight().rotateRight());
@@ -36,13 +37,24 @@ class VectorTest {
 
         var c = new Vector(42, 12);
         var d = new Vector(42, 12);
-        assertEquals(0, c.dist(d));
+        assertEquals(0, c.dist1(d));
         d = d.rotateRight();
-        assertEquals(42 + 12 + 30, c.dist(d));
+        assertEquals(new Vector(12, -42), d);
+        assertEquals(54 + 30, c.dist1(d));
+        assertEquals(54, c.distMax(d));
+        assertEquals(54 * 54 + 30 * 30, c.distSq(d));
+        assertEquals(Math.sqrt(54 * 54 + 30 * 30), c.dist2(d), 1e-10);
         c = c.rotateLeft();
-        assertEquals(c.dist() + d.dist(), c.dist(d));
+        assertEquals(new Vector(-12, 42), c);
+        assertEquals(c.dist1() + d.dist1(), c.dist1(d));
+        assertEquals(c.distMax() + d.distMax(), c.distMax(d));
+        assertNotEquals(c.distSq() + d.distSq(), c.distSq(d)); // does not satisfy the triangle inequality
+        assertEquals(c.dist2() + d.dist2(), c.dist2(d), 1e-10);
         c = c.opposite();
-        assertEquals(0, c.dist(d));
+        assertEquals(0, c.dist1(d));
+        assertEquals(0, c.distMax(d));
+        assertEquals(0, c.distSq(d));
+        assertEquals(0, c.dist2(d), 1e-10);
 
         var e = new Vector(42, 12);
         assertEquals(Vector.ORIGIN, e.multiply(0));
@@ -94,9 +106,20 @@ class VectorTest {
         assertEquals(c.add(c).add(c).add(c).add(c), c.multiply(5));
         assertEquals(c.add(c.multiply(7)).subtract(c.multiply(4)), c.multiply(4));
 
-        assertEquals(42 + 12 + 3, c.dist());
-        assertEquals(c.dist(), c.opposite().dist());
-        assertEquals(c.dist() * 3, c.opposite().add(c.multiply(4)).dist());
+        assertEquals(42 + 12 + 3, c.dist1());
+        assertEquals(42, c.distMax());
+        assertEquals(42 * 42 + 12 * 12 + 3 * 3, c.distSq());
+        assertEquals(Math.sqrt(42 * 42 + 12 * 12 + 3 * 3), c.dist2(), 1e-10);
+
+        assertEquals(c.dist1(), c.opposite().dist1());
+        assertEquals(c.distMax(), c.opposite().distMax());
+        assertEquals(c.distSq(), c.opposite().distSq());
+        assertEquals(c.dist2(), c.opposite().dist2(), 1e-10);
+
+        assertEquals(c.dist1() * 5, c.opposite().dist1(c.multiply(4)));
+        assertEquals(c.distMax() * 5, c.opposite().distMax(c.multiply(4)));
+        assertNotEquals(c.distSq() * 5, c.opposite().distSq(c.multiply(4))); // does not satisfy the triangle inequality
+        assertEquals(c.dist2() * 5, c.opposite().dist2(c.multiply(4)), 1e-10);
 
         assertEquals("(42, 12, -3)", c.toString());
 
@@ -106,32 +129,37 @@ class VectorTest {
 
     @Test
     void testGeneral() {
-        var a = Vector.origin(12);
-        var b = new Vector(0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11);
+        var a = Vector.origin(10);
+        var b = new Vector(1, -2, 3, -4, 5, -6, 7, -8, 9, -10);
+        var c = new Vector(1, 2, 3, 4, 5, 6, 7, 8);
 
-        assertEquals(12, a.dim());
-        assertEquals(12, b.dim());
+        assertEquals(10, a.dim());
+        assertEquals(10, b.dim());
 
-        assertEquals(0, a.dist());
-        assertEquals(66, b.dist());
+        assertEquals(0, a.dist1());
+        assertEquals(0, a.distMax());
+        assertEquals(0, a.distSq());
+        assertEquals(0, a.dist2(), 1e-10);
+
+        assertEquals(55, b.dist1());
+        assertEquals(10, b.distMax());
+        assertEquals(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100, b.distSq());
+        assertEquals(Math.sqrt(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100), b.dist2(), 1e-10);
+
+        assertThrows(IllegalArgumentException.class, () -> b.add(c));
+        assertThrows(IllegalArgumentException.class, () -> c.subtract(b));
+        assertThrows(IllegalArgumentException.class, () -> b.dist1(c));
+        assertThrows(IllegalArgumentException.class, () -> b.distMax(c));
+        assertThrows(IllegalArgumentException.class, () -> c.distSq(b));
+        assertThrows(IllegalArgumentException.class, () -> c.dist2(b));
 
         assertEquals(b, a.add(b));
+        assertEquals(a, b.subtract(b));
 
-        var c = new Vector(42, 12, -3);
-        assertEquals(Vector.origin(c.dim()), c.multiply(0));
-        assertEquals(c, c.multiply(1));
-        assertEquals(c.add(c), c.multiply(2));
-        assertEquals(c.add(c).add(c).add(c).add(c), c.multiply(5));
-        assertEquals(c.add(c.multiply(7)).subtract(c.multiply(4)), c.multiply(4));
+        assertEquals("(1, -2, 3, -4, 5, -6, 7, -8, 9, -10)", b.toString());
 
-        assertEquals(42 + 12 + 3, c.dist());
-        assertEquals(c.dist(), c.opposite().dist());
-        assertEquals(c.dist() * 3, c.opposite().add(c.multiply(4)).dist());
-
-        assertEquals("(0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11)", b.toString());
-
-        assertThrows(UnsupportedOperationException.class, c::rotateLeft);
-        assertThrows(UnsupportedOperationException.class, c::rotateRight);
+        assertThrows(UnsupportedOperationException.class, a::rotateLeft);
+        assertThrows(UnsupportedOperationException.class, a::rotateRight);
     }
 
     @Test

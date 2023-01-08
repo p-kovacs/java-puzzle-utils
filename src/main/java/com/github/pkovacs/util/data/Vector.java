@@ -7,8 +7,7 @@ import static java.util.stream.Collectors.joining;
 
 /**
  * Represents a position vector in D-dimensional coordinate space with integer precision. It is an immutable array of
- * {@code long} coordinates. It provides methods for various vector operations and for obtaining the Manhattan
- * distance between two vectors. Lexicographical ordering is also supported.
+ * {@code long} coordinates, which provides various useful methods and also supports lexicographical ordering.
  * <p>
  * Some features are specific to 2D vectors, e.g., the four directions and rotation. The coordinates are interpreted
  * as usual in Math: (0, 0) is the {@link #ORIGIN}, (0, 1) means {@link #NORTH}, (0, -1) means {@link #SOUTH},
@@ -213,18 +212,79 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns the Manhattan distance (aka. "taxicab" distance) between this vector and the
-     * {@link #origin(int) origin}.
+     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Manhattan distance</a>
+     * (aka. L1 distance or "taxicab" distance) between this vector and the {@link #origin(int) origin}.
      */
-    public long dist() {
+    public long dist1() {
         return Arrays.stream(coords).map(Math::abs).sum();
     }
 
     /**
-     * Returns the Manhattan distance (aka. "taxicab" distance) between this vector and the given vector.
+     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Manhattan distance</a>
+     * (aka. L1 distance or "taxicab" distance) between this vector and the given vector.
+     *
+     * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public long dist(Vector v) {
-        return subtract(v).dist();
+    public long dist1(Vector v) {
+        return subtract(v).dist1();
+    }
+
+    /**
+     * Returns the <a href="https://en.wikipedia.org/wiki/Chebyshev_distance">"maximum" distance</a>
+     * (aka. L∞ distance or Chebyshev distance) between this vector and the {@link #origin(int) origin}.
+     */
+    public long distMax() {
+        return Arrays.stream(coords).map(Math::abs).max().orElseThrow();
+    }
+
+    /**
+     * Returns the <a href="https://en.wikipedia.org/wiki/Chebyshev_distance">"maximum" distance</a>
+     * (aka. L∞ distance or Chebyshev distance) between this vector and the given vector.
+     *
+     * @throws IllegalArgumentException if the vectors have different dimensions
+     */
+    public long distMax(Vector v) {
+        return subtract(v).distMax();
+    }
+
+    /**
+     * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
+     * Eucledian distance</a> between this vector and the {@link #origin(int) origin}.
+     * <p>
+     * Warning: this distance does not satisfy the triangle inequality.
+     */
+    public long distSq() {
+        return Arrays.stream(coords).map(i -> i * i).sum();
+    }
+
+    /**
+     * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
+     * Eucledian distance</a> between this vector and the given vector.
+     * <p>
+     * Warning: this distance does not satisfy the triangle inequality.
+     *
+     * @throws IllegalArgumentException if the vectors have different dimensions
+     */
+    public long distSq(Vector v) {
+        return subtract(v).distSq();
+    }
+
+    /**
+     * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Eucledian distance</a>
+     * (aka. L2 distance) between this vector and the {@link #origin(int) origin}.
+     */
+    public double dist2() {
+        return Math.sqrt(distSq());
+    }
+
+    /**
+     * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Eucledian distance</a>
+     * (aka. L2 distance) between this vector and the given vector.
+     *
+     * @throws IllegalArgumentException if the vectors have different dimensions
+     */
+    public double dist2(Vector v) {
+        return subtract(v).dist2();
     }
 
     @Override

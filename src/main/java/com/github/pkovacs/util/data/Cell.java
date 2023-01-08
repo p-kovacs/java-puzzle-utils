@@ -4,9 +4,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Represents a cell (or position) of a table or matrix. It is an immutable pair of {@code int} values: row index and
- * column index. It provides methods to get the neighbors of a cell and the Manhattan distance between two cells.
- * Lexicographical ordering is also supported (first by row index, then by column index).
+ * Represents a cell (or position) in a table or matrix as an immutable pair of {@code int} values:
+ * {@code (row, col)}. This class provides various useful methods and also supports lexicographical ordering
+ * (first by row index, then by column index).
  * <p>
  * {@link Point} is a similar class with different order and names of the components: {@code (x, y)} instead of
  * {@code (row, col)}.
@@ -14,10 +14,20 @@ import java.util.stream.Stream;
  * @see Point
  * @see Table
  */
-public record Cell(int row, int col) implements Comparable<Cell> {
+public record Cell(int row, int col) implements Position, Comparable<Cell> {
 
     /** The origin cell: (0, 0). */
     public static final Cell ORIGIN = new Cell(0, 0);
+
+    @Override
+    public int x() {
+        return col;
+    }
+
+    @Override
+    public int y() {
+        return row;
+    }
 
     /**
      * Returns true if the indices of this cell are between zero (inclusive) and the given row/column count
@@ -91,35 +101,6 @@ public record Cell(int row, int col) implements Comparable<Cell> {
                 new Cell(row + 1, col - 1),
                 new Cell(row, col - 1),
                 new Cell(row - 1, col - 1));
-    }
-
-    /**
-     * Returns true if the given cell is a neighbor of this cell.
-     */
-    public boolean isNeighbor(Cell other) {
-        return (row == other.row && Math.abs(col - other.col) == 1)
-                || (col == other.col && Math.abs(row - other.row) == 1);
-    }
-
-    /**
-     * Returns true if the given cell is an "extended" neighbor of this cell, also including the diagonal ones.
-     */
-    public boolean isExtendedNeighbor(Cell other) {
-        return !equals(other) && Math.abs(row - other.row) <= 1 && Math.abs(col - other.col) <= 1;
-    }
-
-    /**
-     * Returns the Manhattan distance (aka. "taxicab" distance) between this cell and (0, 0).
-     */
-    public int dist() {
-        return Math.abs(row) + Math.abs(col);
-    }
-
-    /**
-     * Returns the Manhattan distance (aka. "taxicab" distance) between this cell and the given cell.
-     */
-    public int dist(Cell other) {
-        return Math.abs(row - other.row) + Math.abs(col - other.col);
     }
 
     @Override

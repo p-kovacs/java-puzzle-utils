@@ -78,7 +78,7 @@ abstract class AbstractShortestPathTest {
         result = findPathInMaze(maze, start, end, detonationTime);
 
         assertEquals(20, result.dist());
-        assertEquals(start.dist(end), result.dist());
+        assertEquals(start.dist1(end), result.dist());
     }
 
     private Path<Cell> findPathInMaze(CharTable maze, Cell start, Cell end, long detonationTime) {

@@ -114,6 +114,13 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
     }
 
     /**
+     * Creates a new point by adding the given delta values to the coordinates of this point.
+     */
+    public Point add(int dx, int dy) {
+        return new Point(x + dx, y + dy);
+    }
+
+    /**
      * Creates a new point by adding the given point to this one (as a position vector).
      */
     public Point add(Point other) {

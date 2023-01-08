@@ -25,6 +25,9 @@ class CellTest {
         assertTrue(a.isValid(13, 43));
         assertFalse(a.isValid(12, 43));
         assertFalse(a.isValid(13, 42));
+
+        assertEquals(new Cell(20, 30), a.add(8, -12));
+        assertEquals(new Cell(84, 24), b.add(c.row(), c.col()));
     }
 
     @Test

@@ -25,6 +25,9 @@ class PointTest {
         assertTrue(a.isValid(43, 13));
         assertFalse(a.isValid(43, 12));
         assertFalse(a.isValid(42, 13));
+
+        assertEquals(new Point(30, 20), a.add(-12, 8));
+        assertEquals(new Point(24, 84), b.add(c.x(), c.y()));
     }
 
     @Test

@@ -103,6 +103,13 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
                 new Cell(row - 1, col - 1));
     }
 
+    /**
+     * Creates a new cell by adding the given delta values to the indices of this cell.
+     */
+    public Cell add(int deltaRow, int deltaCol) {
+        return new Cell(row + deltaRow, col + deltaCol);
+    }
+
     @Override
     public String toString() {
         return "(" + row + ", " + col + ")";

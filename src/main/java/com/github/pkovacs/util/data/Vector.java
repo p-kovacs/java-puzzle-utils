@@ -8,27 +8,8 @@ import static java.util.stream.Collectors.joining;
 /**
  * Represents a position vector in D-dimensional coordinate space with integer precision. It is an immutable array of
  * {@code long} coordinates, which provides various useful methods and also supports lexicographical ordering.
- * <p>
- * Some features are specific to 2D vectors, e.g., the four directions and rotation. The coordinates are interpreted
- * as usual in Math: (0, 0) is the {@link #ORIGIN}, (0, 1) means {@link #NORTH}, (0, -1) means {@link #SOUTH},
- * (1, 0) means {@link #EAST}, (-1, 0) means {@link #WEST}.
  */
 public class Vector implements Comparable<Vector> {
-
-    /** The 2D origin vector: (0, 0). For other dimensions, use {@link #origin(int)}. */
-    public static final Vector ORIGIN = new Vector(0, 0);
-
-    /** The 2D unit vector with "north" direction: (0, 1). */
-    public static final Vector NORTH = new Vector(0, 1);
-
-    /** The 2D unit vector with "south" direction: (0, -1). */
-    public static final Vector SOUTH = new Vector(0, -1);
-
-    /** The 2D unit vector with "east" direction: (1, 0). */
-    public static final Vector EAST = new Vector(1, 0);
-
-    /** The 2D unit vector with "west" direction: (-1, 0). */
-    public static final Vector WEST = new Vector(-1, 0);
 
     private final long[] coords;
 
@@ -47,7 +28,7 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Creates a vector with the given coordinates.
+     * Creates a D-dimensional vector with the given coordinates.
      */
     public Vector(long... coords) {
         if (coords.length <= 1) {
@@ -61,28 +42,6 @@ public class Vector implements Comparable<Vector> {
      */
     public static Vector origin(int dim) {
         return new Vector(new long[dim]);
-    }
-
-    /**
-     * Returns the 2D unit vector corresponding to the given direction.
-     */
-    public static Vector fromDirection(Direction dir) {
-        return switch (dir) {
-            case NORTH -> Vector.NORTH;
-            case EAST -> Vector.EAST;
-            case SOUTH -> Vector.SOUTH;
-            case WEST -> Vector.WEST;
-        };
-    }
-
-    /**
-     * Returns the 2D unit vector corresponding to the given direction character.
-     *
-     * @param dir the direction character. One of 'N' (north), 'E' (east), 'S' (south), 'W' (west),
-     *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
-     */
-    public static Vector fromChar(char dir) {
-        return fromDirection(Direction.fromChar(dir));
     }
 
     /**
@@ -165,50 +124,6 @@ public class Vector implements Comparable<Vector> {
             newCoords[i] = function.apply(i);
         }
         return new Vector(newCoords);
-    }
-
-    /**
-     * Creates a new vector by mirroring this 2D vector horizontally.
-     */
-    public Vector mirrorHorizontally() {
-        if (dim() != 2) {
-            throw new UnsupportedOperationException("Supported only for 2D vectors.");
-        }
-        return new Vector(-x(), y());
-    }
-
-    /**
-     * Creates a new vector by mirroring this 2D vector vertically.
-     */
-    public Vector mirrorVertically() {
-        if (dim() != 2) {
-            throw new UnsupportedOperationException("Supported only for 2D vectors.");
-        }
-        return new Vector(x(), -y());
-    }
-
-    /**
-     * Creates a new vector by rotating this 2D vector 90 degrees to the right.
-     *
-     * @throws UnsupportedOperationException if the dimension of this vector is larger than two
-     */
-    public Vector rotateRight() {
-        if (dim() != 2) {
-            throw new UnsupportedOperationException("Supported only for 2D vectors.");
-        }
-        return new Vector(y(), -x());
-    }
-
-    /**
-     * Creates a new vector by rotating this 2D vector 90 degrees to the left.
-     *
-     * @throws UnsupportedOperationException if the dimension of this vector is larger than two
-     */
-    public Vector rotateLeft() {
-        if (dim() != 2) {
-            throw new UnsupportedOperationException("Supported only for 2D vectors.");
-        }
-        return new Vector(-y(), x());
     }
 
     /**

@@ -123,6 +123,44 @@ class PointTest {
     }
 
     @Test
+    void testVectorMethods() {
+        var a = new Point(42, 12);
+        var b = new Point(10, 20);
+
+        assertEquals(new Point(-42, -12), a.opposite());
+        assertEquals(new Point(52, 32), a.add(b));
+        assertEquals(new Point(52, 32), b.add(a));
+        assertEquals(new Point(32, -8), a.subtract(b));
+        assertEquals(new Point(-32, 8), b.subtract(a));
+        assertEquals(a.add(b.opposite()), a.subtract(b));
+        assertEquals(b.add(a.opposite()), b.subtract(a));
+    }
+
+    @Test
+    void testRotationAndMirroring() {
+        var a = new Point(40, 10);
+
+        assertEquals(new Point(-40, -10), a.opposite());
+
+        assertEquals(new Point(-10, 40), a.rotateLeft());
+        assertEquals(new Point(-40, -10), a.rotateLeft().rotateLeft());
+        assertEquals(new Point(10, -40), a.rotateLeft().rotateLeft().rotateLeft());
+        assertEquals(new Point(40, 10), a.rotateLeft().rotateLeft().rotateLeft().rotateLeft());
+
+        assertEquals(new Point(10, -40), a.rotateRight());
+        assertEquals(new Point(-40, -10), a.rotateRight().rotateRight());
+        assertEquals(new Point(-10, 40), a.rotateRight().rotateRight().rotateRight());
+        assertEquals(new Point(40, 10), a.rotateRight().rotateRight().rotateRight().rotateRight());
+
+        assertEquals(new Point(-40, 10), a.mirrorHorizontally());
+        assertEquals(new Point(40, -10), a.mirrorVertically());
+        assertEquals(a, a.mirrorHorizontally().mirrorHorizontally());
+        assertEquals(a, a.mirrorVertically().mirrorVertically());
+        assertEquals(a.opposite(), a.mirrorHorizontally().mirrorVertically());
+        assertEquals(a.opposite(), a.mirrorVertically().mirrorHorizontally());
+    }
+
+    @Test
     void testToString() {
         assertEquals("(12, 42)", new Point(12, 42).toString());
         assertEquals("(-3, -5)", new Point(-3, -5).toString());

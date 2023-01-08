@@ -114,17 +114,52 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
     }
 
     /**
-     * Creates a new point by adding the coordinates of given point to the coordinates of this point.
+     * Creates a new point by adding the given point to this one (as a position vector).
      */
     public Point add(Point other) {
         return new Point(x + other.x, y + other.y);
     }
 
     /**
-     * Creates a new point by subtracting the coordinates of given point to the coordinates of this point.
+     * Creates a new point by subtracting the given point from this one (as a position vector).
      */
     public Point subtract(Point other) {
         return new Point(x - other.x, y - other.y);
+    }
+
+    /**
+     * Creates a new point that is the opposite of this point (as a position vector).
+     */
+    public Point opposite() {
+        return new Point(-x, -y);
+    }
+
+    /**
+     * Creates a new point by rotating this point 90 degrees to the left (as a position vector).
+     */
+    public Point rotateLeft() {
+        return new Point(-y, x);
+    }
+
+    /**
+     * Creates a new point by rotating this point 90 degrees to the right (as a position vector).
+     */
+    public Point rotateRight() {
+        return new Point(y, -x);
+    }
+
+    /**
+     * Creates a new point by mirroring this point horizontally (as a position vector).
+     */
+    public Point mirrorHorizontally() {
+        return new Point(-x, y);
+    }
+
+    /**
+     * Creates a new point by mirroring this point vertically (as a position vector).
+     */
+    public Point mirrorVertically() {
+        return new Point(x, -y);
     }
 
     @Override

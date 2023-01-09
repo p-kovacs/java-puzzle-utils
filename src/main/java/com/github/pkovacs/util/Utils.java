@@ -1,6 +1,7 @@
 package com.github.pkovacs.util;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,6 +77,96 @@ public class Utils extends InputUtils {
         if (min.compareTo(max) > 0) {
             throw new IllegalArgumentException("Minimum value " + min + " is greater than maximum value " + max + ".");
         }
+    }
+
+    /**
+     * Returns the minimum of the given {@code int} values.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static int min(int... ints) {
+        return streamOf(ints).min().orElseThrow();
+    }
+
+    /**
+     * Returns the minimum of the given {@code long} values.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static long min(long... longs) {
+        return streamOf(longs).min().orElseThrow();
+    }
+
+    /**
+     * Returns the minimum of the given {@code char} values.
+     *
+     * @throws java.util.NoSuchElementException if no characters are given
+     */
+    public static char min(char... chars) {
+        return streamOf(chars).min(Comparator.naturalOrder()).orElseThrow();
+    }
+
+    /**
+     * Returns the minimum of the {@code int} values of the given numbers.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static int minInt(Collection<? extends Number> numbers) {
+        return numbers.stream().mapToInt(Number::intValue).min().orElseThrow();
+    }
+
+    /**
+     * Returns the minimum of the {@code long} values of the given numbers.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static long minLong(Collection<? extends Number> numbers) {
+        return numbers.stream().mapToLong(Number::longValue).min().orElseThrow();
+    }
+
+    /**
+     * Returns the maximum of the given {@code int} values.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static int max(int... ints) {
+        return streamOf(ints).max().orElseThrow();
+    }
+
+    /**
+     * Returns the maximum of the given {@code long} values.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static long max(long... longs) {
+        return streamOf(longs).max().orElseThrow();
+    }
+
+    /**
+     * Returns the maximum of the given {@code char} values.
+     *
+     * @throws java.util.NoSuchElementException if no characters are given
+     */
+    public static char max(char... chars) {
+        return streamOf(chars).max(Comparator.naturalOrder()).orElseThrow();
+    }
+
+    /**
+     * Returns the maximum of the {@code int} values of the given numbers.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static int maxInt(Collection<? extends Number> numbers) {
+        return numbers.stream().mapToInt(Number::intValue).max().orElseThrow();
+    }
+
+    /**
+     * Returns the maximum of the {@code long} values of the given numbers.
+     *
+     * @throws java.util.NoSuchElementException if no numbers are given
+     */
+    public static long maxLong(Collection<? extends Number> numbers) {
+        return numbers.stream().mapToLong(Number::longValue).max().orElseThrow();
     }
 
     /**

@@ -3,11 +3,13 @@ package com.github.pkovacs.util;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UtilsTest {
@@ -65,28 +67,68 @@ class UtilsTest {
 
     @Test
     void testInts() {
-        int[] x = { 1, 2, 3, 4, 5 };
-        assertEquals(List.of(1, 2, 3, 4, 5), Utils.listOf(x));
-        assertEquals(Set.of(1, 2, 3, 4, 5), Utils.setOf(x));
+        int[] x = { 3, 2, 1, 5, 4 };
+
+        assertEquals(List.of(), Utils.listOf(new int[0]));
+        assertEquals(Set.of(), Utils.setOf(new int[0]));
+        assertEquals(List.of(3, 2, 1, 5, 4), Utils.listOf(x));
+        assertEquals(Set.of(3, 2, 1, 5, 4), Utils.setOf(x));
         assertEquals(3, Utils.streamOf(x).filter(c -> c % 2 == 1).count());
+
+        assertEquals(1, Utils.min(3, 1, 5));
+        assertEquals(1, Utils.min(x));
+        assertEquals(1, Utils.minInt(Utils.listOf(x)));
+        assertEquals(5, Utils.max(3, 1, 5));
+        assertEquals(5, Utils.max(x));
+        assertEquals(5, Utils.maxInt(Utils.listOf(x)));
+
+        assertThrows(NoSuchElementException.class, () -> Utils.min(new int[0]));
+        assertThrows(NoSuchElementException.class, () -> Utils.max(new int[0]));
+        assertThrows(NoSuchElementException.class, () -> Utils.minInt(List.of()));
+        assertThrows(NoSuchElementException.class, () -> Utils.maxInt(List.of()));
     }
 
     @Test
     void testLongs() {
-        long[] x = { 1, 2, 3, 4, 5 };
-        assertEquals(List.of(1L, 2L, 3L, 4L, 5L), Utils.listOf(x));
-        assertEquals(Set.of(1L, 2L, 3L, 4L, 5L), Utils.setOf(x));
+        long[] x = { 3, 2, 1, 5, 4 };
+
+        assertEquals(List.of(), Utils.listOf(new int[0]));
+        assertEquals(Set.of(), Utils.setOf(new int[0]));
+        assertEquals(List.of(3L, 2L, 1L, 5L, 4L), Utils.listOf(x));
+        assertEquals(Set.of(3L, 2L, 1L, 5L, 4L), Utils.setOf(x));
         assertEquals(3, Utils.streamOf(x).filter(c -> c % 2 == 1).count());
+
+        assertEquals(1L, Utils.min(3L, 1L, 5L));
+        assertEquals(1L, Utils.min(x));
+        assertEquals(1L, Utils.minInt(Utils.listOf(x)));
+        assertEquals(5L, Utils.max(3L, 1L, 5L));
+        assertEquals(5L, Utils.max(x));
+        assertEquals(5L, Utils.maxInt(Utils.listOf(x)));
+
+        assertThrows(NoSuchElementException.class, () -> Utils.min(new long[0]));
+        assertThrows(NoSuchElementException.class, () -> Utils.max(new long[0]));
+        assertThrows(NoSuchElementException.class, () -> Utils.minLong(List.of()));
+        assertThrows(NoSuchElementException.class, () -> Utils.maxLong(List.of()));
     }
 
     @Test
     void testChars() {
+        char[] x = { 'h', 'e', 'l', 'l', 'o' };
+
         assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.charsOf("hello").toList());
         assertEquals(2, Utils.charsOf("hello").filter(c -> c == 'l').count());
 
-        assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.listOf("hello".toCharArray()));
-        assertEquals(Set.of('h', 'e', 'l', 'o'), Utils.setOf("hello".toCharArray()));
+        assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.listOf(x));
+        assertEquals(Set.of('h', 'e', 'l', 'o'), Utils.setOf(x));
         assertEquals(3, Utils.streamOf("hello".toCharArray()).filter(c -> c != 'l').count());
+
+        assertEquals('a', Utils.min('c', 'a', 'f', 'b'));
+        assertEquals('e', Utils.min(x));
+        assertEquals('f', Utils.max('c', 'a', 'f', 'b'));
+        assertEquals('o', Utils.max(x));
+
+        assertThrows(NoSuchElementException.class, () -> Utils.min(new char[0]));
+        assertThrows(NoSuchElementException.class, () -> Utils.max(new char[0]));
     }
 
     @Test

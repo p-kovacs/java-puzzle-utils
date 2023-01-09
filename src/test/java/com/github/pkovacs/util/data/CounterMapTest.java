@@ -1,9 +1,12 @@
 package com.github.pkovacs.util.data;
 
+import java.util.NoSuchElementException;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CounterMapTest {
 
@@ -16,6 +19,8 @@ class CounterMapTest {
         assertEquals(0, map.getValue("hello"));
         assertEquals(0, map.getValue("okay"));
         assertEquals(0, map.size());
+        assertThrows(NoSuchElementException.class, map::min);
+        assertThrows(NoSuchElementException.class, map::max);
 
         assertEquals(1, map.inc("hello"));
         assertEquals(-1, map.dec("okay"));

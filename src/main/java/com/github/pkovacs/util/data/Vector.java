@@ -29,6 +29,8 @@ public class Vector implements Comparable<Vector> {
 
     /**
      * Creates a D-dimensional vector with the given coordinates.
+     *
+     * @throws IllegalArgumentException if less than two coordinates are given
      */
     public Vector(long... coords) {
         if (coords.length <= 1) {
@@ -39,6 +41,8 @@ public class Vector implements Comparable<Vector> {
 
     /**
      * Returns the origin vector with the given dimension.
+     *
+     * @throws IllegalArgumentException if the dimension is less than two
      */
     public static Vector origin(int dim) {
         return new Vector(new long[dim]);
@@ -68,7 +72,7 @@ public class Vector implements Comparable<Vector> {
     /**
      * Returns the z coordinate of this vector. It is the same as {@link #get(int) get(2)}.
      *
-     * @throws IndexOutOfBoundsException if the dimension of this vector is less than three
+     * @throws IndexOutOfBoundsException if this is a 2D vector
      */
     public long z() {
         return coords[2];
@@ -77,14 +81,27 @@ public class Vector implements Comparable<Vector> {
     /**
      * Returns the k-th coordinate of this vector.
      *
-     * @throws IndexOutOfBoundsException if the dimension of this vector is less than or equal to {@code k}
+     * @throws IndexOutOfBoundsException if {@code k >= dim()}
      */
     public long get(int k) {
         return coords[k];
     }
 
     /**
+     * Creates a new vector by changing the k-th coordinate of this vector.
+     *
+     * @throws IndexOutOfBoundsException if {@code k >= dim()}
+     */
+    public Vector set(int k, long value) {
+        long[] newCoords = coords.clone();
+        newCoords[k] = value;
+        return new Vector(newCoords);
+    }
+
+    /**
      * Creates a new vector by adding the given vector to this one.
+     *
+     * @throws IllegalArgumentException if the vectors have different dimensions
      */
     public Vector add(Vector v) {
         return newInstance(checkDimensions(this, v), i -> coords[i] + v.coords[i]);
@@ -92,6 +109,8 @@ public class Vector implements Comparable<Vector> {
 
     /**
      * Creates a new vector by subtracting the given vector from this one.
+     *
+     * @throws IllegalArgumentException if the vectors have different dimensions
      */
     public Vector subtract(Vector v) {
         return newInstance(checkDimensions(this, v), i -> coords[i] - v.coords[i]);
@@ -113,7 +132,7 @@ public class Vector implements Comparable<Vector> {
 
     private static int checkDimensions(Vector a, Vector b) {
         if (a.coords.length != b.coords.length) {
-            throw new IllegalArgumentException("Vector dimensions mismatch.");
+            throw new IllegalArgumentException("Vectors have different dimensions.");
         }
         return a.coords.length;
     }

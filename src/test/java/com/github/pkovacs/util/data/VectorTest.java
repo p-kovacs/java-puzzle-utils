@@ -16,8 +16,16 @@ class VectorTest {
         var b = new Vector(42, 12);
 
         assertEquals(b.x(), 42);
+        assertEquals(b.get(0), 42);
         assertEquals(b.y(), 12);
+        assertEquals(b.get(1), 12);
+        assertThrows(IndexOutOfBoundsException.class, b::z);
+        assertThrows(IndexOutOfBoundsException.class, () -> b.get(2));
+
         assertEquals(b, a.add(b));
+        assertEquals(new Vector(-1, 12), b.set(0, -1));
+        assertEquals(new Vector(42, 100), b.set(1, 100));
+        assertThrows(IndexOutOfBoundsException.class, () -> b.set(2, 0));
 
         a = a.add(b).subtract(new Vector(2, 2));
         assertEquals(new Vector(40, 10), a);

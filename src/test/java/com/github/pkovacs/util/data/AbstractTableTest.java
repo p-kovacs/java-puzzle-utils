@@ -52,9 +52,9 @@ abstract class AbstractTableTest<T> {
 
         assertEquals(List.of(
                         new Cell(0, 2),
+                        new Cell(1, 1),
                         new Cell(1, 3),
-                        new Cell(2, 2),
-                        new Cell(1, 1)),
+                        new Cell(2, 2)),
                 table.neighbors(new Cell(1, 2)).toList());
         assertEquals(List.of(
                         new Cell(0, 1),
@@ -62,32 +62,43 @@ abstract class AbstractTableTest<T> {
                 table.neighbors(new Cell(0, 0)).toList());
         assertEquals(List.of(
                         new Cell(1, 1),
-                        new Cell(2, 2),
-                        new Cell(2, 0)),
+                        new Cell(2, 0),
+                        new Cell(2, 2)),
                 table.neighbors(new Cell(2, 1)).toList());
+        assertEquals(List.of(
+                        new Cell(0, 0),
+                        new Cell(0, 1),
+                        new Cell(1, 0)),
+                table.neighborsAndSelf(new Cell(0, 0)).toList());
 
         assertEquals(List.of(
+                        new Cell(0, 1),
                         new Cell(0, 2),
                         new Cell(0, 3),
-                        new Cell(1, 3),
-                        new Cell(2, 3),
-                        new Cell(2, 2),
-                        new Cell(2, 1),
                         new Cell(1, 1),
-                        new Cell(0, 1)),
+                        new Cell(1, 3),
+                        new Cell(2, 1),
+                        new Cell(2, 2),
+                        new Cell(2, 3)),
                 table.extendedNeighbors(new Cell(1, 2)).toList());
         assertEquals(List.of(
                         new Cell(0, 1),
-                        new Cell(1, 1),
-                        new Cell(1, 0)),
+                        new Cell(1, 0),
+                        new Cell(1, 1)),
                 table.extendedNeighbors(new Cell(0, 0)).toList());
         assertEquals(List.of(
+                        new Cell(1, 0),
                         new Cell(1, 1),
                         new Cell(1, 2),
-                        new Cell(2, 2),
                         new Cell(2, 0),
-                        new Cell(1, 0)),
+                        new Cell(2, 2)),
                 table.extendedNeighbors(new Cell(2, 1)).toList());
+        assertEquals(List.of(
+                        new Cell(0, 0),
+                        new Cell(0, 1),
+                        new Cell(1, 0),
+                        new Cell(1, 1)),
+                table.extendedNeighborsAndSelf(new Cell(0, 0)).toList());
     }
 
     @Test

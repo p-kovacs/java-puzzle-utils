@@ -38,9 +38,9 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
     }
 
     /**
-     * Returns the neighbor of this cell in the given direction. (0, 0) represents the top left cell among the ones
-     * with non-negative indices. The directions are interpreted accordingly, so "north" or "up" means decreasing
-     * row index, while "south" or "down" means increasing row index.
+     * Returns the neighbor of this cell in the given direction. (0, 0) represents the <i>top</i> left cell among
+     * the ones with non-negative indices, so "north" or "up" means decreasing row index, while "south" or "down"
+     * means increasing row index.
      */
     public Cell neighbor(Direction dir) {
         return switch (dir) {
@@ -52,9 +52,9 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
     }
 
     /**
-     * Returns the neighbor of this cell in the given direction. (0, 0) represents the top left cell among the ones
-     * with non-negative indices. The directions are interpreted accordingly, so "north" or "up" means decreasing
-     * row index, while "south" or "down" means increasing row index.
+     * Returns the neighbor of this cell in the given direction. (0, 0) represents the <i>top</i> left cell among
+     * the ones with non-negative indices, so "north" or "up" means decreasing row index, while "south" or "down"
+     * means increasing row index.
      *
      * @param dir the direction character. One of 'N' (north), 'E' (east), 'S' (south), 'W' (west),
      *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
@@ -64,43 +64,47 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
     }
 
     /**
-     * Returns the four neighbors of this cell.
-     *
-     * @return the four neighbor cells in clockwise order (N, E, S, W)
+     * Returns a lexicographically sorted stream of the four neighbors of this cell.
      */
     public Stream<Cell> neighbors() {
+        return neighborsAndSelf().filter(c -> c != this);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of this cell and its four neighbors.
+     */
+    public Stream<Cell> neighborsAndSelf() {
         return Stream.of(
                 new Cell(row - 1, col),
+                new Cell(row, col - 1),
+                this,
                 new Cell(row, col + 1),
-                new Cell(row + 1, col),
-                new Cell(row, col - 1));
+                new Cell(row + 1, col));
     }
 
     /**
-     * Returns the {@link #isValid(int, int) valid} neighbors of this cell with respect to the given row count and
-     * column count.
-     *
-     * @return the valid neighbor cells in clockwise order (at most four cells in N, E, S, W order)
-     */
-    public Stream<Cell> validNeighbors(int rowCount, int colCount) {
-        return neighbors().filter(cell -> cell.isValid(rowCount, colCount));
-    }
-
-    /**
-     * Returns the eight "extended" neighbors of this cell, also including the diagonal ones.
-     *
-     * @return the eight "extended" neighbor cells in clockwise order (N, NE, E, SE, S, SW, W, NW)
+     * Returns a lexicographically sorted stream of the eight "extended" neighbors of this cell (also including the
+     * diagonal ones).
      */
     public Stream<Cell> extendedNeighbors() {
+        return extendedNeighborsAndSelf().filter(c -> c != this);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of this cell and its eight "extended" neighbors (also including the
+     * diagonal ones).
+     */
+    public Stream<Cell> extendedNeighborsAndSelf() {
         return Stream.of(
+                new Cell(row - 1, col - 1),
                 new Cell(row - 1, col),
                 new Cell(row - 1, col + 1),
-                new Cell(row, col + 1),
-                new Cell(row + 1, col + 1),
-                new Cell(row + 1, col),
-                new Cell(row + 1, col - 1),
                 new Cell(row, col - 1),
-                new Cell(row - 1, col - 1));
+                this,
+                new Cell(row, col + 1),
+                new Cell(row + 1, col - 1),
+                new Cell(row + 1, col),
+                new Cell(row + 1, col + 1));
     }
 
     /**

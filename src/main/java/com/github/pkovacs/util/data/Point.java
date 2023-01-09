@@ -80,37 +80,47 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
     }
 
     /**
-     * Returns the four neighbors of this point.
+     * Returns a lexicographically sorted stream of the four neighbors of this point.
      */
     public Stream<Point> neighbors() {
-        return Stream.of(
-                new Point(x, y - 1),
-                new Point(x + 1, y),
-                new Point(x, y + 1),
-                new Point(x - 1, y));
+        return neighborsAndSelf().filter(p -> p != this);
     }
 
     /**
-     * Returns the {@link #isValid(int, int) valid} neighbors of this point with respect to the given width and
-     * height (at most four points).
+     * Returns a lexicographically sorted stream of this point and its four neighbors.
      */
-    public Stream<Point> validNeighbors(int width, int height) {
-        return neighbors().filter(p -> p.isValid(width, height));
+    public Stream<Point> neighborsAndSelf() {
+        return Stream.of(
+                new Point(x - 1, y),
+                new Point(x, y - 1),
+                this,
+                new Point(x, y + 1),
+                new Point(x + 1, y));
     }
 
     /**
-     * Returns the eight "extended" neighbors of this point, also including the diagonal ones.
+     * Returns a lexicographically sorted stream of the eight "extended" neighbors of this point (also including the
+     * diagonal ones).
      */
     public Stream<Point> extendedNeighbors() {
+        return extendedNeighborsAndSelf().filter(p -> p != this);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of this point and its eight "extended" neighbors (also including the
+     * diagonal ones).
+     */
+    public Stream<Point> extendedNeighborsAndSelf() {
         return Stream.of(
+                new Point(x - 1, y - 1),
+                new Point(x - 1, y),
+                new Point(x - 1, y + 1),
                 new Point(x, y - 1),
+                this,
+                new Point(x, y + 1),
                 new Point(x + 1, y - 1),
                 new Point(x + 1, y),
-                new Point(x + 1, y + 1),
-                new Point(x, y + 1),
-                new Point(x - 1, y + 1),
-                new Point(x - 1, y),
-                new Point(x - 1, y - 1));
+                new Point(x + 1, y + 1));
     }
 
     /**
@@ -191,8 +201,8 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
 
     /**
      * Returns an ordered stream of points within the closed box {@code [min..max]}.
-     * If {@code min.x <= max.x} and {@code min.y <= max.y}, then the first element of the stream is {@code min},
-     * the last element is {@code max}, and the stream is lexicographically sorted.
+     * If {@code min.x <= max.x} and {@code min.y <= max.y}, then the first element of the stream is
+     * {@code min}, the last element is {@code max}, and the stream is lexicographically sorted.
      * Otherwise, an empty stream is returned.
      */
     public static Stream<Point> box(Point min, Point max) {

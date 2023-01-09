@@ -65,20 +65,35 @@ public abstract class AbstractTable<V> {
     }
 
     /**
-     * Returns an ordered stream of the neighbors of the given cell within this table in clockwise order
-     * (at most four cells). Only those cells are included that are contained in this table.
+     * Returns a lexicographically sorted stream of the neighbors of the given cell within this table.
+     * Only those cells are included that are contained in this table (at most four cells).
      */
     public Stream<Cell> neighbors(Cell cell) {
-        return cell.neighbors().filter(c -> c.isValid(rowCount(), colCount()));
+        return cell.neighbors().filter(this::containsCell);
     }
 
     /**
-     * Returns an ordered stream of the "extended" neighbors of the given cell within this table in clockwise order
-     * (at most eight cells, also including the diagonal ones). Only those cells are included that are contained in
-     * this table.
+     * Returns a lexicographically sorted stream of the given cell and its neighbors within this table.
+     * Only those cells are included that are contained in this table (at most five cells).
+     */
+    public Stream<Cell> neighborsAndSelf(Cell cell) {
+        return cell.neighborsAndSelf().filter(this::containsCell);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the "extended" neighbors of the given cell within this table.
+     * Only those cells are included that are contained in this table (at most eight cells).
      */
     public Stream<Cell> extendedNeighbors(Cell cell) {
-        return cell.extendedNeighbors().filter(c -> c.isValid(rowCount(), colCount()));
+        return cell.extendedNeighbors().filter(this::containsCell);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the given cell and its "extended" neighbors within this table.
+     * Only those cells are included that are contained in this table (at most nine cells).
+     */
+    public Stream<Cell> extendedNeighborsAndSelf(Cell cell) {
+        return cell.extendedNeighborsAndSelf().filter(this::containsCell);
     }
 
     /**

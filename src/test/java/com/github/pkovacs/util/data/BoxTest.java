@@ -1,5 +1,7 @@
 package com.github.pkovacs.util.data;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
@@ -126,6 +128,30 @@ class BoxTest {
         assertThrows(IllegalArgumentException.class, () -> x.contains(y.min()));
         assertThrows(IllegalArgumentException.class, () -> y.contains(x.max()));
         assertThrows(IllegalArgumentException.class, () -> x.containsAll(y));
+    }
+
+    @Test
+    void testBoundingBox() {
+        var list2d = List.of(
+                new Vector(5, -12),
+                new Vector(12, 42),
+                new Vector(8, -24),
+                new Vector(20, 40));
+        var list3d = List.of(
+                new Vector(5, -12, 1),
+                new Vector(12, 42, 80),
+                new Vector(8, -24, -48),
+                new Vector(20, 40, 100));
+
+        assertEquals(new Box(new Vector(5, -24), new Vector(20, 42)), Box.bound(list2d));
+        assertEquals(new Box(new Vector(5, -24, -48), new Vector(20, 42, 100)), Box.bound(list3d));
+        assertEquals(new Box(list2d.get(0), list2d.get(1)), Box.bound(list2d.subList(0, 2)));
+        assertEquals(new Box(list3d.get(0), list3d.get(0)), Box.bound(list3d.subList(0, 1)));
+
+        assertTrue(new Box(new Vector(5, 10), new Vector(10, 5)).isEmpty());
+        assertFalse(Box.bound(List.of(new Vector(5, 10), new Vector(10, 5))).isEmpty());
+
+        assertThrows(NoSuchElementException.class, () -> Box.bound(List.of()));
     }
 
 }

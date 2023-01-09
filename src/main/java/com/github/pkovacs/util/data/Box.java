@@ -1,5 +1,8 @@
 package com.github.pkovacs.util.data;
 
+import java.util.Collection;
+import java.util.NoSuchElementException;
+import java.util.function.BinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -16,12 +19,25 @@ import java.util.stream.Stream;
 public record Box(Vector min, Vector max) {
 
     /**
-     * Constructs a new box {@code [min..max]}. The given vectors must have the same dimensions.
+     * Constructs a new box {@code [min..max]}.
+     *
+     * @throws IllegalArgumentException if the given vectors have different dimensions
      */
     public Box {
         if (min.dim() != max.dim()) {
             throw new IllegalArgumentException("The vectors have different dimensions.");
         }
+    }
+
+    /**
+     * Constructs the axis-aligned <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a>
+     * of the given vectors.
+     *
+     * @throws IllegalArgumentException if the given vectors have different dimensions
+     * @throws NoSuchElementException if the collection is empty
+     */
+    public static Box bound(Collection<Vector> vectors) {
+        return new Box(bound(vectors, Math::min), bound(vectors, Math::max));
     }
 
     /**
@@ -97,6 +113,21 @@ public record Box(Vector min, Vector max) {
     @Override
     public String toString() {
         return "[" + min + " .. " + max + "]";
+    }
+
+    private static Vector bound(Collection<Vector> vectors, BinaryOperator<Long> op) {
+        var first = vectors.iterator().next();
+        if (vectors.stream().anyMatch(v -> v.dim() != first.dim())) {
+            throw new IllegalArgumentException("The vectors have different dimensions.");
+        }
+
+        long[] coords = IntStream.range(0, first.dim()).mapToLong(first::get).toArray();
+        for (var v : vectors) {
+            for (int k = 0; k < first.dim(); k++) {
+                coords[k] = op.apply(coords[k], v.get(k));
+            }
+        }
+        return new Vector(coords);
     }
 
 }

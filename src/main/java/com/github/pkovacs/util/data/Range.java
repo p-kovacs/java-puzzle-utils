@@ -1,6 +1,10 @@
 package com.github.pkovacs.util.data;
 
+import java.util.Collection;
+import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+
+import com.github.pkovacs.util.Utils;
 
 /**
  * An immutable closed range of {@code long} integers {@code [min..max]}.
@@ -10,6 +14,57 @@ import java.util.stream.LongStream;
  * @see Box
  */
 public record Range(long min, long max) {
+
+    /**
+     * Constructs a new closed range {@code [min..max]}.
+     */
+    public Range {
+    }
+
+    /**
+     * Constructs the bounding range of the given {@code int} values.
+     *
+     * @throws java.util.NoSuchElementException if the array is empty
+     */
+    public static Range bound(int... ints) {
+        return new Range(Utils.min(ints), Utils.max(ints));
+    }
+
+    /**
+     * Constructs the bounding range of the given {@code int} values.
+     *
+     * @throws java.util.NoSuchElementException if the stream is empty
+     */
+    public static Range bound(IntStream ints) {
+        return bound(ints.toArray());
+    }
+
+    /**
+     * Constructs the bounding range of the given {@code long} values.
+     *
+     * @throws java.util.NoSuchElementException if the array is empty
+     */
+    public static Range bound(long... longs) {
+        return new Range(Utils.min(longs), Utils.max(longs));
+    }
+
+    /**
+     * Constructs the bounding range of the given {@code long} values.
+     *
+     * @throws java.util.NoSuchElementException if the stream is empty
+     */
+    public static Range bound(LongStream longs) {
+        return bound(longs.toArray());
+    }
+
+    /**
+     * Constructs the bounding range of the {@code long} values of the given numbers.
+     *
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public static Range bound(Collection<? extends Number> numbers) {
+        return new Range(Utils.minLong(numbers), Utils.maxLong(numbers));
+    }
 
     /**
      * Returns true if this range is empty, that is, {@code max < min}.

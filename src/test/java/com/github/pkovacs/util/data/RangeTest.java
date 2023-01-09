@@ -1,10 +1,17 @@
 package com.github.pkovacs.util.data;
 
+import java.math.BigInteger;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RangeTest {
@@ -43,6 +50,25 @@ class RangeTest {
         assertEquals(x.count(), x.stream().count());
 
         assertEquals("[12..42]", x.toString());
+    }
+
+    @Test
+    void testBoundingRange() {
+        List<Number> list = List.of(BigInteger.valueOf(234), 100, 200L);
+
+        assertEquals(new Range(100, 234), Range.bound(list));
+        assertEquals(new Range(100, 234), Range.bound(234, 100, 200));
+        assertEquals(new Range(100, 100), Range.bound(100));
+        assertEquals(new Range(12, 33), Range.bound(IntStream.range(12, 34)));
+        assertEquals(new Range(100, 234), Range.bound(new long[] { 234, 100, 200 }));
+        assertEquals(new Range(1234, 5678), Range.bound(LongStream.rangeClosed(1234, 5678)));
+
+        assertTrue(new Range(100, 99).isEmpty());
+        assertFalse(Range.bound(100, 99).isEmpty());
+
+        assertThrows(NoSuchElementException.class, () -> Range.bound(List.of()));
+        assertThrows(NoSuchElementException.class, () -> Range.bound(new int[0]));
+        assertThrows(NoSuchElementException.class, () -> Range.bound(new long[0]));
     }
 
 }

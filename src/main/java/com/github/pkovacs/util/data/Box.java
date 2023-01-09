@@ -1,8 +1,6 @@
 package com.github.pkovacs.util.data;
 
-import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
@@ -93,14 +91,7 @@ public record Box(Vector min, Vector max) {
      * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
      */
     public Stream<Vector> stream() {
-        var list = List.of(min);
-        for (int i = 0; i < dim(); i++) {
-            int k = i;
-            list = list.stream()
-                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(val -> v.set(k, val)))
-                    .toList();
-        }
-        return list.stream();
+        return Vector.box(min, max);
     }
 
     @Override

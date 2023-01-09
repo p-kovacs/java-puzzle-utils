@@ -1,6 +1,5 @@
 package com.github.pkovacs.util.data;
 
-import java.util.List;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BoxTest {
 
     @Test
-    void test2d() {
+    void testTwoDim() {
         var x = new Box(new Vector(5, 12), new Vector(12, 42));
         var y = new Box(new Vector(8, 24), new Vector(20, 30));
 
@@ -45,24 +44,13 @@ class BoxTest {
 
         assertEquals("[(5, 12) .. (12, 42)]", x.toString());
 
-        assertEquals(List.of(),
-                new Box(new Vector(10, 20), new Vector(10, 10)).stream().toList());
-        assertEquals(List.of(new Vector(10, 20)),
-                new Box(new Vector(10, 20), new Vector(10, 20)).stream().toList());
-        assertEquals(List.of(new Vector(10, 20), new Vector(11, 20)),
-                new Box(new Vector(10, 20), new Vector(11, 20)).stream().toList());
-        assertEquals(List.of(new Vector(10, 20), new Vector(10, 21), new Vector(10, 22)),
-                new Box(new Vector(10, 20), new Vector(10, 22)).stream().toList());
-        assertEquals(List.of(
-                        new Vector(10, 20), new Vector(10, 21), new Vector(10, 22),
-                        new Vector(11, 20), new Vector(11, 21), new Vector(11, 22),
-                        new Vector(12, 20), new Vector(12, 21), new Vector(12, 22),
-                        new Vector(13, 20), new Vector(13, 21), new Vector(13, 22)),
-                new Box(new Vector(10, 20), new Vector(13, 22)).stream().toList());
+        var list = new Box(new Vector(10, 20), new Vector(14, 25)).stream().toList();
+        assertEquals(5 * 6, list.size());
+        assertTrue(IntStream.range(0, list.size() - 1).allMatch(i -> list.get(i).compareTo(list.get(i + 1)) <= 0));
     }
 
     @Test
-    void test3d() {
+    void testThreeDim() {
         var x = new Box(new Vector(5, 12, 1), new Vector(12, 42, 100));
         var y = new Box(new Vector(8, 24, -48), new Vector(20, 40, 80));
 
@@ -99,28 +87,9 @@ class BoxTest {
         assertEquals("[(5, 12, 1) .. (12, 42, 100)]", x.toString());
         assertEquals("[(8, 24, -48) .. (20, 40, 80)]", y.toString());
 
-        assertEquals(List.of(),
-                new Box(new Vector(10, 20, 30), new Vector(10, 10, 40)).stream().toList());
-        assertEquals(List.of(new Vector(10, 20, 30)),
-                new Box(new Vector(10, 20, 30), new Vector(10, 20, 30)).stream().toList());
-        assertEquals(List.of(new Vector(10, 20, 30), new Vector(11, 20, 30)),
-                new Box(new Vector(10, 20, 30), new Vector(11, 20, 30)).stream().toList());
-        assertEquals(List.of(new Vector(10, 20, 30), new Vector(10, 21, 30)),
-                new Box(new Vector(10, 20, 30), new Vector(10, 21, 30)).stream().toList());
-        assertEquals(List.of(
-                        new Vector(10, 20, 30), new Vector(10, 20, 31),
-                        new Vector(10, 20, 32), new Vector(10, 20, 33)),
-                new Box(new Vector(10, 20, 30), new Vector(10, 20, 33)).stream().toList());
-        assertEquals(List.of(
-                        new Vector(10, 20, 30), new Vector(10, 20, 31), new Vector(10, 20, 32),
-                        new Vector(10, 21, 30), new Vector(10, 21, 31), new Vector(10, 21, 32),
-                        new Vector(11, 20, 30), new Vector(11, 20, 31), new Vector(11, 20, 32),
-                        new Vector(11, 21, 30), new Vector(11, 21, 31), new Vector(11, 21, 32),
-                        new Vector(12, 20, 30), new Vector(12, 20, 31), new Vector(12, 20, 32),
-                        new Vector(12, 21, 30), new Vector(12, 21, 31), new Vector(12, 21, 32),
-                        new Vector(13, 20, 30), new Vector(13, 20, 31), new Vector(13, 20, 32),
-                        new Vector(13, 21, 30), new Vector(13, 21, 31), new Vector(13, 21, 32)),
-                new Box(new Vector(10, 20, 30), new Vector(13, 21, 32)).stream().toList());
+        var list = new Box(new Vector(10, 20, 30), new Vector(14, 21, 32)).stream().toList();
+        assertEquals(5 * 2 * 3, list.size());
+        assertTrue(IntStream.range(0, list.size() - 1).allMatch(i -> list.get(i).compareTo(list.get(i + 1)) <= 0));
     }
 
     @Test

@@ -7,11 +7,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VectorTest {
 
     @Test
-    void test2d() {
+    void testBasicMethodsTwoDim() {
         var a = Vector.origin(2);
         var b = new Vector(42, 12);
 
@@ -23,6 +24,7 @@ class VectorTest {
         assertThrows(IndexOutOfBoundsException.class, () -> b.get(2));
 
         assertEquals(b, a.add(b));
+        assertEquals(new Vector(44, 15), b.add(2, 3));
         assertEquals(new Vector(-1, 12), b.set(0, -1));
         assertEquals(new Vector(42, 100), b.set(1, 100));
         assertThrows(IndexOutOfBoundsException.class, () -> b.set(2, 0));
@@ -32,23 +34,6 @@ class VectorTest {
         assertEquals(50, a.dist1());
         assertEquals(new Vector(-40, -10), a.opposite());
         assertEquals(50, a.opposite().dist1());
-
-        var c = new Vector(42, 12);
-        var d = new Vector(12, -42);
-        assertEquals(54 + 30, c.dist1(d));
-        assertEquals(54, c.distMax(d));
-        assertEquals(54 * 54 + 30 * 30, c.distSq(d));
-        assertEquals(Math.sqrt(54 * 54 + 30 * 30), c.dist2(d), 1e-10);
-        c = new Vector(-12, 42);
-        assertEquals(c.dist1() + d.dist1(), c.dist1(d));
-        assertEquals(c.distMax() + d.distMax(), c.distMax(d));
-        assertNotEquals(c.distSq() + d.distSq(), c.distSq(d)); // does not satisfy the triangle inequality
-        assertEquals(c.dist2() + d.dist2(), c.dist2(d), 1e-10);
-        c = c.opposite();
-        assertEquals(0, c.dist1(d));
-        assertEquals(0, c.distMax(d));
-        assertEquals(0, c.distSq(d));
-        assertEquals(0, c.dist2(d), 1e-10);
 
         var e = new Vector(42, 12);
         assertEquals(new Vector(0, 0), e.multiply(0));
@@ -61,7 +46,85 @@ class VectorTest {
     }
 
     @Test
-    void test3d() {
+    void testDistanceMethodsTwoDim() {
+        var a = new Vector(42, 12);
+        var b = new Vector(12, -42);
+
+        assertEquals(54 + 30, a.dist1(b));
+        assertEquals(54, a.distMax(b));
+        assertEquals(54 * 54 + 30 * 30, a.distSq(b));
+        assertEquals(Math.sqrt(54 * 54 + 30 * 30), a.dist2(b), 1e-10);
+        a = new Vector(-12, 42);
+        assertEquals(a.dist1() + b.dist1(), a.dist1(b));
+        assertEquals(a.distMax() + b.distMax(), a.distMax(b));
+        assertNotEquals(a.distSq() + b.distSq(), a.distSq(b)); // does not satisfy the triangle inequality
+        assertEquals(a.dist2() + b.dist2(), a.dist2(b), 1e-10);
+        a = a.opposite();
+        assertEquals(0, a.dist1(b));
+        assertEquals(0, a.distMax(b));
+        assertEquals(0, a.distSq(b));
+        assertEquals(0, a.dist2(b), 1e-10);
+    }
+
+    @Test
+    void testNeighborMethodsTwoDim() {
+        var a = new Vector(42, 12);
+
+        assertEquals(List.of(
+                        new Vector(41, 12),
+                        new Vector(42, 11),
+                        new Vector(42, 12),
+                        new Vector(42, 13),
+                        new Vector(43, 12)),
+                a.neighborsAndSelf().toList());
+        assertEquals(4, a.neighbors().count());
+        assertEquals(5, a.neighborsAndSelf().count());
+        assertTrue(a.neighbors().allMatch(v -> v.dist1(a) == 1));
+        assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) <= 1));
+        assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) == 1 || v == a));
+        assertEquals(a.neighbors().sorted().toList(), a.neighbors().toList());
+        assertEquals(a.neighborsAndSelf().sorted().toList(), a.neighborsAndSelf().toList());
+
+        assertEquals(List.of(
+                        new Vector(41, 11),
+                        new Vector(41, 12),
+                        new Vector(41, 13),
+                        new Vector(42, 11),
+                        new Vector(42, 12),
+                        new Vector(42, 13),
+                        new Vector(43, 11),
+                        new Vector(43, 12),
+                        new Vector(43, 13)),
+                a.extendedNeighborsAndSelf().toList());
+        assertEquals(8, a.extendedNeighbors().count());
+        assertEquals(9, a.extendedNeighborsAndSelf().count());
+        assertTrue(a.extendedNeighbors().allMatch(v -> v.distMax(a) == 1));
+        assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) <= 1));
+        assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) == 1 || v == a));
+        assertEquals(a.extendedNeighbors().sorted().toList(), a.extendedNeighbors().toList());
+        assertEquals(a.extendedNeighborsAndSelf().sorted().toList(), a.extendedNeighborsAndSelf().toList());
+    }
+
+    @Test
+    void testBoxTwoDim() {
+        assertEquals(List.of(),
+                Vector.box(new Vector(10, 20), new Vector(10, 10)).toList());
+        assertEquals(List.of(new Vector(10, 20)),
+                Vector.box(new Vector(10, 20), new Vector(10, 20)).toList());
+        assertEquals(List.of(new Vector(10, 20), new Vector(11, 20)),
+                Vector.box(new Vector(10, 20), new Vector(11, 20)).toList());
+        assertEquals(List.of(new Vector(10, 20), new Vector(10, 21), new Vector(10, 22)),
+                Vector.box(new Vector(10, 20), new Vector(10, 22)).toList());
+        assertEquals(List.of(
+                        new Vector(10, 20), new Vector(10, 21), new Vector(10, 22),
+                        new Vector(11, 20), new Vector(11, 21), new Vector(11, 22),
+                        new Vector(12, 20), new Vector(12, 21), new Vector(12, 22),
+                        new Vector(13, 20), new Vector(13, 21), new Vector(13, 22)),
+                Vector.box(new Vector(10, 20), new Vector(13, 22)).toList());
+    }
+
+    @Test
+    void testBasicMethodsThreeDim() {
         var a = Vector.origin(3);
         var b = new Vector(42, 12, 314);
 
@@ -71,7 +134,9 @@ class VectorTest {
         assertEquals(b.x(), 42);
         assertEquals(b.y(), 12);
         assertEquals(b.z(), 314);
+
         assertEquals(b, a.add(b));
+        assertEquals(new Vector(44, 15, 214), b.add(2, 3, -100));
 
         a = a.add(b).subtract(new Vector(2, 2, 14));
         assertEquals(new Vector(40, 10, 300), a);
@@ -84,22 +149,83 @@ class VectorTest {
         assertEquals(c.add(c).add(c).add(c).add(c), c.multiply(5));
         assertEquals(c.add(c.multiply(7)).subtract(c.multiply(4)), c.multiply(4));
 
-        assertEquals(42 + 12 + 3, c.dist1());
-        assertEquals(42, c.distMax());
-        assertEquals(42 * 42 + 12 * 12 + 3 * 3, c.distSq());
-        assertEquals(Math.sqrt(42 * 42 + 12 * 12 + 3 * 3), c.dist2(), 1e-10);
-
-        assertEquals(c.dist1(), c.opposite().dist1());
-        assertEquals(c.distMax(), c.opposite().distMax());
-        assertEquals(c.distSq(), c.opposite().distSq());
-        assertEquals(c.dist2(), c.opposite().dist2(), 1e-10);
-
-        assertEquals(c.dist1() * 5, c.opposite().dist1(c.multiply(4)));
-        assertEquals(c.distMax() * 5, c.opposite().distMax(c.multiply(4)));
-        assertNotEquals(c.distSq() * 5, c.opposite().distSq(c.multiply(4))); // does not satisfy the triangle inequality
-        assertEquals(c.dist2() * 5, c.opposite().dist2(c.multiply(4)), 1e-10);
-
         assertEquals("(42, 12, -3)", c.toString());
+    }
+
+    @Test
+    void testDistanceMethodsThreeDim() {
+        var a = new Vector(42, 12, -3);
+
+        assertEquals(42 + 12 + 3, a.dist1());
+        assertEquals(42, a.distMax());
+        assertEquals(42 * 42 + 12 * 12 + 3 * 3, a.distSq());
+        assertEquals(Math.sqrt(42 * 42 + 12 * 12 + 3 * 3), a.dist2(), 1e-10);
+
+        assertEquals(a.dist1(), a.opposite().dist1());
+        assertEquals(a.distMax(), a.opposite().distMax());
+        assertEquals(a.distSq(), a.opposite().distSq());
+        assertEquals(a.dist2(), a.opposite().dist2(), 1e-10);
+
+        assertEquals(a.dist1() * 5, a.opposite().dist1(a.multiply(4)));
+        assertEquals(a.distMax() * 5, a.opposite().distMax(a.multiply(4)));
+        assertNotEquals(a.distSq() * 5, a.opposite().distSq(a.multiply(4))); // does not satisfy the triangle inequality
+        assertEquals(a.dist2() * 5, a.opposite().dist2(a.multiply(4)), 1e-10);
+    }
+
+    @Test
+    void testNeighborMethodsThreeDim() {
+        var a = new Vector(42, 12, 5);
+
+        assertEquals(List.of(
+                        new Vector(41, 12, 5),
+                        new Vector(42, 11, 5),
+                        new Vector(42, 12, 4),
+                        new Vector(42, 12, 5),
+                        new Vector(42, 12, 6),
+                        new Vector(42, 13, 5),
+                        new Vector(43, 12, 5)),
+                a.neighborsAndSelf().toList());
+        assertEquals(6, a.neighbors().count());
+        assertEquals(7, a.neighborsAndSelf().count());
+        assertTrue(a.neighbors().allMatch(v -> v.dist1(a) == 1));
+        assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) <= 1));
+        assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) == 1 || v == a));
+        assertEquals(a.neighbors().sorted().toList(), a.neighbors().toList());
+        assertEquals(a.neighborsAndSelf().sorted().toList(), a.neighborsAndSelf().toList());
+
+        assertEquals(26, a.extendedNeighbors().count());
+        assertEquals(27, a.extendedNeighborsAndSelf().count());
+        assertTrue(a.extendedNeighbors().allMatch(v -> v.distMax(a) == 1));
+        assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) <= 1));
+        assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) == 1 || v == a));
+        assertEquals(a.extendedNeighbors().sorted().toList(), a.extendedNeighbors().toList());
+        assertEquals(a.extendedNeighborsAndSelf().sorted().toList(), a.extendedNeighborsAndSelf().toList());
+    }
+
+    @Test
+    void testBoxThreeDim() {
+        assertEquals(List.of(),
+                Vector.box(new Vector(10, 20, 30), new Vector(10, 10, 40)).toList());
+        assertEquals(List.of(new Vector(10, 20, 30)),
+                Vector.box(new Vector(10, 20, 30), new Vector(10, 20, 30)).toList());
+        assertEquals(List.of(new Vector(10, 20, 30), new Vector(11, 20, 30)),
+                Vector.box(new Vector(10, 20, 30), new Vector(11, 20, 30)).toList());
+        assertEquals(List.of(new Vector(10, 20, 30), new Vector(10, 21, 30)),
+                Vector.box(new Vector(10, 20, 30), new Vector(10, 21, 30)).toList());
+        assertEquals(List.of(
+                        new Vector(10, 20, 30), new Vector(10, 20, 31),
+                        new Vector(10, 20, 32), new Vector(10, 20, 33)),
+                Vector.box(new Vector(10, 20, 30), new Vector(10, 20, 33)).toList());
+        assertEquals(List.of(
+                        new Vector(10, 20, 30), new Vector(10, 20, 31), new Vector(10, 20, 32),
+                        new Vector(10, 21, 30), new Vector(10, 21, 31), new Vector(10, 21, 32),
+                        new Vector(11, 20, 30), new Vector(11, 20, 31), new Vector(11, 20, 32),
+                        new Vector(11, 21, 30), new Vector(11, 21, 31), new Vector(11, 21, 32),
+                        new Vector(12, 20, 30), new Vector(12, 20, 31), new Vector(12, 20, 32),
+                        new Vector(12, 21, 30), new Vector(12, 21, 31), new Vector(12, 21, 32),
+                        new Vector(13, 20, 30), new Vector(13, 20, 31), new Vector(13, 20, 32),
+                        new Vector(13, 21, 30), new Vector(13, 21, 31), new Vector(13, 21, 32)),
+                Vector.box(new Vector(10, 20, 30), new Vector(13, 21, 32)).toList());
     }
 
     @Test
@@ -121,6 +247,7 @@ class VectorTest {
         assertEquals(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100, b.distSq());
         assertEquals(Math.sqrt(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100), b.dist2(), 1e-10);
 
+        assertThrows(IllegalArgumentException.class, () -> b.add(new long[] { 10, 20, 30, 40, 50 }));
         assertThrows(IllegalArgumentException.class, () -> b.add(c));
         assertThrows(IllegalArgumentException.class, () -> c.subtract(b));
         assertThrows(IllegalArgumentException.class, () -> b.dist1(c));

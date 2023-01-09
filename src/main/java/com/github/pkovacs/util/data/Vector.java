@@ -1,13 +1,23 @@
 package com.github.pkovacs.util.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
 /**
  * Represents a position vector in D-dimensional coordinate space with integer precision. It is an immutable array of
  * {@code long} coordinates, which provides various useful methods and also supports lexicographical ordering.
+ * <p>
+ * This class is the D-dimensional generalization of {@link Point}.
+ *
+ * @see Point
+ * @see Box
  */
 public class Vector implements Comparable<Vector> {
 
@@ -33,7 +43,7 @@ public class Vector implements Comparable<Vector> {
      * @throws IllegalArgumentException if less than two coordinates are given
      */
     public Vector(long... coords) {
-        if (coords.length <= 1) {
+        if (coords.length < 2) {
             throw new IllegalArgumentException("At least two coordinates are required.");
         }
         this.coords = coords.clone();
@@ -96,6 +106,63 @@ public class Vector implements Comparable<Vector> {
         long[] newCoords = coords.clone();
         newCoords[k] = value;
         return new Vector(newCoords);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the neighbors of this vector.
+     * The stream contains {@code 2 * dim()} vectors, and for each vector {@code v}, {@code v.dist1(this) == 1}.
+     */
+    public Stream<Vector> neighbors() {
+        return neighborsAndSelf().filter(p -> p != this);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of this vector and its neighbors.
+     * The stream contains {@code 2 * dim() + 1} vectors, and for each vector {@code v}, {@code v.dist1(this) <= 1}.
+     */
+    public Stream<Vector> neighborsAndSelf() {
+        var list = new ArrayList<Vector>();
+        for (int k = 0; k < dim(); k++) {
+            list.add(set(k, coords[k] - 1));
+        }
+        list.add(this);
+        for (int k = dim() - 1; k >= 0; k--) {
+            list.add(set(k, coords[k] + 1));
+        }
+        return list.stream();
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the "extended" neighbors of this vector.
+     * The stream contains {@code 3^dim() - 1} vectors, and for each vector {@code v}, {@code v.distMax(this) == 1}.
+     */
+    public Stream<Vector> extendedNeighbors() {
+        return extendedNeighborsAndSelf().filter(p -> p != this);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of this vector and its "extended" neighbors.
+     * The stream contains {@code 3^dim()} vectors, and for each vector {@code v}, {@code v.distMax(this) <= 1}.
+     */
+    public Stream<Vector> extendedNeighborsAndSelf() {
+        var list = List.of(this);
+        for (int i = 0; i < dim(); i++) {
+            int k = i;
+            list = list.stream()
+                    .flatMap(v -> Stream.of(v.set(k, v.get(k) - 1), v, v.set(k, v.get(k) + 1)))
+                    .toList();
+        }
+        return list.stream();
+    }
+
+    /**
+     * Creates a new vector by adding the given delta values to the coordinates of this vector.
+     *
+     * @throws IllegalArgumentException if the number of delta values is not equal to the dimension of the
+     *         vector
+     */
+    public Vector add(long... delta) {
+        return add(new Vector(delta));
     }
 
     /**
@@ -255,6 +322,32 @@ public class Vector implements Comparable<Vector> {
             }
         }
         return 0;
+    }
+
+    /**
+     * Returns an ordered stream of vectors within the closed box {@code [min..max]}.
+     * If {@code min.get(k) <= max.get(k)} for each {@code 0 <= k < dim()}, then the first element of the stream is
+     * {@code min}, the last element is {@code max}, and the stream is lexicographically sorted.
+     * Otherwise, an empty stream is returned.
+     * <p>
+     * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
+     *
+     * @throws IllegalArgumentException if the given vectors have different dimensions
+     */
+    public static Stream<Vector> box(Vector min, Vector max) {
+        int dim = checkDimensions(min, max);
+        if (IntStream.range(0, dim).anyMatch(k -> min.get(k) > max.get(k))) {
+            return Stream.empty();
+        }
+
+        var list = List.of(min);
+        for (int i = 0; i < dim; i++) {
+            int k = i;
+            list = list.stream()
+                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(val -> v.set(k, val)))
+                    .toList();
+        }
+        return list.stream();
     }
 
 }

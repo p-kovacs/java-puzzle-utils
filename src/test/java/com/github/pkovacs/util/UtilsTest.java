@@ -12,31 +12,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UtilsTest {
 
     @Test
+    void testChars() {
+        assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.charsOf("hello").toList());
+        assertEquals(2, Utils.charsOf("hello").filter(c -> c == 'l').count());
+
+        assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.listOf("hello".toCharArray()));
+        assertEquals(Set.of('h', 'e', 'l', 'o'), Utils.setOf("hello".toCharArray()));
+        assertEquals(3, Utils.streamOf("hello".toCharArray()).filter(c -> c != 'l').count());
+    }
+
+    @Test
     void testSetOperations() {
-        var c1 = Utils.setOf("hello");
-        var c2 = Utils.setOf("echo");
-        var c3 = Utils.listOf("love");
-        var c4 = Utils.listOf("old");
+        var c1 = Utils.setOf("hello".toCharArray());
+        var c2 = Utils.setOf("echo".toCharArray());
+        var c3 = Utils.listOf("love".toCharArray());
+        var c4 = Utils.listOf("old".toCharArray());
 
-        assertEquals(Utils.setOf("heloch"), Utils.unionOf(c1, c2));
-        assertEquals(Utils.setOf("helov"), Utils.unionOf(c1, c3));
-        assertEquals(Utils.setOf("helod"), Utils.unionOf(c1, c4));
-        assertEquals(Utils.setOf("echolv"), Utils.unionOf(c2.stream(), c3.stream()));
-        assertEquals(Utils.setOf("echold"), Utils.unionOf(c2.stream(), c4.stream()));
-        assertEquals(Utils.setOf("loved"), Utils.unionOf(c3.stream(), c4.stream()));
-        assertEquals(Utils.setOf("helochv"), Utils.unionOf(List.of(c1, c2, c3)));
-        assertEquals(Utils.setOf("helovd"), Utils.unionOf(List.of(c1, c3, c4)));
-        assertEquals(Utils.setOf("helochvd"), Utils.unionOf(List.of(c1, c2, c3, c4)));
+        assertEquals(Set.of('h', 'e', 'l', 'o', 'c'), Utils.unionOf(c1, c2));
+        assertEquals(Set.of('h', 'e', 'l', 'o', 'v'), Utils.unionOf(c1, c3));
+        assertEquals(Set.of('h', 'e', 'l', 'o', 'd'), Utils.unionOf(c1, c4));
+        assertEquals(Set.of('e', 'c', 'h', 'o', 'l', 'v'), Utils.unionOf(c2.stream(), c3.stream()));
+        assertEquals(Set.of('e', 'c', 'h', 'o', 'l', 'd'), Utils.unionOf(c2.stream(), c4.stream()));
+        assertEquals(Set.of('l', 'o', 'v', 'e', 'd'), Utils.unionOf(c3.stream(), c4.stream()));
+        assertEquals(Set.of('h', 'e', 'l', 'o', 'c', 'v'), Utils.unionOf(List.of(c1, c2, c3)));
+        assertEquals(Set.of('h', 'e', 'l', 'o', 'v', 'd'), Utils.unionOf(List.of(c1, c3, c4)));
+        assertEquals(Set.of('h', 'e', 'l', 'o', 'c', 'v', 'd'), Utils.unionOf(List.of(c1, c2, c3, c4)));
 
-        assertEquals(Utils.setOf("heo"), Utils.intersectionOf(c1, c2));
-        assertEquals(Utils.setOf("elo"), Utils.intersectionOf(c1, c3));
-        assertEquals(Utils.setOf("lo"), Utils.intersectionOf(c1, c4));
-        assertEquals(Utils.setOf("eo"), Utils.intersectionOf(c2.stream(), c3.stream()));
-        assertEquals(Utils.setOf("o"), Utils.intersectionOf(c2.stream(), c4.stream()));
-        assertEquals(Utils.setOf("lo"), Utils.intersectionOf(c3.stream(), c4.stream()));
-        assertEquals(Utils.setOf("eo"), Utils.intersectionOf(List.of(c1, c2, c3)));
-        assertEquals(Utils.setOf("lo"), Utils.intersectionOf(List.of(c1, c3, c4)));
-        assertEquals(Utils.setOf("o"), Utils.intersectionOf(List.of(c1, c2, c3, c4)));
+        assertEquals(Set.of('h', 'e', 'o'), Utils.intersectionOf(c1, c2));
+        assertEquals(Set.of('e', 'l', 'o'), Utils.intersectionOf(c1, c3));
+        assertEquals(Set.of('l', 'o'), Utils.intersectionOf(c1, c4));
+        assertEquals(Set.of('e', 'o'), Utils.intersectionOf(c2.stream(), c3.stream()));
+        assertEquals(Set.of('o'), Utils.intersectionOf(c2.stream(), c4.stream()));
+        assertEquals(Set.of('l', 'o'), Utils.intersectionOf(c3.stream(), c4.stream()));
+        assertEquals(Set.of('e', 'o'), Utils.intersectionOf(List.of(c1, c2, c3)));
+        assertEquals(Set.of('l', 'o'), Utils.intersectionOf(List.of(c1, c3, c4)));
+        assertEquals(Set.of('o'), Utils.intersectionOf(List.of(c1, c2, c3, c4)));
     }
 
     @Test

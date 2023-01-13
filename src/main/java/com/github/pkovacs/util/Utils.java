@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -12,6 +14,34 @@ import java.util.stream.Stream;
 public class Utils extends InputUtils {
 
     protected Utils() {
+    }
+
+    /**
+     * Returns the elements of the given char array as an unmodifiable list.
+     */
+    public static List<Character> listOf(char[] chars) {
+        return streamOf(chars).toList();
+    }
+
+    /**
+     * Returns the elements of the given char array as an unmodifiable set.
+     */
+    public static Set<Character> setOf(char[] chars) {
+        return streamOf(chars).collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Returns the elements of the given char array as a stream.
+     */
+    public static Stream<Character> streamOf(char[] chars) {
+        return IntStream.range(0, chars.length).mapToObj(i -> chars[i]);
+    }
+
+    /**
+     * Returns the characters of the given {@code CharSequence} as a stream.
+     */
+    public static Stream<Character> charsOf(CharSequence s) {
+        return s.toString().chars().mapToObj(i -> (char) i);
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.github.pkovacs.util;
 
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -49,15 +48,6 @@ class InputUtilsTest {
         assertEquals(15, InputUtils.parseInt('F'));
         assertEquals(35, InputUtils.parseInt('z'));
         assertEquals(35, InputUtils.parseInt('Z'));
-    }
-
-    @Test
-    void testCharactersOfStrings() {
-        assertEquals(List.of('h', 'e', 'l', 'l', 'o'), InputUtils.listOf("hello"));
-        assertEquals(Set.of('h', 'e', 'l', 'o'), InputUtils.setOf("hello"));
-
-        assertEquals(2, InputUtils.streamOf("hello").filter(c -> c == 'l').count());
-        assertEquals(3, InputUtils.streamOf("hello".toCharArray()).filter(c -> c != 'l').count());
     }
 
     @Test

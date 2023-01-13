@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.github.pkovacs.util.InputUtils;
+import com.github.pkovacs.util.Utils;
 
 /**
  * Represents a table (or matrix) of {@code char} values with fixed number of rows and columns. This class is
@@ -153,7 +153,7 @@ public class CharTable extends AbstractTable<Character> {
      * Returns an ordered stream of the values contained in the specified row of this table.
      */
     public Stream<Character> rowValues(int i) {
-        return InputUtils.streamOf(data[i]);
+        return Utils.streamOf(data[i]);
     }
 
     /**
@@ -167,7 +167,7 @@ public class CharTable extends AbstractTable<Character> {
      * Returns an ordered stream of all values contained in this table (row by row).
      */
     public Stream<Character> values() {
-        return Arrays.stream(data).flatMap(InputUtils::streamOf);
+        return Arrays.stream(data).flatMap(Utils::streamOf);
     }
 
     /**

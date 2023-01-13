@@ -8,12 +8,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Provides simple utility methods for processing strings and text files. They can be used to parse inputs of various
@@ -177,34 +173,6 @@ public class InputUtils {
      */
     public static int parseInt(char c) {
         return Integer.parseInt(String.valueOf(c), 36);
-    }
-
-    /**
-     * Returns the characters of the given char sequence as a stream.
-     */
-    public static Stream<Character> streamOf(CharSequence s) {
-        return s.toString().chars().mapToObj(i -> (char) i);
-    }
-
-    /**
-     * Returns the elements of the given char array as a stream.
-     */
-    public static Stream<Character> streamOf(char[] array) {
-        return IntStream.range(0, array.length).mapToObj(i -> array[i]);
-    }
-
-    /**
-     * Returns the characters of the given char sequence as an unmodifiable list.
-     */
-    public static List<Character> listOf(CharSequence s) {
-        return streamOf(s).toList();
-    }
-
-    /**
-     * Returns the characters of the given char sequence as an unmodifiable set.
-     */
-    public static Set<Character> setOf(CharSequence s) {
-        return streamOf(s).collect(Collectors.toUnmodifiableSet());
     }
 
     /**

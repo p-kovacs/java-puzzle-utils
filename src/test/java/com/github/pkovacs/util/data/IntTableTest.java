@@ -2,6 +2,7 @@ package com.github.pkovacs.util.data;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -138,6 +139,19 @@ class IntTableTest extends AbstractTableTest<Integer> {
         assertEquals(15, table.col(1).mapToInt(table::get).sum());
         assertEquals(18, table.col(2).mapToInt(table::get).sum());
         assertEquals(21, table.col(3).mapToInt(table::get).sum());
+    }
+
+    @Test
+    void testFindMethods() {
+        var table = new IntTable(new int[][] { { 1, 2, 3 }, { 10, 20, 30 }, { 1, 2, 3 }, { -1, -2, -3 } });
+
+        assertEquals(new Cell(1, 2), table.find(30));
+        assertEquals(new Cell(0, 1), table.find(2));
+        assertThrows(NoSuchElementException.class, () -> table.find(42));
+
+        assertEquals(List.of(new Cell(1, 2)), table.findAll(30).toList());
+        assertEquals(List.of(new Cell(0, 1), new Cell(2, 1)), table.findAll(2).toList());
+        assertEquals(List.of(), table.findAll(42).toList());
     }
 
     @Test

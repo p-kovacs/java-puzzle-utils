@@ -44,6 +44,13 @@ public abstract class AbstractTable<V> {
     }
 
     /**
+     * Returns an ordered stream of all cells in this table (row by row).
+     */
+    public Stream<Cell> cells() {
+        return Cell.box(rowCount(), colCount());
+    }
+
+    /**
      * Returns an ordered stream of the cells in the specified row of this table.
      */
     public Stream<Cell> row(int i) {
@@ -58,10 +65,31 @@ public abstract class AbstractTable<V> {
     }
 
     /**
-     * Returns an ordered stream of all cells in this table (row by row).
+     * Returns the top left cell of this table.
      */
-    public Stream<Cell> cells() {
-        return Cell.box(rowCount(), colCount());
+    public Cell topLeft() {
+        return new Cell(0, 0);
+    }
+
+    /**
+     * Returns the bottom left cell of this table.
+     */
+    public Cell bottomLeft() {
+        return new Cell(rowCount() - 1, 0);
+    }
+
+    /**
+     * Returns the top right cell of this table.
+     */
+    public Cell topRight() {
+        return new Cell(0, colCount() - 1);
+    }
+
+    /**
+     * Returns the bottom right cell of this table.
+     */
+    public Cell bottomRight() {
+        return new Cell(rowCount() - 1, colCount() - 1);
     }
 
     /**
@@ -94,6 +122,22 @@ public abstract class AbstractTable<V> {
      */
     public Stream<Cell> extendedNeighborsAndSelf(Cell cell) {
         return cell.extendedNeighborsAndSelf().filter(this::containsCell);
+    }
+
+    /**
+     * Finds a cell with the given value in this table.
+     *
+     * @throws java.util.NoSuchElementException if the table does not contain the given value
+     */
+    public Cell find(V value) {
+        return findAll(value).findFirst().orElseThrow();
+    }
+
+    /**
+     * Finds all cells with the given value in this table.
+     */
+    public Stream<Cell> findAll(V value) {
+        return cells().filter(c -> get0(c.row(), c.col()).equals(value));
     }
 
     /**

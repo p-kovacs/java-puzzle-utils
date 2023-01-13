@@ -2,6 +2,7 @@ package com.github.pkovacs.util.data;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -101,6 +102,19 @@ class CharTableTest extends AbstractTableTest<Character> {
         assertEquals(table.values().toList(), table.cells().map(table::get).toList());
         assertEquals(table.rowValues(1).toList(), table.row(1).map(table::get).toList());
         assertEquals(table.colValues(2).toList(), table.col(2).map(table::get).toList());
+    }
+
+    @Test
+    void testFindMethods() {
+        var table = new CharTable(List.of("123", "abc", "123", "xyz"));
+
+        assertEquals(new Cell(1, 2), table.find('c'));
+        assertEquals(new Cell(0, 1), table.find('2'));
+        assertThrows(NoSuchElementException.class, () -> table.find('X'));
+
+        assertEquals(List.of(new Cell(1, 2)), table.findAll('c').toList());
+        assertEquals(List.of(new Cell(0, 1), new Cell(2, 1)), table.findAll('2').toList());
+        assertEquals(List.of(), table.findAll('X').toList());
     }
 
     @Test

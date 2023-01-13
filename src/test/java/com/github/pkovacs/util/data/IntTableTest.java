@@ -1,6 +1,8 @@
 package com.github.pkovacs.util.data;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +33,19 @@ class IntTableTest extends AbstractTableTest<Integer> {
         assertEquals(42, t1.get(0, 1));
         assertEquals(-2, t2.get(0, 1));
         assertEquals(-2, t3.get(0, 1));
+    }
+
+    @Test
+    void testWrapMethods() {
+        var cells = List.of(new Cell(12, 12), new Cell(13, 13), new Cell(11, 11), new Cell(14, 11));
+        assertContentEquals(new int[][] { { 10, 0, 0 }, { 0, 10, 0 }, { 0, 0, 10 }, { 10, 0, 0 } },
+                IntTable.wrap(cells, 10, 0));
+
+        var table1 = new IntTable(new int[][] { { 0, 1, 2, 3 }, { 100, 101, 102, 103 }, { 200, 201, 202, 203 } });
+        var table2 = new IntTable(new int[][] { { -1, 1, -1, 3 }, { 100, -1, 102, -1 }, { -1, 201, -1, 203 } });
+        var map = table1.cells().filter(c -> (c.row() + c.col()) % 2 == 1)
+                .collect(Collectors.toMap(c -> c, table1::get));
+        assertEquals(table2, IntTable.wrap(map, -1));
     }
 
     @Test

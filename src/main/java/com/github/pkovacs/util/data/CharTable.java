@@ -1,8 +1,11 @@
 package com.github.pkovacs.util.data;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -79,6 +82,46 @@ public class CharTable extends AbstractTable<Character> {
         for (int i = 0; i < data.length; i++) {
             data[i] = other.data[i].clone();
         }
+    }
+
+    /**
+     * Creates a new table by wrapping and shifting the given collection of positions. This method can be useful for
+     * debugging.
+     * <p>
+     * The cells of the returned table correspond to the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions
+     * shifted appropriately so that the top left position of the bounding box becomes (0, 0). The cells corresponding
+     * to the given positions are assigned the given {@code value}, while other cells are assigned the given
+     * {@code fillValue}.
+     */
+    public static CharTable wrap(Collection<? extends Position> positions, char value, char fillValue) {
+        return wrap(positions, p -> value, fillValue);
+    }
+
+    /**
+     * Creates a new table by wrapping and shifting the given map with position keys. This method can be useful for
+     * debugging.
+     * <p>
+     * The cells of the returned table correspond to the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the keys of the given
+     * map shifted appropriately so that the top left position of the bounding box becomes (0, 0). The cells
+     * corresponding to the map keys are assigned according to the map, while other cells are assigned the given
+     * {@code fillValue}.
+     */
+    public static CharTable wrap(Map<? extends Position, Character> map, char fillValue) {
+        return wrap(map.keySet(), map::get, fillValue);
+    }
+
+    private static <T extends Position> CharTable wrap(Collection<T> positions, Function<T, Character> function,
+            char fillValue) {
+        int minRow = positions.stream().mapToInt(Position::y).min().orElseThrow();
+        int maxRow = positions.stream().mapToInt(Position::y).max().orElseThrow();
+        int minCol = positions.stream().mapToInt(Position::x).min().orElseThrow();
+        int maxCol = positions.stream().mapToInt(Position::x).max().orElseThrow();
+
+        var table = new CharTable(maxRow - minRow + 1, maxCol - minCol + 1, fillValue);
+        positions.forEach(p -> table.set(p.y() - minRow, p.x() - minCol, function.apply(p)));
+        return table;
     }
 
     @Override

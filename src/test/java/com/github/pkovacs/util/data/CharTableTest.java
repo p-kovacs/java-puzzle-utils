@@ -3,6 +3,7 @@ package com.github.pkovacs.util.data;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +33,18 @@ class CharTableTest extends AbstractTableTest<Character> {
         assertEquals('a', t1.get(0, 1));
         assertEquals('y', t2.get(0, 1));
         assertEquals('y', t3.get(0, 1));
+    }
+
+    @Test
+    void testWrapMethods() {
+        var cells = List.of(new Cell(12, 12), new Cell(13, 13), new Cell(11, 11), new Cell(14, 11));
+        assertEquals(new CharTable(List.of("#  ", " # ", "  #", "#  ")), CharTable.wrap(cells, '#', ' '));
+
+        var table1 = new CharTable(List.of("123", "abc", "def", "xyz"));
+        var table2 = new CharTable(List.of(".2.", "a.c", ".e.", "x.z"));
+        var map = table1.cells().filter(c -> (c.row() + c.col()) % 2 == 1)
+                .collect(Collectors.toMap(c -> c, table1::get));
+        assertEquals(table2, CharTable.wrap(map, '.'));
     }
 
     @Test

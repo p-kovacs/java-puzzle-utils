@@ -3,6 +3,7 @@ package com.github.pkovacs.util;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -183,6 +184,52 @@ class UtilsTest {
         assertEquals(Set.of(List.of(1)), Utils.intersectionOf(c.stream(), b.stream()));
         assertEquals(Set.of(), Utils.intersectionOf(List.of(a, b, c)));
         assertEquals(Set.of(), Utils.intersectionOf(List.of(c, b, a)));
+    }
+
+    @Test
+    public void testListSlicing() {
+        assertEquals(List.of(List.of(1, 2, 3), List.of(4, 5, 6)),
+                Utils.chunked(List.of(1, 2, 3, 4, 5, 6), 3).toList());
+        assertEquals(List.of(List.of(1, 2, 3), List.of(4, 5)),
+                Utils.chunked(List.of(1, 2, 3, 4, 5), 3).toList());
+        assertEquals(List.of(List.of(1, 2), List.of(3, 4), List.of(5)),
+                Utils.chunked(List.of(1, 2, 3, 4, 5), 2).toList());
+        assertEquals(List.of(List.of(1), List.of(2), List.of(3), List.of(4)),
+                Utils.chunked(List.of(1, 2, 3, 4), 1).toList());
+        assertEquals(List.of(List.of(1, 2, 3), List.of(4)),
+                Utils.chunked(List.of(1, 2, 3, 4), 3).toList());
+        assertEquals(List.of(List.of(1, 2, 3, 4)),
+                Utils.chunked(List.of(1, 2, 3, 4), 4).toList());
+        assertEquals(List.of(List.of(1, 2, 3, 4)),
+                Utils.chunked(List.of(1, 2, 3, 4), 5).toList());
+
+        assertThrows(IllegalArgumentException.class, () -> Utils.chunked(List.of(1, 2, 3), 0));
+        assertThrows(IllegalArgumentException.class, () -> Utils.chunked(List.of(1, 2, 3), -1));
+
+        assertEquals(List.of(List.of(1, 2, 3), List.of(2, 3, 4), List.of(3, 4, 5)),
+                Utils.windowed(List.of(1, 2, 3, 4, 5), 3).toList());
+        assertEquals(List.of(List.of(1, 2), List.of(2, 3), List.of(3, 4), List.of(4, 5)),
+                Utils.windowed(List.of(1, 2, 3, 4, 5), 2).toList());
+        assertEquals(List.of(List.of(1), List.of(2), List.of(3), List.of(4)),
+                Utils.windowed(List.of(1, 2, 3, 4), 1).toList());
+        assertEquals(List.of(List.of(1, 2, 3), List.of(2, 3, 4)),
+                Utils.windowed(List.of(1, 2, 3, 4), 3).toList());
+        assertEquals(List.of(List.of(1, 2, 3, 4)),
+                Utils.windowed(List.of(1, 2, 3, 4), 4).toList());
+        assertEquals(List.of(),
+                Utils.windowed(List.of(1, 2, 3, 4), 5).toList());
+
+        assertThrows(IllegalArgumentException.class, () -> Utils.windowed(List.of(1, 2, 3), 0));
+        assertThrows(IllegalArgumentException.class, () -> Utils.windowed(List.of(1, 2, 3), -1));
+    }
+
+    @Test
+    public void testInverseMap() {
+        var map = Map.of('a', 1, 'b', 2, 'c', 3);
+
+        assertEquals(Map.of(1, 'a', 2, 'b', 3, 'c'), Utils.inverse(map));
+        assertEquals(map, Utils.inverse(Utils.inverse(map)));
+        assertEquals(Map.of(), Utils.inverse(Map.of()));
     }
 
 }

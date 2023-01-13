@@ -1,9 +1,12 @@
 package com.github.pkovacs.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -286,6 +289,57 @@ public class Utils extends InputUtils {
                 .map(c -> c instanceof Set ? c : new HashSet<>(c))
                 .forEach(result::retainAll);
         return result;
+    }
+
+    /**
+     * Returns an ordered stream of the consecutive {@linkplain List#subList(int, int) sublists} (chunks) of the
+     * given size constructed from the given list (the last sublist might be smaller).
+     * <p>
+     * Example: {@code chunked(List.of(1, 2, 3, 4, 5), 3)} is {@code [[1, 2, 3], [4, 5]]}.
+     *
+     * @throws IllegalArgumentException if the chunk size is smaller than 1
+     */
+    public static <E> Stream<List<E>> chunked(List<E> list, int size) {
+        if (size < 1) {
+            throw new IllegalArgumentException("Chunk size must be at least 1.");
+        }
+
+        return IntStream.range(0, (list.size() + size - 1) / size)
+                .mapToObj(i -> list.subList(i * size, Math.min((i + 1) * size, list.size())));
+    }
+
+    /**
+     * Returns an ordered stream of all {@linkplain List#subList(int, int) sublists} of the given size constructed
+     * from the given list. As if the list was looking at through a sliding window of the given size.
+     * <p>
+     * Example: {@code windowed(List.of(1, 2, 3, 4, 5), 3)} is {@code [[1, 2, 3], [2, 3, 4], [3, 4, 5]]}.
+     *
+     * @throws IllegalArgumentException if the window size is smaller than 1
+     */
+    public static <E> Stream<List<E>> windowed(List<E> list, int size) {
+        if (size < 1) {
+            throw new IllegalArgumentException("Window size must be at least 1.");
+        }
+
+        return IntStream.rangeClosed(0, list.size() - size).mapToObj(i -> list.subList(i, i + size));
+    }
+
+    /**
+     * Returns an unmodifiable map that is the inverse of the given map.
+     * <p>
+     * Note: this method simply constructs a new map each time it is called. If you need a dynamic view of the inverse
+     * map, consider using Guava's {@code BiMap}.
+     *
+     * @throws IllegalArgumentException if the values of the given map are not unique
+     */
+    public static <K, V> Map<V, K> inverse(Map<K, V> map) {
+        var inverse = new HashMap<V, K>();
+        for (var e : map.entrySet()) {
+            if (inverse.put(e.getValue(), e.getKey()) != null) {
+                throw new IllegalArgumentException("The values of the map are not unique.");
+            }
+        }
+        return Collections.unmodifiableMap(inverse);
     }
 
 }

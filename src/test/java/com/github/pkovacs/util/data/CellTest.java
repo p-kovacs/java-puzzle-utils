@@ -1,12 +1,14 @@
 package com.github.pkovacs.util.data;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CellTest {
@@ -128,6 +130,15 @@ class CellTest {
     }
 
     @Test
+    void testRangeMethods() {
+        var list = List.of(new Cell(20, 30), new Cell(10, 50), new Cell(15, 25));
+        assertEquals(new Range(10, 20), Cell.rowRange(list));
+        assertEquals(new Range(25, 50), Cell.colRange(list));
+        assertThrows(NoSuchElementException.class, () -> Cell.rowRange(List.of()));
+        assertThrows(NoSuchElementException.class, () -> Cell.colRange(List.of()));
+    }
+
+    @Test
     void testBoxMethods() {
         assertEquals(List.of(), Cell.box(0, 3).toList());
         assertEquals(List.of(), Cell.box(1, -1).toList());
@@ -137,15 +148,24 @@ class CellTest {
                         new Cell(1, 0), new Cell(1, 1), new Cell(1, 2)),
                 Cell.box(2, 3).toList());
 
+        var list1 = List.of(
+                new Cell(40, 20), new Cell(41, 20), new Cell(42, 20));
+        var list2 = List.of(
+                new Cell(42, 10), new Cell(42, 11),
+                new Cell(43, 10), new Cell(43, 11),
+                new Cell(44, 10), new Cell(44, 11));
+
         assertEquals(List.of(),
                 Cell.box(new Cell(40, 20), new Cell(40, 19)).toList());
-        assertEquals(List.of(new Cell(40, 20), new Cell(41, 20), new Cell(42, 20)),
+        assertEquals(list1,
                 Cell.box(new Cell(40, 20), new Cell(42, 20)).toList());
-        assertEquals(List.of(
-                        new Cell(42, 10), new Cell(42, 11),
-                        new Cell(43, 10), new Cell(43, 11),
-                        new Cell(44, 10), new Cell(44, 11)),
-                Cell.box(new Cell(42, 10), new Cell(44, 11)).toList());
+        assertEquals(list2, Cell.box(new Cell(42, 10), new Cell(44, 11)).toList());
+
+        assertEquals(List.of(), Cell.box(new Cell(42, 20), new Cell(40, 20)).toList());
+        assertEquals(list1, Cell.boundingBox(new Cell(42, 20), new Cell(40, 20)).toList());
+        assertEquals(list2, Cell.boundingBox(List.of(new Cell(44, 10), new Cell(42, 11))).toList());
+        assertEquals(list2, Cell.boundingBox(new Cell(44, 10), new Cell(43, 11), new Cell(42, 10)).toList());
     }
+
 
 }

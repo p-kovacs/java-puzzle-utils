@@ -1,5 +1,7 @@
 package com.github.pkovacs.util.data;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -125,6 +127,24 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
     }
 
     /**
+     * Returns the bounding {@link Range} of the row indices of the given cells.
+     *
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public static Range rowRange(Collection<Cell> cells) {
+        return Range.bound(cells.stream().mapToInt(Cell::row));
+    }
+
+    /**
+     * Returns the bounding {@link Range} of the column indices of the given cells.
+     *
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public static Range colRange(Collection<Cell> cells) {
+        return Range.bound(cells.stream().mapToInt(Cell::col));
+    }
+
+    /**
      * Returns an ordered stream of {@link #isValid(int, int) valid} cells within the given bounds.
      * If both arguments are positive, then the first element of the stream is (0, 0), the last element is
      * {@code (rowCount - 1, colCount - 1)}, and the stream is lexicographically sorted.
@@ -149,6 +169,31 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
 
         return IntStream.range(0, rowCount * colCount)
                 .mapToObj(i -> new Cell(min.row + i / colCount, min.col + i % colCount));
+    }
+
+    /**
+     * Returns an ordered stream of cells within the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given cells.
+     * The returned stream is lexicographically sorted and non-empty if the given array is non-empty.
+     */
+    public static Stream<Cell> boundingBox(Cell... cells) {
+        return boundingBox(List.of(cells));
+    }
+
+    /**
+     * Returns an ordered stream of cells within the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given cells.
+     * The returned stream is lexicographically sorted and non-empty if the given collection is non-empty.
+     */
+    public static Stream<Cell> boundingBox(Collection<Cell> cells) {
+        if (cells.isEmpty()) {
+            return Stream.empty();
+        }
+
+        var rowRange = rowRange(cells);
+        var colRange = colRange(cells);
+        return box(new Cell((int) rowRange.min(), (int) colRange.min()),
+                new Cell((int) rowRange.max(), (int) colRange.max()));
     }
 
 }

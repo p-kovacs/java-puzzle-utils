@@ -1,5 +1,7 @@
 package com.github.pkovacs.util.data;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -190,6 +192,24 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
     }
 
     /**
+     * Returns the bounding {@link Range} of the x coordinates of the given points.
+     *
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public static Range xRange(Collection<Point> points) {
+        return Range.bound(points.stream().mapToInt(Point::x));
+    }
+
+    /**
+     * Returns the bounding {@link Range} of the y coordinates of the given points.
+     *
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public static Range yRange(Collection<Point> points) {
+        return Range.bound(points.stream().mapToInt(Point::y));
+    }
+
+    /**
      * Returns an ordered stream of {@link #isValid(int, int) valid} points within the given bounds.
      * If both arguments are positive, then the first element of the stream is (0, 0), the last element is
      * {@code (width - 1, height - 1)}, and the stream is lexicographically sorted.
@@ -214,6 +234,31 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
 
         return IntStream.range(0, width * height)
                 .mapToObj(i -> new Point(min.x + i / height, min.y + i % height));
+    }
+
+    /**
+     * Returns an ordered stream of points within the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given points.
+     * The returned stream is lexicographically sorted and non-empty if the given array is non-empty.
+     */
+    public static Stream<Point> boundingBox(Point... points) {
+        return boundingBox(List.of(points));
+    }
+
+    /**
+     * Returns an ordered stream of points within the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given points.
+     * The returned stream is lexicographically sorted and non-empty if the given collection is non-empty.
+     */
+    public static Stream<Point> boundingBox(Collection<Point> points) {
+        if (points.isEmpty()) {
+            return Stream.empty();
+        }
+
+        var xRange = xRange(points);
+        var yRange = yRange(points);
+        return box(new Point((int) xRange.min(), (int) yRange.min()),
+                new Point((int) xRange.max(), (int) yRange.max()));
     }
 
 }

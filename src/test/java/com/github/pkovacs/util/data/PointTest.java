@@ -1,12 +1,14 @@
 package com.github.pkovacs.util.data;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PointTest {
@@ -181,6 +183,15 @@ class PointTest {
     }
 
     @Test
+    void testRangeMethods() {
+        var list = List.of(new Point(20, 30), new Point(10, 50), new Point(15, 25));
+        assertEquals(new Range(10, 20), Point.xRange(list));
+        assertEquals(new Range(25, 50), Point.yRange(list));
+        assertThrows(NoSuchElementException.class, () -> Point.xRange(List.of()));
+        assertThrows(NoSuchElementException.class, () -> Point.yRange(List.of()));
+    }
+
+    @Test
     void testBoxMethods() {
         assertEquals(List.of(), Point.box(0, 3).toList());
         assertEquals(List.of(), Point.box(1, -1).toList());
@@ -190,15 +201,23 @@ class PointTest {
                         new Point(1, 0), new Point(1, 1), new Point(1, 2)),
                 Point.box(2, 3).toList());
 
+        var list1 = List.of(
+                new Point(40, 20), new Point(41, 20), new Point(42, 20));
+        var list2 = List.of(
+                new Point(42, 10), new Point(42, 11),
+                new Point(43, 10), new Point(43, 11),
+                new Point(44, 10), new Point(44, 11));
+
         assertEquals(List.of(),
                 Point.box(new Point(40, 20), new Point(40, 19)).toList());
-        assertEquals(List.of(new Point(40, 20), new Point(41, 20), new Point(42, 20)),
+        assertEquals(list1,
                 Point.box(new Point(40, 20), new Point(42, 20)).toList());
-        assertEquals(List.of(
-                        new Point(42, 10), new Point(42, 11),
-                        new Point(43, 10), new Point(43, 11),
-                        new Point(44, 10), new Point(44, 11)),
-                Point.box(new Point(42, 10), new Point(44, 11)).toList());
+        assertEquals(list2, Point.box(new Point(42, 10), new Point(44, 11)).toList());
+
+        assertEquals(List.of(), Point.box(new Point(42, 20), new Point(40, 20)).toList());
+        assertEquals(list1, Point.boundingBox(new Point(42, 20), new Point(40, 20)).toList());
+        assertEquals(list2, Point.boundingBox(List.of(new Point(44, 10), new Point(42, 11))).toList());
+        assertEquals(list2, Point.boundingBox(new Point(44, 10), new Point(43, 11), new Point(42, 10)).toList());
     }
 
 }

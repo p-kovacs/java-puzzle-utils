@@ -8,8 +8,76 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UtilsTest {
+
+    @Test
+    void testRangeMethods() {
+        assertEquals(0, Utils.constrainIndex(0, 5));
+        assertEquals(2, Utils.constrainIndex(2, 5));
+        assertEquals(4, Utils.constrainIndex(4, 5));
+        assertEquals(4, Utils.constrainIndex(5, 5));
+        assertEquals(4, Utils.constrainIndex(42, 5));
+        assertEquals(0, Utils.constrainIndex(-1, 5));
+        assertEquals(0, Utils.constrainIndex(-42, 5));
+
+        assertEquals(0, Utils.wrapIndex(0, 5));
+        assertEquals(2, Utils.wrapIndex(2, 5));
+        assertEquals(4, Utils.wrapIndex(4, 5));
+        assertEquals(0, Utils.wrapIndex(5, 5));
+        assertEquals(2, Utils.wrapIndex(42, 5));
+        assertEquals(4, Utils.wrapIndex(-1, 5));
+        assertEquals(3, Utils.wrapIndex(-42, 5));
+
+        assertEquals(3, Utils.constrainToRange(0, 3, 7));
+        assertEquals(5, Utils.constrainToRange(5, 3, 7));
+        assertEquals(7, Utils.constrainToRange(10, 3, 7));
+        assertEquals(3, Utils.constrainToRange(-2, 3, 7));
+        assertEquals(7, Utils.constrainToRange(42, 3, 7));
+
+        assertEquals(3L, Utils.constrainToRange(0L, 3L, 7L));
+        assertEquals(5L, Utils.constrainToRange(5L, 3L, 7L));
+        assertEquals(7L, Utils.constrainToRange(10L, 3L, 7L));
+        assertEquals(3L, Utils.constrainToRange(-2L, 3L, 7L));
+        assertEquals(7L, Utils.constrainToRange(42L, 3L, 7L));
+
+        assertEquals(5, Utils.wrapToRange(0, 3, 7));
+        assertEquals(4, Utils.wrapToRange(4, 3, 7));
+        assertEquals(3, Utils.wrapToRange(8, 3, 7));
+        assertEquals(7, Utils.wrapToRange(12, 3, 7));
+        assertEquals(4, Utils.wrapToRange(34, 3, 7));
+        assertEquals(6, Utils.wrapToRange(56, 3, 7));
+        assertEquals(7, Utils.wrapToRange(-3, 3, 7));
+
+        assertEquals(5L, Utils.wrapToRange(0L, 3L, 7L));
+        assertEquals(4L, Utils.wrapToRange(4L, 3L, 7L));
+        assertEquals(3L, Utils.wrapToRange(8L, 3L, 7L));
+        assertEquals(7L, Utils.wrapToRange(12L, 3L, 7L));
+        assertEquals(4L, Utils.wrapToRange(34L, 3L, 7L));
+        assertEquals(6L, Utils.wrapToRange(56L, 3L, 7L));
+        assertEquals(7L, Utils.wrapToRange(-3L, 3L, 7L));
+
+        assertTrue(Utils.isInRange('k', 'a', 'z'));
+        assertTrue(Utils.isInRange(5, 3, 8));
+        assertTrue(Utils.isInRange(3.0, Math.E, Math.PI));
+    }
+
+    @Test
+    void testInts() {
+        int[] x = { 1, 2, 3, 4, 5 };
+        assertEquals(List.of(1, 2, 3, 4, 5), Utils.listOf(x));
+        assertEquals(Set.of(1, 2, 3, 4, 5), Utils.setOf(x));
+        assertEquals(3, Utils.streamOf(x).filter(c -> c % 2 == 1).count());
+    }
+
+    @Test
+    void testLongs() {
+        long[] x = { 1, 2, 3, 4, 5 };
+        assertEquals(List.of(1L, 2L, 3L, 4L, 5L), Utils.listOf(x));
+        assertEquals(Set.of(1L, 2L, 3L, 4L, 5L), Utils.setOf(x));
+        assertEquals(3, Utils.streamOf(x).filter(c -> c % 2 == 1).count());
+    }
 
     @Test
     void testChars() {

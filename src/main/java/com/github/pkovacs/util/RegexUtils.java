@@ -32,20 +32,22 @@ public final class RegexUtils {
     /**
      * Returns the first match of the given regular expression within the given input sequence as a string.
      *
-     * @return the first matching substring of the input or null if no matches found
+     * @return the first matching substring of the input
+     * @throws java.util.NoSuchElementException if no matches found
      */
     public static String findFirst(String regex, CharSequence input) {
-        return matcher(regex, input).results().map(MatchResult::group).findFirst().orElse(null);
+        return matcher(regex, input).results().map(MatchResult::group).findFirst().orElseThrow();
     }
 
     /**
      * Returns the first match of the given regular expression within the given input sequence as a {@link MatchResult}
      * object.
      *
-     * @return the first {@link MatchResult} or null if no matches found
+     * @return the first {@link MatchResult}
+     * @throws java.util.NoSuchElementException if no matches found
      */
     public static MatchResult findFirstMatch(String regex, CharSequence input) {
-        return matcher(regex, input).results().findFirst().orElse(null);
+        return matcher(regex, input).results().findFirst().orElseThrow();
     }
 
     /**

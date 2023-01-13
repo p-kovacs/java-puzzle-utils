@@ -1,12 +1,14 @@
 package com.github.pkovacs.util;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.MatchResult;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RegexUtilsTest {
@@ -22,6 +24,9 @@ class RegexUtilsTest {
         assertEquals("5", RegexUtils.findFirst(regex, s));
         assertEquals("5", RegexUtils.findFirstMatch(regex, s).group());
         assertEquals(20, RegexUtils.findFirstMatch(regex, s).start());
+
+        assertThrows(NoSuchElementException.class, () -> RegexUtils.findFirst("\\d[.]\\d", s));
+        assertThrows(NoSuchElementException.class, () -> RegexUtils.findFirstMatch("\\d[.]\\d", s));
 
         assertEquals(List.of("5", "12", "-42", "42"), RegexUtils.findAll(regex, s));
         assertEquals(List.of("5", "12", "-42", "42"),

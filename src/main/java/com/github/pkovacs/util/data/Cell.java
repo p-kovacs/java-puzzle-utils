@@ -110,6 +110,22 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
     }
 
     /**
+     * Returns an infinite ordered stream of cells that constitutes a "ray" moving away from this cell in the
+     * direction specified by the given other cell. The first element of the stream is the given cell, the next
+     * element is the subsequent cell in the same direction (applying the same changes to the row and column indices),
+     * and so on.
+     * <p>
+     * This method can be combined with {@link #neighbors()} or {@link #extendedNeighbors()} to obtain 4 or 8 rays
+     * moving away from this cell, respectively (i.e., the movement of <i>rook</i> or <i>queen</i> in chess,
+     * respectively).
+     */
+    public Stream<Cell> ray(Cell other) {
+        int deltaRow = other.row - row;
+        int deltaCol = other.col - col;
+        return Stream.iterate(other, t -> t.add(deltaRow, deltaCol));
+    }
+
+    /**
      * Creates a new cell by adding the given delta values to the indices of this cell.
      */
     public Cell add(int deltaRow, int deltaCol) {

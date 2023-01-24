@@ -125,6 +125,30 @@ public abstract class AbstractTable<V> {
     }
 
     /**
+     * Returns an ordered stream of cells that constitutes a "ray" moving away from the given cell in the given
+     * direction within this table. The first element of the stream (if any) is the corresponding neighbor of
+     * this cell, the next element (if any) is the subsequent cell in the same direction, and so on while the cells
+     * are contained in the table.
+     */
+    public Stream<Cell> ray(Cell cell, Direction dir) {
+        return ray(cell, cell.neighbor(dir));
+    }
+
+    /**
+     * Returns an ordered stream of cells that constitutes a "ray" moving away from the given cell in the
+     * direction specified by the given other cell within this table. The first element of the stream (if any)
+     * is the given other cell (the second parameter), the next element (if any) is the subsequent cell in
+     * the same direction, and so on while the cells are contained in the table.
+     * <p>
+     * This method can be combined with {@link #neighbors(Cell)} or {@link #extendedNeighbors(Cell)} to obtain 4 or 8
+     * rays moving away from this cell, respectively (i.e., the movement of <i>rook</i> or <i>queen</i> in chess,
+     * respectively).
+     */
+    public Stream<Cell> ray(Cell cell, Cell other) {
+        return cell.ray(other).takeWhile(this::containsCell);
+    }
+
+    /**
      * Finds a cell with the given value in this table.
      *
      * @throws java.util.NoSuchElementException if the table does not contain the given value

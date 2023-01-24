@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -102,6 +103,37 @@ class CharTableTest extends AbstractTableTest<Character> {
         assertEquals(table.values().toList(), table.cells().map(table::get).toList());
         assertEquals(table.rowValues(1).toList(), table.row(1).map(table::get).toList());
         assertEquals(table.colValues(2).toList(), table.col(2).map(table::get).toList());
+    }
+
+    @Test
+    void testRays() {
+        var cell = new Cell(3, 5);
+
+        var rookTable = new CharTable(8, 8, '.');
+        rookTable.set(cell, 'R');
+        List<Stream<Cell>> cells = rookTable.neighbors(cell)
+                .map(other -> rookTable.ray(cell, other))
+                .toList();
+        for (int i = 0; i < cells.size(); i++) {
+            char ch = (char) ('1' + i);
+            cells.get(i).forEach(c -> rookTable.set(c, ch));
+        }
+
+        assertContentEquals(List.of(".....1..", ".....1..", ".....1..", "22222R33",
+                ".....4..", ".....4..", ".....4..", ".....4.."), rookTable);
+
+        var queenTable = new CharTable(8, 8, '.');
+        queenTable.set(cell, 'Q');
+        cells = queenTable.extendedNeighbors(cell)
+                .map(other -> queenTable.ray(cell, other))
+                .toList();
+        for (int i = 0; i < cells.size(); i++) {
+            char ch = (char) ('1' + i);
+            cells.get(i).forEach(c -> queenTable.set(c, ch));
+        }
+
+        assertContentEquals(List.of("..1..2..", "...1.2.3", "....123.", "44444Q55",
+                "....678.", "...6.7.8", "..6..7..", ".6...7.."), queenTable);
     }
 
     @Test

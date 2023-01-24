@@ -108,6 +108,27 @@ class CellTest {
     }
 
     @Test
+    void testRays() {
+        var a = new Cell(12, 42);
+
+        assertEquals(List.of(new Cell(11, 42), new Cell(10, 42), new Cell(9, 42)),
+                a.ray(a.neighbor(Direction.NORTH)).limit(3).toList());
+        assertEquals(List.of(new Cell(12, 43), new Cell(12, 44), new Cell(12, 45)),
+                a.ray(a.neighbor(Direction.EAST)).limit(3).toList());
+        assertEquals(List.of(new Cell(13, 42), new Cell(14, 42), new Cell(15, 42)),
+                a.ray(a.neighbor(Direction.SOUTH)).limit(3).toList());
+        assertEquals(List.of(new Cell(12, 41), new Cell(12, 40), new Cell(12, 39)),
+                a.ray(a.neighbor(Direction.WEST)).limit(3).toList());
+
+        assertEquals(List.of(new Cell(11, 41), new Cell(10, 40), new Cell(9, 39)),
+                a.ray(new Cell(11, 41)).limit(3).toList());
+        assertEquals(List.of(new Cell(16, 46), new Cell(17, 47), new Cell(18, 48)),
+                a.ray(new Cell(13, 43)).skip(3).limit(3).toList());
+        assertEquals(List.of(new Cell(10, 52), new Cell(8, 62), new Cell(6, 72)),
+                a.ray(new Cell(10, 52)).limit(3).toList());
+    }
+
+    @Test
     void testDistanceMethods() {
         var a = new Cell(12, 42);
         var b = new Cell(30, 30);
@@ -166,6 +187,5 @@ class CellTest {
         assertEquals(list2, Cell.boundingBox(List.of(new Cell(44, 10), new Cell(42, 11))).toList());
         assertEquals(list2, Cell.boundingBox(new Cell(44, 10), new Cell(43, 11), new Cell(42, 10)).toList());
     }
-
 
 }

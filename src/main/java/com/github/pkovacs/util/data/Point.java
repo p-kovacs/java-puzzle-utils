@@ -126,6 +126,22 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
     }
 
     /**
+     * Returns an infinite ordered stream of points that constitutes a "ray" moving away from this point in the
+     * direction specified by the given other point. The first element of the stream is the given point, the next
+     * element is the subsequent point in the same direction (applying the same changes to the x and y coordinates),
+     * and so on.
+     * <p>
+     * This method can be combined with {@link #neighbors()} or {@link #extendedNeighbors()} to obtain 4 or 8 rays
+     * moving away from this point, respectively (i.e., the movement of <i>rook</i> or <i>queen</i> in chess,
+     * respectively).
+     */
+    public Stream<Point> ray(Point other) {
+        int dx = other.x - x;
+        int dy = other.y - y;
+        return Stream.iterate(other, t -> t.add(dx, dy));
+    }
+
+    /**
      * Creates a new point by adding the given delta values to the coordinates of this point.
      */
     public Point add(int dx, int dy) {

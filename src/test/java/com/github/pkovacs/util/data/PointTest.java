@@ -161,6 +161,27 @@ class PointTest {
     }
 
     @Test
+    void testRays() {
+        var a = new Point(12, 42);
+
+        assertEquals(List.of(new Point(12, 41), new Point(12, 40), new Point(12, 39)),
+                a.ray(a.neighbor(Direction.NORTH)).limit(3).toList());
+        assertEquals(List.of(new Point(13, 42), new Point(14, 42), new Point(15, 42)),
+                a.ray(a.neighbor(Direction.EAST)).limit(3).toList());
+        assertEquals(List.of(new Point(12, 43), new Point(12, 44), new Point(12, 45)),
+                a.ray(a.neighbor(Direction.SOUTH)).limit(3).toList());
+        assertEquals(List.of(new Point(11, 42), new Point(10, 42), new Point(9, 42)),
+                a.ray(a.neighbor(Direction.WEST)).limit(3).toList());
+
+        assertEquals(List.of(new Point(11, 41), new Point(10, 40), new Point(9, 39)),
+                a.ray(new Point(11, 41)).limit(3).toList());
+        assertEquals(List.of(new Point(16, 46), new Point(17, 47), new Point(18, 48)),
+                a.ray(new Point(13, 43)).skip(3).limit(3).toList());
+        assertEquals(List.of(new Point(10, 52), new Point(8, 62), new Point(6, 72)),
+                a.ray(new Point(10, 52)).limit(3).toList());
+    }
+
+    @Test
     void testDistanceMethods() {
         var a = new Point(42, 12);
         var b = new Point(30, 30);

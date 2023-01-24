@@ -111,6 +111,28 @@ abstract class AbstractTableTest<T> {
     }
 
     @Test
+    void testRays() {
+        var table = createTestTable(4, 5);
+        var cell = new Cell(3, 2);
+
+        assertEquals(List.of(new Cell(2, 2), new Cell(1, 2), new Cell(0, 2)),
+                table.ray(cell, Direction.NORTH).toList());
+        assertEquals(List.of(new Cell(3, 3), new Cell(3, 4)),
+                table.ray(cell, Direction.EAST).toList());
+        assertEquals(List.of(),
+                table.ray(cell, Direction.SOUTH).toList());
+        assertEquals(List.of(new Cell(3, 1), new Cell(3, 0)),
+                table.ray(cell, Direction.WEST).toList());
+
+        assertEquals(List.of(new Cell(2, 1), new Cell(1, 0)),
+                table.ray(cell, new Cell(2, 1)).toList());
+        assertEquals(List.of(),
+                table.ray(cell, new Cell(4, 3)).toList());
+        assertEquals(List.of(new Cell(2, 3), new Cell(1, 4)),
+                table.ray(cell, new Cell(2, 3)).toList());
+    }
+
+    @Test
     void testTransformations() {
         var table = createTestTable(3, 4);
         var transposed = table.transpose();

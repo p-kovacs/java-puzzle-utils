@@ -110,6 +110,31 @@ public record Cell(int row, int col) implements Position, Comparable<Cell> {
     }
 
     /**
+     * Returns an ordered stream of cells that constitutes a straight line segment from this cell to the given
+     * other cell (horizontally, vertically, or diagonally). The first element of the stream is this cell, and
+     * the last element is the given other cell (provided that they lay on a common line).
+     *
+     * @throws IllegalArgumentException if the cells do not lay on a common horizontal, vertical, or diagonal
+     *         line.
+     */
+    public Stream<Cell> lineTo(Cell other) {
+        int rowDist = other.row - row;
+        int colDist = other.col - col;
+
+        if (equals(other)) {
+            return Stream.of(this);
+        } else if (rowDist == 0 || colDist == 0 || Math.abs(rowDist) == Math.abs(colDist)) {
+            int dist = Math.max(Math.abs(rowDist), Math.abs(colDist));
+            int dr = rowDist / dist;
+            int dc = colDist / dist;
+            return IntStream.rangeClosed(0, dist).mapToObj(i -> new Cell(row + i * dr, col + i * dc));
+        } else {
+            throw new IllegalArgumentException(
+                    "The cells do not lay on a common horizontal, vertical, or diagonal line.");
+        }
+    }
+
+    /**
      * Returns an infinite ordered stream of cells that constitutes a "ray" moving away from this cell in the
      * direction specified by the given other cell. The first element of the stream is the given cell, the next
      * element is the subsequent cell in the same direction (applying the same changes to the row and column indices),

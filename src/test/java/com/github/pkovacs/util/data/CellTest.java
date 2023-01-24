@@ -108,6 +108,24 @@ class CellTest {
     }
 
     @Test
+    void testLines() {
+        assertEquals(List.of(new Cell(10, 42), new Cell(11, 42), new Cell(12, 42)),
+                new Cell(10, 42).lineTo(new Cell(12, 42)).toList());
+        assertEquals(List.of(new Cell(12, 40), new Cell(12, 41), new Cell(12, 42)),
+                new Cell(12, 40).lineTo(new Cell(12, 42)).toList());
+        assertEquals(List.of(new Cell(12, 42), new Cell(11, 42), new Cell(10, 42), new Cell(9, 42)),
+                new Cell(12, 42).lineTo(new Cell(9, 42)).toList());
+        assertEquals(List.of(new Cell(12, 42), new Cell(13, 43), new Cell(14, 44)),
+                new Cell(12, 42).lineTo(new Cell(14, 44)).toList());
+        assertEquals(List.of(new Cell(12, 42), new Cell(11, 43), new Cell(10, 44)),
+                new Cell(12, 42).lineTo(new Cell(10, 44)).toList());
+        assertEquals(List.of(new Cell(12, 42)),
+                new Cell(12, 42).lineTo(new Cell(12, 42)).toList());
+
+        assertThrows(IllegalArgumentException.class, () -> new Cell(12, 42).lineTo(new Cell(10, 45)));
+    }
+
+    @Test
     void testRays() {
         var a = new Cell(12, 42);
 

@@ -126,6 +126,31 @@ public record Point(int x, int y) implements Position, Comparable<Point> {
     }
 
     /**
+     * Returns an ordered stream of points that constitutes a straight line segment from this point to the given
+     * other point (horizontally, vertically, or diagonally). The first element of the stream is this point, and
+     * the last element is the given other point (provided that they lay on a common line).
+     *
+     * @throws IllegalArgumentException if the points do not lay on a common horizontal, vertical, or diagonal
+     *         line.
+     */
+    public Stream<Point> lineTo(Point other) {
+        int xDist = other.x - x;
+        int yDist = other.y - y;
+
+        if (equals(other)) {
+            return Stream.of(this);
+        } else if (xDist == 0 || yDist == 0 || Math.abs(xDist) == Math.abs(yDist)) {
+            int dist = Math.max(Math.abs(xDist), Math.abs(yDist));
+            int dx = xDist / dist;
+            int dy = yDist / dist;
+            return IntStream.rangeClosed(0, dist).mapToObj(i -> new Point(x + i * dx, y + i * dy));
+        } else {
+            throw new IllegalArgumentException(
+                    "The points do not lay on a common horizontal, vertical, or diagonal line.");
+        }
+    }
+
+    /**
      * Returns an infinite ordered stream of points that constitutes a "ray" moving away from this point in the
      * direction specified by the given other point. The first element of the stream is the given point, the next
      * element is the subsequent point in the same direction (applying the same changes to the x and y coordinates),

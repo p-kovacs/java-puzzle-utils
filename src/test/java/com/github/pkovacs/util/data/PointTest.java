@@ -161,6 +161,24 @@ class PointTest {
     }
 
     @Test
+    void testLines() {
+        assertEquals(List.of(new Point(10, 42), new Point(11, 42), new Point(12, 42)),
+                new Point(10, 42).lineTo(new Point(12, 42)).toList());
+        assertEquals(List.of(new Point(12, 40), new Point(12, 41), new Point(12, 42)),
+                new Point(12, 40).lineTo(new Point(12, 42)).toList());
+        assertEquals(List.of(new Point(12, 42), new Point(11, 42), new Point(10, 42), new Point(9, 42)),
+                new Point(12, 42).lineTo(new Point(9, 42)).toList());
+        assertEquals(List.of(new Point(12, 42), new Point(13, 43), new Point(14, 44)),
+                new Point(12, 42).lineTo(new Point(14, 44)).toList());
+        assertEquals(List.of(new Point(12, 42), new Point(11, 43), new Point(10, 44)),
+                new Point(12, 42).lineTo(new Point(10, 44)).toList());
+        assertEquals(List.of(new Point(12, 42)),
+                new Point(12, 42).lineTo(new Point(12, 42)).toList());
+
+        assertThrows(IllegalArgumentException.class, () -> new Point(12, 42).lineTo(new Point(10, 45)));
+    }
+
+    @Test
     void testRays() {
         var a = new Point(12, 42);
 

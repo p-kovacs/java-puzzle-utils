@@ -32,6 +32,19 @@ public final class Bfs {
     }
 
     /**
+     * Calculates the distance (in terms the number of edges) along a shortest path from the given source node
+     * to the nearest target node specified by the given predicate.
+     * For more details, see {@link #findPath(Object, Function, Predicate)}.
+     *
+     * @throws java.util.NoSuchElementException if no target nodes are reachable from the source node.
+     */
+    public static <T> int dist(T source,
+            Function<? super T, ? extends Iterable<T>> neighborProvider,
+            Predicate<? super T> targetPredicate) {
+        return (int) findPath(source, neighborProvider, targetPredicate).orElseThrow().dist();
+    }
+
+    /**
      * Finds a shortest path (in terms of the number of edges) from the given source node to a target node specified
      * by the given predicate.
      *
@@ -68,6 +81,20 @@ public final class Bfs {
             Predicate<? super T> targetPredicate) {
         var results = new HashMap<T, Path<T>>();
         return run(sources, neighborProvider, targetPredicate, results);
+    }
+
+    /**
+     * Runs the algorithm to find shortest paths (in terms of the number of edges) to all nodes reachable from the
+     * given source node.
+     *
+     * @param source the source node.
+     * @param neighborProvider the neighbor provider function. For each node {@code u}, it has to provide the
+     *         end nodes of the outgoing edges of {@code u} as a collection.
+     * @return a map that associates a {@link Path} with each node reachable from the source node.
+     */
+    public static <T> Map<T, Path<T>> run(T source,
+            Function<? super T, ? extends Iterable<T>> neighborProvider) {
+        return run(List.of(source), neighborProvider);
     }
 
     /**

@@ -7,6 +7,8 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import com.github.pkovacs.util.alg.Dijkstra.Edge;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,6 +21,31 @@ class BellmanFordTest extends AbstractShortestPathTest {
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
         return BellmanFord.findPath(source, edgeProvider, targetPredicate);
+    }
+
+    @Test
+    void testWithSimpleGraph() {
+        ListMultimap<String, Edge<String>> graph = MultimapBuilder.hashKeys().arrayListValues().build();
+        graph.put("A", new Edge<>("B", 1));
+        graph.put("A", new Edge<>("C", 1));
+        graph.put("A", new Edge<>("D", 1));
+        graph.put("B", new Edge<>("E", 2));
+        graph.put("C", new Edge<>("E", -3));
+        graph.put("D", new Edge<>("G", 4));
+        graph.put("E", new Edge<>("D", 5));
+        graph.put("E", new Edge<>("F", 5));
+        graph.put("E", new Edge<>("G", 5));
+        graph.put("F", new Edge<>("B", -6));
+        graph.put("F", new Edge<>("G", -6));
+
+        var result = BellmanFord.run("A", graph::get);
+
+        assertEquals(0, result.get("A").dist());
+        assertEquals(-3, result.get("B").dist());
+        assertEquals(1, result.get("C").dist());
+        assertEquals(-2, result.get("E").dist());
+        assertEquals(3, result.get("F").dist());
+        assertEquals(-3, result.get("G").dist());
     }
 
     @Test

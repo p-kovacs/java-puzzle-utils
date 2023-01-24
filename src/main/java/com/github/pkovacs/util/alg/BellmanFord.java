@@ -77,6 +77,19 @@ public final class BellmanFord {
     }
 
     /**
+     * Runs the algorithm to find shortest paths to all nodes reachable from the given source node.
+     *
+     * @param source the source node.
+     * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
+     *         edges of {@code u} as a collection of {@link Edge} objects.
+     * @return a map that associates a {@link Path} with each node reachable from the source node.
+     */
+    public static <T> Map<T, Path<T>> run(T source,
+            Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
+        return run(List.of(source), edgeProvider);
+    }
+
+    /**
      * Runs the algorithm to find shortest paths to all nodes reachable from the given source nodes.
      *
      * @param sources the source nodes.

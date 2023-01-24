@@ -37,7 +37,12 @@ class BfsTest {
         graph.put("F", "B");
         graph.put("F", "G");
 
-        var map = Bfs.run(List.of("A"), graph::get);
+        assertEquals(0, Bfs.dist("A", graph::get, "A"::equals));
+        assertEquals(1, Bfs.dist("A", graph::get, "B"::equals));
+        assertEquals(3, Bfs.dist("A", graph::get, "F"::equals));
+        assertEquals(2, Bfs.dist("A", graph::get, "G"::equals));
+
+        var map = Bfs.run("A", graph::get);
 
         assertEquals(7, map.size());
         assertEquals(0, map.get("A").dist());

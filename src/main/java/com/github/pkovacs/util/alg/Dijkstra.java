@@ -43,6 +43,18 @@ public final class Dijkstra {
     }
 
     /**
+     * Calculates the distance along a shortest path from the given source node to the nearest target node specified
+     * by the given predicate. For more details, see {@link #findPath(Object, Function, Predicate)}.
+     *
+     * @throws java.util.NoSuchElementException if no target nodes are reachable from the source node.
+     */
+    public static <T> long dist(T source,
+            Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
+            Predicate<? super T> targetPredicate) {
+        return findPath(source, edgeProvider, targetPredicate).orElseThrow().dist();
+    }
+
+    /**
      * Finds a shortest path from the given source node to a target node specified by the given predicate.
      *
      * @param source the source node.
@@ -77,6 +89,19 @@ public final class Dijkstra {
             Predicate<? super T> targetPredicate) {
         var results = new HashMap<T, Path<T>>();
         return run(sources, edgeProvider, targetPredicate, results);
+    }
+
+    /**
+     * Runs the algorithm to find shortest paths to all nodes reachable from the given source node.
+     *
+     * @param source the source node.
+     * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
+     *         edges of {@code u} as a collection of {@link Edge} objects.
+     * @return a map that associates a {@link Path} with each node reachable from the source node.
+     */
+    public static <T> Map<T, Path<T>> run(T source,
+            Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
+        return run(List.of(source), edgeProvider);
     }
 
     /**

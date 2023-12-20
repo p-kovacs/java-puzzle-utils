@@ -24,7 +24,7 @@ class BellmanFordTest extends AbstractShortestPathTest {
     }
 
     @Test
-    void testWithSimpleGraph() {
+    void testBellmanFordWithSimpleGraph() {
         ListMultimap<String, Edge<String>> graph = MultimapBuilder.hashKeys().arrayListValues().build();
         graph.put("A", new Edge<>("B", 1));
         graph.put("A", new Edge<>("C", 1));
@@ -49,11 +49,9 @@ class BellmanFordTest extends AbstractShortestPathTest {
     }
 
     @Test
-    void testMultipleSources() {
+    void testWithMultipleSources() {
         var result = BellmanFord.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
-                i -> i >= 0
-                        ? List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2))
-                        : List.of(),
+                i -> i >= 0 ? List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)) : List.of(),
                 i -> i == 42);
 
         assertTrue(result.isPresent());

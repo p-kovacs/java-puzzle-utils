@@ -213,16 +213,16 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Manhattan distance</a>
-     * (aka. L1 distance or "taxicab" distance) between this vector and the {@link #origin(int) origin}.
+     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
+     * (aka. L1 distance or Manhattan distance) between this vector and the {@link #origin(int) origin}.
      */
     public long dist1() {
         return Arrays.stream(coords).map(Math::abs).sum();
     }
 
     /**
-     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Manhattan distance</a>
-     * (aka. L1 distance or "taxicab" distance) between this vector and the given vector.
+     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
+     * (aka. L1 distance or Manhattan distance) between this vector and the given vector.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
@@ -252,7 +252,7 @@ public class Vector implements Comparable<Vector> {
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
      * Eucledian distance</a> between this vector and the {@link #origin(int) origin}.
      * <p>
-     * Warning: this distance does not satisfy the triangle inequality.
+     * Warning: this distance metric does not satisfy the triangle inequality.
      */
     public long distSq() {
         return Arrays.stream(coords).map(i -> i * i).sum();
@@ -262,7 +262,7 @@ public class Vector implements Comparable<Vector> {
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
      * Eucledian distance</a> between this vector and the given vector.
      * <p>
-     * Warning: this distance does not satisfy the triangle inequality.
+     * Warning: this distance metric does not satisfy the triangle inequality.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */

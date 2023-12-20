@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
  * the data. A cell of the table is identified by a {@link Cell} object or two integer indices.
  * <p>
  * This class is the primitive type specialization of {@link Table} for {@code int}. Most methods are defined in
- * the {@link AbstractTable abstract base class}.
+ * {@link AbstractTable}.
  * <p>
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a nicely formatted result, with the values aligned in columns appropriately, which can be useful for

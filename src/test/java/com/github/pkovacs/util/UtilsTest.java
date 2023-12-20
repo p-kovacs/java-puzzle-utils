@@ -1,6 +1,7 @@
 package com.github.pkovacs.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -119,8 +121,12 @@ class UtilsTest {
         assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.charsOf("hello").toList());
         assertEquals(2, Utils.charsOf("hello").filter(c -> c == 'l').count());
 
+        assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.charsOf("hello").toList());
+        assertEquals(2, Utils.charsOf("hello").filter(c -> c == 'l').count());
+
         assertEquals(List.of('h', 'e', 'l', 'l', 'o'), Utils.listOf(x));
         assertEquals(Set.of('h', 'e', 'l', 'o'), Utils.setOf(x));
+        assertEquals(3, Utils.charsOf("hello").filter(c -> c != 'l').count());
         assertEquals(3, Utils.streamOf("hello".toCharArray()).filter(c -> c != 'l').count());
 
         assertEquals('a', Utils.min('c', 'a', 'f', 'b'));
@@ -130,6 +136,21 @@ class UtilsTest {
 
         assertThrows(NoSuchElementException.class, () -> Utils.min(new char[0]));
         assertThrows(NoSuchElementException.class, () -> Utils.max(new char[0]));
+    }
+
+    @Test
+    public void testCountMethods() {
+        assertEquals(3, Utils.count(List.of(1, 2, 3, 2, 1, 2, 3), 2));
+        assertEquals(2, Utils.count(List.of("a", "b", "c", "b"), "b"));
+        assertEquals(1, Utils.count(List.of("a", "b", "c", "b"), "c"));
+        assertEquals(0, Utils.count(List.of("a", "b", "c", "b"), "d"));
+        assertEquals(2, Utils.count(List.of("a", "bc", "d", "bc"), "bc"));
+        assertEquals(2, Utils.count(Arrays.asList("a", null, "d", null), null));
+
+        assertEquals(3, Utils.count("abcdcbab", 'b'));
+        assertEquals(2, Utils.count("abcdcbab", 'c'));
+        assertEquals(1, Utils.count("abcdcbab", 'd'));
+        assertEquals(0, Utils.count("abcdcbab", 'e'));
     }
 
     @Test
@@ -230,6 +251,30 @@ class UtilsTest {
         assertEquals(Map.of(1, 'a', 2, 'b', 3, 'c'), Utils.inverse(map));
         assertEquals(map, Utils.inverse(Utils.inverse(map)));
         assertEquals(Map.of(), Utils.inverse(Map.of()));
+    }
+
+    @Test
+    void testDeepCopy() {
+        int[][] a = { { 0, 1, 2, 3, 4 }, {}, { Integer.MIN_VALUE, Integer.MAX_VALUE } };
+        int[][] b = Utils.deepCopy(a);
+
+        assertTrue(Arrays.deepEquals(a, b));
+        assertNotSame(a, b);
+        assertNotSame(a[0], b[0]);
+
+        long[][] c = { { 0, 1, 2, 3, 4 }, {}, { Long.MIN_VALUE, Long.MAX_VALUE } };
+        long[][] d = Utils.deepCopy(c);
+
+        assertTrue(Arrays.deepEquals(c, d));
+        assertNotSame(c, d);
+        assertNotSame(c[0], d[0]);
+
+        char[][] x = { "hello".toCharArray(), "".toCharArray(), "okay".toCharArray() };
+        char[][] y = Utils.deepCopy(x);
+
+        assertTrue(Arrays.deepEquals(x, y));
+        assertNotSame(x, y);
+        assertNotSame(x[0], y[0]);
     }
 
 }

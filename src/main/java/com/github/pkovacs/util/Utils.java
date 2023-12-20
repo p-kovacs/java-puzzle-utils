@@ -1,5 +1,6 @@
 package com.github.pkovacs.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -243,6 +245,20 @@ public class Utils extends InputUtils {
     }
 
     /**
+     * Returns the occurrence count of the given value in the given collection.
+     */
+    public static <T> int count(Collection<T> collection, T value) {
+        return (int) collection.stream().filter(v -> Objects.equals(v, value)).count();
+    }
+
+    /**
+     * Returns the occurrence count of the given character in the given string.
+     */
+    public static int count(CharSequence s, char ch) {
+        return (int) charsOf(s).filter(c -> c == ch).count();
+    }
+
+    /**
      * Returns the union of the given collections.
      */
     public static <E> Set<E> unionOf(Collection<? extends E> a, Collection<? extends E> b) {
@@ -340,6 +356,30 @@ public class Utils extends InputUtils {
             }
         }
         return Collections.unmodifiableMap(inverse);
+    }
+
+    /**
+     * Returns a deep copy of the given {@code int} matrix.
+     * The "rows" might have different sizes, but they must not be null.
+     */
+    public static int[][] deepCopy(int[][] matrix) {
+        return Arrays.stream(matrix).map(a -> a.clone()).toArray(int[][]::new);
+    }
+
+    /**
+     * Returns a deep copy of the given {@code long} matrix.
+     * The "rows" might have different sizes, but they must not be null.
+     */
+    public static long[][] deepCopy(long[][] matrix) {
+        return Arrays.stream(matrix).map(a -> a.clone()).toArray(long[][]::new);
+    }
+
+    /**
+     * Returns a deep copy of the given {@code char} matrix.
+     * The "rows" might have different sizes, but they must not be null.
+     */
+    public static char[][] deepCopy(char[][] matrix) {
+        return Arrays.stream(matrix).map(a -> a.clone()).toArray(char[][]::new);
     }
 
 }

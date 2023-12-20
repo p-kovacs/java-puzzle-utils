@@ -149,7 +149,7 @@ public abstract class AbstractTable<V> {
     }
 
     /**
-     * Finds a cell with the given value in this table.
+     * Finds the first cell with the given value in this table.
      *
      * @throws java.util.NoSuchElementException if the table does not contain the given value
      */

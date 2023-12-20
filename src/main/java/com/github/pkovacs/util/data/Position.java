@@ -24,16 +24,16 @@ public interface Position {
     }
 
     /**
-     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Manhattan distance</a>
-     * (aka. L1 distance or "taxicab" distance) between this position and (0, 0).
+     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
+     * (aka. L1 distance or Manhattan distance) between this position and (0, 0).
      */
     default int dist1() {
         return dist1(ORIGIN);
     }
 
     /**
-     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Manhattan distance</a>
-     * (aka. L1 distance or "taxicab" distance) between this position and the given position.
+     * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
+     * (aka. L1 distance or Manhattan distance) between this position and the given position.
      */
     default int dist1(Position other) {
         return Math.abs(other.x() - x()) + Math.abs(other.y() - y());
@@ -59,7 +59,7 @@ public interface Position {
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
      * Eucledian distance</a> between this position and (0, 0).
      * <p>
-     * Warning: this distance does not satisfy the triangle inequality.
+     * Warning: this distance metric does not satisfy the triangle inequality.
      */
     default int distSq() {
         return distSq(ORIGIN);
@@ -69,7 +69,7 @@ public interface Position {
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
      * Eucledian distance</a> between this position and the given position.
      * <p>
-     * Warning: this distance does not satisfy the triangle inequality.
+     * Warning: this distance metric does not satisfy the triangle inequality.
      */
     default int distSq(Position other) {
         int dx = other.x() - x();

@@ -106,7 +106,7 @@ class CharTableTest extends AbstractTableTest<Character> {
     }
 
     @Test
-    void testRays() {
+    void testCharTableRays() {
         var cell = new Cell(3, 5);
 
         var rookTable = new CharTable(8, 8, '.');

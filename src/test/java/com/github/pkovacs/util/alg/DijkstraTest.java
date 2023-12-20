@@ -24,7 +24,7 @@ class DijkstraTest extends AbstractShortestPathTest {
     }
 
     @Test
-    void testWithSimpleGraph() {
+    void testDijkstraWithSimpleGraph() {
         ListMultimap<String, Edge<String>> graph = MultimapBuilder.hashKeys().arrayListValues().build();
         graph.put("A", new Edge<>("B", 1));
         graph.put("A", new Edge<>("C", 1));
@@ -54,7 +54,7 @@ class DijkstraTest extends AbstractShortestPathTest {
     }
 
     @Test
-    void testMultipleSources() {
+    void testWithMultipleSources() {
         var result = Dijkstra.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
                 i -> List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)),
                 i -> i == 42);

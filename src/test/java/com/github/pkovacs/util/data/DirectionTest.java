@@ -32,7 +32,16 @@ class DirectionTest {
         assertEquals(Direction.NORTH, Direction.SOUTH.mirrorVertically());
         assertEquals(Direction.EAST, Direction.EAST.mirrorVertically());
 
-        Arrays.stream(Direction.values()).forEach(dir -> {
+        var dirs = Direction.values();
+        for (int i = 0; i < 4; i++) {
+            var dir1 = dirs[i];
+            var dir2 = dirs[(i + 1) % 4];
+            assertEquals(dir2, dir1.rotateRight());
+            assertEquals(dir1, dir2.rotateLeft());
+            assertEquals(dir1.isHorizontal(), dir2.isVertical());
+        }
+
+        Arrays.stream(dirs).forEach(dir -> {
             assertEquals(dir, dir.opposite().opposite());
             assertEquals(dir.opposite(), dir.rotateRight().rotateRight());
             assertEquals(dir.rotateLeft(), dir.rotateRight().rotateRight().rotateRight());
@@ -42,6 +51,9 @@ class DirectionTest {
             assertEquals(dir, dir.mirrorHorizontally().mirrorHorizontally());
             assertEquals(dir.opposite(), dir.mirrorHorizontally().mirrorVertically());
             assertEquals(dir.opposite(), dir.mirrorVertically().mirrorHorizontally());
+            assertEquals(dir.isHorizontal(), !dir.isVertical());
+            assertEquals(dir.isHorizontal(), dir.rotateLeft().isVertical());
+            assertEquals(dir.isHorizontal(), dir.rotateRight().isVertical());
         });
     }
 

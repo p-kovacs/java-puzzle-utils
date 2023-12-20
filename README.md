@@ -3,9 +3,9 @@
 Various utilities, data structures, and algorithms written in Java for solving coding puzzles like
 [Advent of Code](https://adventofcode.com/).
 
-Compatibility: Java 17+
+Compatibility: Java 21+
 
-However, Java is not the best tool for such tasks. Consider using Kotlin instead. :)
+However, Java is not the best language for coding puzzles. Consider using Kotlin instead. :)
 
 ## Hints
 

@@ -64,7 +64,7 @@ public final class Bfs {
     }
 
     /**
-     * Finds a shortest path (in terms of the number of edges) from one of the given source nodes to a target node
+     * Finds a shortest path (in terms of the number of edges) from any of the given source nodes to a target node
      * specified by the given predicate.
      *
      * @param sources the source nodes.
@@ -80,7 +80,7 @@ public final class Bfs {
             Function<? super T, ? extends Iterable<T>> neighborProvider,
             Predicate<? super T> targetPredicate) {
         var results = new HashMap<T, Path<T>>();
-        return run(sources, neighborProvider, targetPredicate, results);
+        return runBfs(sources, neighborProvider, targetPredicate, results);
     }
 
     /**
@@ -94,7 +94,7 @@ public final class Bfs {
      */
     public static <T> Map<T, Path<T>> run(T source,
             Function<? super T, ? extends Iterable<T>> neighborProvider) {
-        return run(List.of(source), neighborProvider);
+        return runFromAll(List.of(source), neighborProvider);
     }
 
     /**
@@ -106,21 +106,21 @@ public final class Bfs {
      *         end nodes of the outgoing edges of {@code u} as a collection.
      * @return a map that associates a {@link Path} with each node reachable from the source nodes.
      */
-    public static <T> Map<T, Path<T>> run(Iterable<? extends T> sources,
+    public static <T> Map<T, Path<T>> runFromAll(Iterable<? extends T> sources,
             Function<? super T, ? extends Iterable<T>> neighborProvider) {
         var results = new HashMap<T, Path<T>>();
-        run(sources, neighborProvider, n -> false, results);
+        runBfs(sources, neighborProvider, n -> false, results);
         return results;
     }
 
-    private static <T> Optional<Path<T>> run(Iterable<? extends T> sources,
+    private static <T> Optional<Path<T>> runBfs(Iterable<? extends T> sources,
             Function<? super T, ? extends Iterable<T>> neighborProvider,
             Predicate<? super T> targetPredicate,
             Map<T, Path<T>> results) {
 
         var queue = new ArrayDeque<Path<T>>();
         for (var source : sources) {
-            var path = new Path<T>(source, 0, null);
+            var path = new Path<>(source, 0, null);
             results.put(source, path);
             queue.add(path);
         }

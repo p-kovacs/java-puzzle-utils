@@ -56,7 +56,7 @@ public final class BellmanFord {
     }
 
     /**
-     * Finds a shortest path from one of the given source nodes to a target node specified by the given predicate.
+     * Finds a shortest path from any of the given source nodes to a target node specified by the given predicate.
      *
      * @param sources the source nodes.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
@@ -70,7 +70,7 @@ public final class BellmanFord {
     public static <T> Optional<Path<T>> findPathFromAny(Iterable<? extends T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
-        var map = run(sources, edgeProvider);
+        var map = runFromAll(sources, edgeProvider);
         return map.values().stream()
                 .filter(p -> targetPredicate.test(p.endNode()))
                 .min(Comparator.comparing(Path::dist));
@@ -86,7 +86,7 @@ public final class BellmanFord {
      */
     public static <T> Map<T, Path<T>> run(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
-        return run(List.of(source), edgeProvider);
+        return runFromAll(List.of(source), edgeProvider);
     }
 
     /**
@@ -97,14 +97,14 @@ public final class BellmanFord {
      *         edges of {@code u} as a collection of {@link Edge} objects.
      * @return a map that associates a {@link Path} with each node reachable from the source nodes.
      */
-    public static <T> Map<T, Path<T>> run(Iterable<? extends T> sources,
+    public static <T> Map<T, Path<T>> runFromAll(Iterable<? extends T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
 
         var results = new HashMap<T, Path<T>>();
 
         var queue = new ArrayDeque<Path<T>>();
         for (var source : sources) {
-            var path = new Path<T>(source, 0, null);
+            var path = new Path<>(source, 0, null);
             results.put(source, path);
             queue.add(path);
         }

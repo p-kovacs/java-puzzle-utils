@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
  */
 public class InputUtils {
 
-    private static final Pattern integerPattern = Pattern.compile("(?:(?<![a-zA-Z0-9])-)?\\d+");
-
     protected InputUtils() {
     }
 
@@ -141,7 +139,7 @@ public class InputUtils {
      * </pre>
      */
     public static int[] parseInts(String input) {
-        return integerPattern.matcher(input).results()
+        return PatternHolder.integerPattern.matcher(input).results()
                 .map(MatchResult::group)
                 .mapToInt(Integer::parseInt)
                 .toArray();
@@ -162,7 +160,7 @@ public class InputUtils {
      * </pre>
      */
     public static long[] parseLongs(String input) {
-        return integerPattern.matcher(input).results()
+        return PatternHolder.integerPattern.matcher(input).results()
                 .map(MatchResult::group)
                 .mapToLong(Long::parseLong)
                 .toArray();
@@ -274,6 +272,10 @@ public class InputUtils {
             return String.valueOf(value);
         }
 
+    }
+
+    private static class PatternHolder {
+        static final Pattern integerPattern = Pattern.compile("(?:(?<![a-zA-Z0-9])-)?\\d+");
     }
 
 }

@@ -49,22 +49,6 @@ class UtilsTest extends Utils {
         assertEquals(3L, constrainToRange(-2L, 3L, 7L));
         assertEquals(7L, constrainToRange(42L, 3L, 7L));
 
-        assertEquals(5, wrapToRange(0, 3, 7));
-        assertEquals(4, wrapToRange(4, 3, 7));
-        assertEquals(3, wrapToRange(8, 3, 7));
-        assertEquals(7, wrapToRange(12, 3, 7));
-        assertEquals(4, wrapToRange(34, 3, 7));
-        assertEquals(6, wrapToRange(56, 3, 7));
-        assertEquals(7, wrapToRange(-3, 3, 7));
-
-        assertEquals(5L, wrapToRange(0L, 3L, 7L));
-        assertEquals(4L, wrapToRange(4L, 3L, 7L));
-        assertEquals(3L, wrapToRange(8L, 3L, 7L));
-        assertEquals(7L, wrapToRange(12L, 3L, 7L));
-        assertEquals(4L, wrapToRange(34L, 3L, 7L));
-        assertEquals(6L, wrapToRange(56L, 3L, 7L));
-        assertEquals(7L, wrapToRange(-3L, 3L, 7L));
-
         assertTrue(isInRange('k', 'a', 'z'));
         assertTrue(isInRange(5, 3, 8));
         assertTrue(isInRange(3.0, Math.E, Math.PI));
@@ -82,15 +66,15 @@ class UtilsTest extends Utils {
 
         assertEquals(1, min(3, 1, 5));
         assertEquals(1, min(x));
-        assertEquals(1, minInt(listOf(x)));
+        assertEquals(1, min(listOf(x)));
         assertEquals(5, max(3, 1, 5));
         assertEquals(5, max(x));
-        assertEquals(5, maxInt(listOf(x)));
+        assertEquals(5, max(listOf(x)));
 
         assertThrows(NoSuchElementException.class, () -> min(new int[0]));
         assertThrows(NoSuchElementException.class, () -> max(new int[0]));
-        assertThrows(NoSuchElementException.class, () -> minInt(List.of()));
-        assertThrows(NoSuchElementException.class, () -> maxInt(List.of()));
+        assertThrows(NoSuchElementException.class, () -> min(new ArrayList<Integer>()));
+        assertThrows(NoSuchElementException.class, () -> max(new ArrayList<Integer>()));
     }
 
     @Test
@@ -105,15 +89,15 @@ class UtilsTest extends Utils {
 
         assertEquals(1L, min(3L, 1L, 5L));
         assertEquals(1L, min(x));
-        assertEquals(1L, minInt(listOf(x)));
+        assertEquals(1L, min(listOf(x)));
         assertEquals(5L, max(3L, 1L, 5L));
         assertEquals(5L, max(x));
-        assertEquals(5L, maxInt(listOf(x)));
+        assertEquals(5L, max(listOf(x)));
 
         assertThrows(NoSuchElementException.class, () -> min(new long[0]));
         assertThrows(NoSuchElementException.class, () -> max(new long[0]));
-        assertThrows(NoSuchElementException.class, () -> minLong(List.of()));
-        assertThrows(NoSuchElementException.class, () -> maxLong(List.of()));
+        assertThrows(NoSuchElementException.class, () -> min(new ArrayList<Long>()));
+        assertThrows(NoSuchElementException.class, () -> max(new ArrayList<Long>()));
     }
 
     @Test
@@ -133,15 +117,39 @@ class UtilsTest extends Utils {
 
         assertEquals('a', min('c', 'a', 'f', 'b'));
         assertEquals('e', min(x));
+        assertEquals('e', min(listOf(x)));
         assertEquals('f', max('c', 'a', 'f', 'b'));
         assertEquals('o', max(x));
+        assertEquals('o', max(listOf(x)));
 
         assertThrows(NoSuchElementException.class, () -> min(new char[0]));
         assertThrows(NoSuchElementException.class, () -> max(new char[0]));
     }
 
     @Test
-    public void testMathMethods() {
+    void testStrings() {
+        assertEquals("a", min(List.of("c", "a", "f", "b")));
+        assertEquals("f", max(List.of("c", "a", "f", "b")));
+        assertEquals("aba", min(List.of("abc", "acd", "adb", "aba", "ada")));
+        assertEquals("adb", max(List.of("abc", "acd", "adb", "aba", "ada")));
+    }
+
+    @Test
+    void testAbs() {
+        assertEquals(42, abs(42));
+        assertEquals(42, abs(-42));
+        assertEquals(Integer.MAX_VALUE, abs(Integer.MIN_VALUE + 1));
+        assertThrows(ArithmeticException.class, () -> abs(Integer.MIN_VALUE));
+
+        assertEquals(123456789123456789L, abs(123456789123456789L));
+        assertEquals(123456789123456789L, abs(-123456789123456789L));
+        assertEquals(Long.MAX_VALUE, abs(Long.MIN_VALUE + 1));
+        assertEquals(Integer.MAX_VALUE + 1L, abs((long) Integer.MIN_VALUE));
+        assertThrows(ArithmeticException.class, () -> abs(Long.MIN_VALUE));
+    }
+
+    @Test
+    void testMathMethods() {
         assertEquals(1, gcd(3, 5));
         assertEquals(6, gcd(210, 36));
         assertEquals(6, gcd(36, 210));
@@ -195,7 +203,7 @@ class UtilsTest extends Utils {
     }
 
     @Test
-    public void testCountMethods() {
+    void testCountMethods() {
         assertEquals(3, count(List.of(1, 2, 3, 2, 1, 2, 3), 2));
         assertEquals(2, count(List.of("a", "b", "c", "b"), "b"));
         assertEquals(1, count(List.of("a", "b", "c", "b"), "c"));
@@ -264,7 +272,7 @@ class UtilsTest extends Utils {
     }
 
     @Test
-    public void testListSlicing() {
+    void testListSlicing() {
         assertEquals(List.of(listOf(1, 2, 3), listOf(4, 5, 6)),
                 chunked(listOf(1, 2, 3, 4, 5, 6), 3).toList());
         assertEquals(List.of(listOf(1, 2, 3), listOf(4, 5)),
@@ -301,7 +309,7 @@ class UtilsTest extends Utils {
     }
 
     @Test
-    public void testInverseMap() {
+    void testInverseMap() {
         var map = Map.of('a', 1, 'b', 2, 'c', 3);
 
         assertEquals(Map.of(1, 'a', 2, 'b', 3, 'c'), inverse(map));

@@ -41,33 +41,15 @@ public class Utils extends InputUtils {
     /**
      * Constrains the given int {@code value} to the closed range {@code [min..max]}.
      */
-    public static int constrainToRange(int value, int min, int max) {
-        checkRange(min, max);
-        return Math.min(Math.max(value, min), max);
+    public static int constrainToRange(long value, int min, int max) {
+        return Math.clamp(value, min, max);
     }
 
     /**
      * Constrains the given long {@code value} to the closed range {@code [min..max]}.
      */
     public static long constrainToRange(long value, long min, long max) {
-        checkRange(min, max);
-        return Math.min(Math.max(value, min), max);
-    }
-
-    /**
-     * Wraps the given int {@code value} to the closed range {@code [min..max]}.
-     */
-    public static int wrapToRange(int value, int min, int max) {
-        checkRange(min, max);
-        return min + Math.floorMod(value - min, max - min + 1);
-    }
-
-    /**
-     * Wraps the given long {@code value} to the closed range {@code [min..max]}.
-     */
-    public static long wrapToRange(long value, long min, long max) {
-        checkRange(min, max);
-        return min + Math.floorMod(value - min, max - min + 1);
+        return Math.clamp(value, min, max);
     }
 
     /**
@@ -112,21 +94,12 @@ public class Utils extends InputUtils {
     }
 
     /**
-     * Returns the minimum of the {@code int} values of the given numbers.
+     * Returns the minimum of the the given comparable values.
      *
-     * @throws java.util.NoSuchElementException if no numbers are given
+     * @throws java.util.NoSuchElementException if no values are given
      */
-    public static int minInt(Collection<? extends Number> numbers) {
-        return numbers.stream().mapToInt(Number::intValue).min().orElseThrow();
-    }
-
-    /**
-     * Returns the minimum of the {@code long} values of the given numbers.
-     *
-     * @throws java.util.NoSuchElementException if no numbers are given
-     */
-    public static long minLong(Collection<? extends Number> numbers) {
-        return numbers.stream().mapToLong(Number::longValue).min().orElseThrow();
+    public static <T extends Comparable<T>> T min(Collection<T> values) {
+        return values.stream().min(Comparator.naturalOrder()).orElseThrow();
     }
 
     /**
@@ -157,21 +130,32 @@ public class Utils extends InputUtils {
     }
 
     /**
-     * Returns the maximum of the {@code int} values of the given numbers.
+     * Returns the maximum of the the given comparable values.
      *
-     * @throws java.util.NoSuchElementException if no numbers are given
+     * @throws java.util.NoSuchElementException if no values are given
      */
-    public static int maxInt(Collection<? extends Number> numbers) {
-        return numbers.stream().mapToInt(Number::intValue).max().orElseThrow();
+    public static <T extends Comparable<T>> T max(Collection<T> values) {
+        return values.stream().max(Comparator.naturalOrder()).orElseThrow();
     }
 
     /**
-     * Returns the maximum of the {@code long} values of the given numbers.
+     * Returns the absolute value of an {@code int} value.
+     * This is just a shorthand for {@link Math#absExact(int)}.
      *
-     * @throws java.util.NoSuchElementException if no numbers are given
+     * @throws ArithmeticException if the argument is {@link Integer#MIN_VALUE}
      */
-    public static long maxLong(Collection<? extends Number> numbers) {
-        return numbers.stream().mapToLong(Number::longValue).max().orElseThrow();
+    public static int abs(int value) {
+        return Math.absExact(value);
+    }
+
+    /**
+     * Returns the absolute value of a {@code long} value.
+     * This is just a shorthand for {@link Math#absExact(long)}.
+     *
+     * @throws ArithmeticException if the argument is {@link Long#MIN_VALUE}
+     */
+    public static long abs(long value) {
+        return Math.absExact(value);
     }
 
     /**
@@ -302,14 +286,14 @@ public class Utils extends InputUtils {
      * Returns the given {@code int} values as an unmodifiable list.
      */
     public static List<Integer> listOf(int... ints) {
-        return streamOf(ints).boxed().toList();
+        return IntStream.of(ints).boxed().toList();
     }
 
     /**
      * Returns the given {@code int} values as an unmodifiable set.
      */
     public static Set<Integer> setOf(int... ints) {
-        return streamOf(ints).boxed().collect(Collectors.toUnmodifiableSet());
+        return IntStream.of(ints).boxed().collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -323,14 +307,14 @@ public class Utils extends InputUtils {
      * Returns the given {@code long} values as an unmodifiable list.
      */
     public static List<Long> listOf(long... longs) {
-        return streamOf(longs).boxed().toList();
+        return LongStream.of(longs).boxed().toList();
     }
 
     /**
      * Returns the given {@code long} values as an unmodifiable set.
      */
     public static Set<Long> setOf(long... longs) {
-        return streamOf(longs).boxed().collect(Collectors.toUnmodifiableSet());
+        return LongStream.of(longs).boxed().collect(Collectors.toUnmodifiableSet());
     }
 
     /**

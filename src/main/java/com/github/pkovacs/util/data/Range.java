@@ -63,7 +63,7 @@ public record Range(long min, long max) {
      * @throws java.util.NoSuchElementException if the collection is empty
      */
     public static Range bound(Collection<? extends Number> numbers) {
-        return new Range(Utils.minLong(numbers), Utils.maxLong(numbers));
+        return Range.bound(numbers.stream().mapToLong(Number::longValue));
     }
 
     /**

@@ -19,40 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UtilsTest extends Utils {
 
-    @Test
-    void testRangeMethods() {
-        assertEquals(0, constrainIndex(0, 5));
-        assertEquals(2, constrainIndex(2, 5));
-        assertEquals(4, constrainIndex(4, 5));
-        assertEquals(4, constrainIndex(5, 5));
-        assertEquals(4, constrainIndex(42, 5));
-        assertEquals(0, constrainIndex(-1, 5));
-        assertEquals(0, constrainIndex(-42, 5));
-
-        assertEquals(0, wrapIndex(0, 5));
-        assertEquals(2, wrapIndex(2, 5));
-        assertEquals(4, wrapIndex(4, 5));
-        assertEquals(0, wrapIndex(5, 5));
-        assertEquals(2, wrapIndex(42, 5));
-        assertEquals(4, wrapIndex(-1, 5));
-        assertEquals(3, wrapIndex(-42, 5));
-
-        assertEquals(3, constrainToRange(0, 3, 7));
-        assertEquals(5, constrainToRange(5, 3, 7));
-        assertEquals(7, constrainToRange(10, 3, 7));
-        assertEquals(3, constrainToRange(-2, 3, 7));
-        assertEquals(7, constrainToRange(42, 3, 7));
-
-        assertEquals(3L, constrainToRange(0L, 3L, 7L));
-        assertEquals(5L, constrainToRange(5L, 3L, 7L));
-        assertEquals(7L, constrainToRange(10L, 3L, 7L));
-        assertEquals(3L, constrainToRange(-2L, 3L, 7L));
-        assertEquals(7L, constrainToRange(42L, 3L, 7L));
-
-        assertTrue(isInRange('k', 'a', 'z'));
-        assertTrue(isInRange(5, 3, 8));
-        assertTrue(isInRange(3.0, Math.E, Math.PI));
-    }
+    // ****************************** MATH UTILS ******************************
 
     @Test
     void testInts() {
@@ -149,7 +116,42 @@ class UtilsTest extends Utils {
     }
 
     @Test
-    void testMathMethods() {
+    void testRangeMethods() {
+        assertEquals(0, constrainIndex(0, 5));
+        assertEquals(2, constrainIndex(2, 5));
+        assertEquals(4, constrainIndex(4, 5));
+        assertEquals(4, constrainIndex(5, 5));
+        assertEquals(4, constrainIndex(42, 5));
+        assertEquals(0, constrainIndex(-1, 5));
+        assertEquals(0, constrainIndex(-42, 5));
+
+        assertEquals(0, wrapIndex(0, 5));
+        assertEquals(2, wrapIndex(2, 5));
+        assertEquals(4, wrapIndex(4, 5));
+        assertEquals(0, wrapIndex(5, 5));
+        assertEquals(2, wrapIndex(42, 5));
+        assertEquals(4, wrapIndex(-1, 5));
+        assertEquals(3, wrapIndex(-42, 5));
+
+        assertEquals(3, constrainToRange(0, 3, 7));
+        assertEquals(5, constrainToRange(5, 3, 7));
+        assertEquals(7, constrainToRange(10, 3, 7));
+        assertEquals(3, constrainToRange(-2, 3, 7));
+        assertEquals(7, constrainToRange(42, 3, 7));
+
+        assertEquals(3L, constrainToRange(0L, 3L, 7L));
+        assertEquals(5L, constrainToRange(5L, 3L, 7L));
+        assertEquals(7L, constrainToRange(10L, 3L, 7L));
+        assertEquals(3L, constrainToRange(-2L, 3L, 7L));
+        assertEquals(7L, constrainToRange(42L, 3L, 7L));
+
+        assertTrue(isInRange('k', 'a', 'z'));
+        assertTrue(isInRange(5, 3, 8));
+        assertTrue(isInRange(3.0, Math.E, Math.PI));
+    }
+
+    @Test
+    void testGcd() {
         assertEquals(1, gcd(3, 5));
         assertEquals(6, gcd(210, 36));
         assertEquals(6, gcd(36, 210));
@@ -176,7 +178,10 @@ class UtilsTest extends Utils {
         assertEquals(1234, gcd(List.of(1234)));
         assertEquals(0, gcd());
         assertEquals(0, gcd(List.of()));
+    }
 
+    @Test
+    void testLcm() {
         assertEquals(15, lcm(3, 5));
         assertEquals(30, lcm(15, 6));
         assertEquals(3739L * 3821L * 3889L * 4057L,
@@ -202,6 +207,8 @@ class UtilsTest extends Utils {
         assertEquals(1, lcm(List.of()));
     }
 
+    // ****************************** COLLECTION AND STREAM UTILS ******************************
+
     @Test
     void testCountMethods() {
         assertEquals(3, count(List.of(1, 2, 3, 2, 1, 2, 3), 2));
@@ -224,25 +231,25 @@ class UtilsTest extends Utils {
         var c3 = listOf("love".toCharArray());
         var c4 = listOf("old".toCharArray());
 
-        assertEquals(Set.of('h', 'e', 'l', 'o', 'c'), unionOf(c1, c2));
-        assertEquals(Set.of('h', 'e', 'l', 'o', 'v'), unionOf(c1, c3));
-        assertEquals(Set.of('h', 'e', 'l', 'o', 'd'), unionOf(c1, c4));
-        assertEquals(Set.of('e', 'c', 'h', 'o', 'l', 'v'), unionOf(c2.stream(), c3.stream()));
-        assertEquals(Set.of('e', 'c', 'h', 'o', 'l', 'd'), unionOf(c2.stream(), c4.stream()));
-        assertEquals(Set.of('l', 'o', 'v', 'e', 'd'), unionOf(c3.stream(), c4.stream()));
-        assertEquals(Set.of('h', 'e', 'l', 'o', 'c', 'v'), unionOf(List.of(c1, c2, c3)));
-        assertEquals(Set.of('h', 'e', 'l', 'o', 'v', 'd'), unionOf(List.of(c1, c3, c4)));
-        assertEquals(Set.of('h', 'e', 'l', 'o', 'c', 'v', 'd'), unionOf(List.of(c1, c2, c3, c4)));
+        assertEquals(setOf('h', 'e', 'l', 'o', 'c'), unionOf(c1, c2));
+        assertEquals(setOf('h', 'e', 'l', 'o', 'v'), unionOf(c1, c3));
+        assertEquals(setOf('h', 'e', 'l', 'o', 'd'), unionOf(c1, c4));
+        assertEquals(setOf('e', 'c', 'h', 'o', 'l', 'v'), unionOf(c2.stream(), c3.stream()));
+        assertEquals(setOf('e', 'c', 'h', 'o', 'l', 'd'), unionOf(c2.stream(), c4.stream()));
+        assertEquals(setOf('l', 'o', 'v', 'e', 'd'), unionOf(c3.stream(), c4.stream()));
+        assertEquals(setOf('h', 'e', 'l', 'o', 'c', 'v'), unionOf(List.of(c1, c2, c3)));
+        assertEquals(setOf('h', 'e', 'l', 'o', 'v', 'd'), unionOf(List.of(c1, c3, c4)));
+        assertEquals(setOf('h', 'e', 'l', 'o', 'c', 'v', 'd'), unionOf(List.of(c1, c2, c3, c4)));
 
-        assertEquals(Set.of('h', 'e', 'o'), intersectionOf(c1, c2));
-        assertEquals(Set.of('e', 'l', 'o'), intersectionOf(c1, c3));
-        assertEquals(Set.of('l', 'o'), intersectionOf(c1, c4));
-        assertEquals(Set.of('e', 'o'), intersectionOf(c2.stream(), c3.stream()));
-        assertEquals(Set.of('o'), intersectionOf(c2.stream(), c4.stream()));
-        assertEquals(Set.of('l', 'o'), intersectionOf(c3.stream(), c4.stream()));
-        assertEquals(Set.of('e', 'o'), intersectionOf(List.of(c1, c2, c3)));
-        assertEquals(Set.of('l', 'o'), intersectionOf(List.of(c1, c3, c4)));
-        assertEquals(Set.of('o'), intersectionOf(List.of(c1, c2, c3, c4)));
+        assertEquals(setOf('h', 'e', 'o'), intersectionOf(c1, c2));
+        assertEquals(setOf('e', 'l', 'o'), intersectionOf(c1, c3));
+        assertEquals(setOf('l', 'o'), intersectionOf(c1, c4));
+        assertEquals(setOf('e', 'o'), intersectionOf(c2.stream(), c3.stream()));
+        assertEquals(setOf('o'), intersectionOf(c2.stream(), c4.stream()));
+        assertEquals(setOf('l', 'o'), intersectionOf(c3.stream(), c4.stream()));
+        assertEquals(setOf('e', 'o'), intersectionOf(List.of(c1, c2, c3)));
+        assertEquals(setOf('l', 'o'), intersectionOf(List.of(c1, c3, c4)));
+        assertEquals(setOf('o'), intersectionOf(List.of(c1, c2, c3, c4)));
     }
 
     @Test
@@ -316,6 +323,8 @@ class UtilsTest extends Utils {
         assertEquals(map, inverse(inverse(map)));
         assertEquals(Map.of(), inverse(Map.of()));
     }
+
+    // ****************************** ARRAY UTILS ******************************
 
     @Test
     void testDeepCopy() {

@@ -16,54 +16,15 @@ import java.util.stream.Stream;
 
 /**
  * Provides various useful utility methods, also including the ones defined in {@link InputUtils}.
+ * <p>
+ * You can extend this class in order to provide easier access to its methods.
  */
 public class Utils extends InputUtils {
 
     protected Utils() {
     }
 
-    /**
-     * Constrains the given {@code index} to the closed range {@code [0..(size - 1)]}.
-     */
-    public static int constrainIndex(int index, int size) {
-        return constrainToRange(index, 0, size - 1);
-    }
-
-    /**
-     * Wraps the given {@code index} to the closed range {@code [0..(size - 1)]}.
-     */
-    public static int wrapIndex(int index, int size) {
-        checkRange(0, size - 1);
-        return Math.floorMod(index, size);
-    }
-
-    /**
-     * Constrains the given int {@code value} to the closed range {@code [min..max]}.
-     */
-    public static int constrainToRange(long value, int min, int max) {
-        return Math.clamp(value, min, max);
-    }
-
-    /**
-     * Constrains the given long {@code value} to the closed range {@code [min..max]}.
-     */
-    public static long constrainToRange(long value, long min, long max) {
-        return Math.clamp(value, min, max);
-    }
-
-    /**
-     * Returns true if the given {@code value} is within the closed range {@code [min..max]}.
-     */
-    public static <T extends Comparable<T>> boolean isInRange(T value, T min, T max) {
-        checkRange(min, max);
-        return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
-    }
-
-    private static <T extends Comparable<T>> void checkRange(T min, T max) {
-        if (min.compareTo(max) > 0) {
-            throw new IllegalArgumentException("Minimum value " + min + " is greater than maximum value " + max + ".");
-        }
-    }
+    // ****************************** MATH UTILS ******************************
 
     /**
      * Returns the minimum of the given {@code int} values.
@@ -282,6 +243,65 @@ public class Utils extends InputUtils {
     }
 
     /**
+     * Constrains the given {@code index} to the closed range {@code [0..(size - 1)]}.
+     */
+    public static int constrainIndex(int index, int size) {
+        return constrainToRange(index, 0, size - 1);
+    }
+
+    /**
+     * Wraps the given {@code index} to the closed range {@code [0..(size - 1)]}.
+     */
+    public static int wrapIndex(int index, int size) {
+        checkRange(0, size - 1);
+        return Math.floorMod(index, size);
+    }
+
+    /**
+     * Constrains the given int {@code value} to the closed range {@code [min..max]}.
+     */
+    public static int constrainToRange(long value, int min, int max) {
+        return Math.clamp(value, min, max);
+    }
+
+    /**
+     * Constrains the given long {@code value} to the closed range {@code [min..max]}.
+     */
+    public static long constrainToRange(long value, long min, long max) {
+        return Math.clamp(value, min, max);
+    }
+
+    /**
+     * Returns true if the given {@code value} is within the closed range {@code [min..max]}.
+     */
+    public static <T extends Comparable<T>> boolean isInRange(T value, T min, T max) {
+        checkRange(min, max);
+        return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
+    }
+
+    private static <T extends Comparable<T>> void checkRange(T min, T max) {
+        if (min.compareTo(max) > 0) {
+            throw new IllegalArgumentException("Minimum value " + min + " is greater than maximum value " + max + ".");
+        }
+    }
+
+    // ****************************** COLLECTION AND STREAM UTILS ******************************
+
+    /**
+     * Returns the occurrence count of the given value in the given collection.
+     */
+    public static <T> int count(Collection<T> collection, T value) {
+        return (int) collection.stream().filter(v -> Objects.equals(v, value)).count();
+    }
+
+    /**
+     * Returns the occurrence count of the given character in the given string.
+     */
+    public static int count(CharSequence s, char ch) {
+        return (int) charsOf(s).filter(c -> c == ch).count();
+    }
+
+    /**
      * Returns the given {@code int} values as an unmodifiable list.
      */
     public static List<Integer> listOf(int... ints) {
@@ -349,20 +369,6 @@ public class Utils extends InputUtils {
      */
     public static Stream<Character> charsOf(CharSequence s) {
         return s.toString().chars().mapToObj(i -> (char) i);
-    }
-
-    /**
-     * Returns the occurrence count of the given value in the given collection.
-     */
-    public static <T> int count(Collection<T> collection, T value) {
-        return (int) collection.stream().filter(v -> Objects.equals(v, value)).count();
-    }
-
-    /**
-     * Returns the occurrence count of the given character in the given string.
-     */
-    public static int count(CharSequence s, char ch) {
-        return (int) charsOf(s).filter(c -> c == ch).count();
     }
 
     /**
@@ -464,6 +470,8 @@ public class Utils extends InputUtils {
         }
         return Collections.unmodifiableMap(inverse);
     }
+
+    // ****************************** ARRAY AND MATRIX UTILS ******************************
 
     /**
      * Returns a deep copy of the given {@code int} matrix.

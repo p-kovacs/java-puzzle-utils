@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
  * <p>
  * For the sake of simplicity, the methods do not throw checked exceptions. {@link IOException}s are wrapped in
  * {@link UncheckedIOException} objects.
+ * <p>
+ * You can extend this class (or its superclass, {@link Utils}) in order to provide easier access to these methods.
  */
 public class InputUtils {
 

@@ -62,7 +62,7 @@ class UtilsTest extends Utils {
         assertEquals(Set.of(), setOf(new int[0]));
         assertEquals(List.of(3, 2, 1, 5, 4), listOf(x));
         assertEquals(Set.of(3, 2, 1, 5, 4), setOf(x));
-        assertEquals(3, streamOf(x).filter(c -> c % 2 == 1).count());
+        assertEquals(3, streamOf(x).filter(i -> i % 2 == 1).count());
 
         assertEquals(1, min(3, 1, 5));
         assertEquals(1, min(x));
@@ -85,7 +85,7 @@ class UtilsTest extends Utils {
         assertEquals(Set.of(), setOf(new int[0]));
         assertEquals(List.of(3L, 2L, 1L, 5L, 4L), listOf(x));
         assertEquals(Set.of(3L, 2L, 1L, 5L, 4L), setOf(x));
-        assertEquals(3, streamOf(x).filter(c -> c % 2 == 1).count());
+        assertEquals(3, streamOf(x).filter(i -> i % 2 == 1).count());
 
         assertEquals(1L, min(3L, 1L, 5L));
         assertEquals(1L, min(x));

@@ -1,6 +1,5 @@
 package com.github.pkovacs.util;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -367,21 +366,21 @@ public class Utils extends InputUtils {
     }
 
     /**
-     * Returns the union of the given collections.
+     * Returns the union of the given two collections as a set.
      */
     public static <E> Set<E> unionOf(Collection<? extends E> a, Collection<? extends E> b) {
         return unionOf(List.of(a, b));
     }
 
     /**
-     * Returns the union of the given streams.
+     * Returns the union of the given streams as a set.
      */
     public static <E> Set<E> unionOf(Stream<? extends E> a, Stream<? extends E> b) {
         return unionOf(List.of(a.toList(), b.toList()));
     }
 
     /**
-     * Returns the union of the given collections.
+     * Returns the union of the given collections as a set.
      */
     public static <E> Set<E> unionOf(Collection<? extends Collection<? extends E>> collections) {
         var result = new HashSet<E>(collections.iterator().next());
@@ -390,21 +389,21 @@ public class Utils extends InputUtils {
     }
 
     /**
-     * Returns the intersection of the given collections.
+     * Returns the intersection of the given two collections as a set.
      */
     public static <E> Set<E> intersectionOf(Collection<? extends E> a, Collection<? extends E> b) {
         return intersectionOf(List.of(a, b));
     }
 
     /**
-     * Returns the intersection of the given streams.
+     * Returns the intersection of the given streams as a set.
      */
     public static <E> Set<E> intersectionOf(Stream<? extends E> a, Stream<? extends E> b) {
         return intersectionOf(List.of(a.toList(), b.toList()));
     }
 
     /**
-     * Returns the intersection of the given collections.
+     * Returns the intersection of the given collections as a set.
      */
     public static <E> Set<E> intersectionOf(Collection<? extends Collection<? extends E>> collections) {
         var result = new HashSet<E>(collections.iterator().next());
@@ -434,7 +433,7 @@ public class Utils extends InputUtils {
 
     /**
      * Returns an ordered stream of all {@linkplain List#subList(int, int) sublists} of the given size constructed
-     * from the given list. As if the list was looking at through a sliding window of the given size.
+     * from the given list. As if the list was looking at through a sliding window of a certain size.
      * <p>
      * Example: {@code windowed(List.of(1, 2, 3, 4, 5), 3)} is {@code [[1, 2, 3], [2, 3, 4], [3, 4, 5]]}.
      *
@@ -471,7 +470,11 @@ public class Utils extends InputUtils {
      * The "rows" might have different sizes, but they must not be null.
      */
     public static int[][] deepCopy(int[][] matrix) {
-        return Arrays.stream(matrix).map(a -> a.clone()).toArray(int[][]::new);
+        var result = new int[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = matrix[i].clone();
+        }
+        return result;
     }
 
     /**
@@ -479,7 +482,23 @@ public class Utils extends InputUtils {
      * The "rows" might have different sizes, but they must not be null.
      */
     public static long[][] deepCopy(long[][] matrix) {
-        return Arrays.stream(matrix).map(a -> a.clone()).toArray(long[][]::new);
+        var result = new long[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = matrix[i].clone();
+        }
+        return result;
+    }
+
+    /**
+     * Returns a deep copy of the given {@code byte} matrix.
+     * The "rows" might have different sizes, but they must not be null.
+     */
+    public static byte[][] deepCopy(byte[][] matrix) {
+        var result = new byte[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = matrix[i].clone();
+        }
+        return result;
     }
 
     /**
@@ -487,7 +506,11 @@ public class Utils extends InputUtils {
      * The "rows" might have different sizes, but they must not be null.
      */
     public static char[][] deepCopy(char[][] matrix) {
-        return Arrays.stream(matrix).map(a -> a.clone()).toArray(char[][]::new);
+        var result = new char[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = matrix[i].clone();
+        }
+        return result;
     }
 
 }

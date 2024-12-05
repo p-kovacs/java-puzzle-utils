@@ -1,6 +1,7 @@
 package com.github.pkovacs.util.data;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,14 +46,14 @@ abstract class AbstractTableTest<T> {
 
         assertEquals(Stream.concat(table.row(0), Stream.concat(table.row(1), table.row(2))).toList(),
                 table.cells().toList());
-        assertEquals(Utils.intersectionOf(table.row(0), table.col(0)).iterator().next(),
-                table.topLeft());
-        assertEquals(Utils.intersectionOf(table.row(2), table.col(0)).iterator().next(),
-                table.bottomLeft());
-        assertEquals(Utils.intersectionOf(table.row(0), table.col(3)).iterator().next(),
-                table.topRight());
-        assertEquals(Utils.intersectionOf(table.row(2), table.col(3)).iterator().next(),
-                table.bottomRight());
+        assertEquals(Utils.intersectionOf(table.row(0), table.col(0)),
+                Set.of(table.topLeft()));
+        assertEquals(Utils.intersectionOf(table.row(2), table.col(0)),
+                Set.of(table.bottomLeft()));
+        assertEquals(Utils.intersectionOf(table.row(0), table.col(3)),
+                Set.of(table.topRight()));
+        assertEquals(Utils.intersectionOf(table.row(2), table.col(3)),
+                Set.of(table.bottomRight()));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.github.pkovacs.util.alg;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +13,15 @@ class BacktrackingTest {
 
     @Test
     void testPermutations() {
-        var permutations = Backtracking.findAll(6, 6, Backtracking::distinct);
+        var permutations = Backtracking.findAllPermutations(6);
         assertEquals(720, permutations.size());
-        assertTrue(permutations.stream().allMatch(x -> Arrays.stream(x).allMatch(v -> v >= 0 && v < 6)));
+        assertTrue(permutations.stream().allMatch(BacktrackingTest::isPermutation));
+    }
+
+    private static boolean isPermutation(int[] x) {
+        int[] a = x.clone();
+        Arrays.sort(a);
+        return a[0] == 0 && IntStream.range(1, a.length).allMatch(i -> a[i] == a[i - 1] + 1);
     }
 
     @Test
@@ -26,23 +33,18 @@ class BacktrackingTest {
 
     @Test
     void testEightQueens() {
-        assertTrue(Backtracking.findFirst(1, 1, BacktrackingTest::safeQueen).isPresent());
-        assertTrue(Backtracking.findFirst(2, 2, BacktrackingTest::safeQueen).isEmpty());
-        assertTrue(Backtracking.findFirst(3, 3, BacktrackingTest::safeQueen).isEmpty());
-        assertTrue(Backtracking.findFirst(4, 4, BacktrackingTest::safeQueen).isPresent());
+        assertTrue(Backtracking.findFirstDistinct(1, 1, BacktrackingTest::isSafeQueen).isPresent());
+        assertTrue(Backtracking.findFirstDistinct(2, 2, BacktrackingTest::isSafeQueen).isEmpty());
+        assertTrue(Backtracking.findFirstDistinct(3, 3, BacktrackingTest::isSafeQueen).isEmpty());
+        assertTrue(Backtracking.findFirstDistinct(4, 4, BacktrackingTest::isSafeQueen).isPresent());
 
         assertArrayEquals(new int[] { 0, 4, 7, 5, 2, 6, 1, 3 },
-                Backtracking.findFirst(8, 8, BacktrackingTest::safeQueen).orElseThrow());
-        assertEquals(92, Backtracking.findAll(8, 8, BacktrackingTest::safeQueen).size());
+                Backtracking.findFirstDistinct(8, 8, BacktrackingTest::isSafeQueen).orElseThrow());
+        assertEquals(92, Backtracking.findAllDistinct(8, 8, BacktrackingTest::isSafeQueen).size());
     }
 
-    private static boolean safeQueen(int[] array, int k) {
-        for (int i = 0, value = array[k]; i < k; i++) {
-            if (array[i] == value || Math.abs(array[i] - value) == k - i) {
-                return false;
-            }
-        }
-        return true;
+    private static boolean isSafeQueen(int[] array, int k) {
+        return IntStream.range(0, k).noneMatch(i -> Math.abs(array[i] - array[k]) == k - i);
     }
 
 }

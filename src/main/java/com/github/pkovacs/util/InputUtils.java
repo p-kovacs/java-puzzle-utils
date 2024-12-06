@@ -76,7 +76,13 @@ public class InputUtils {
      * Reads the lines of the given input file into a char matrix.
      */
     public static char[][] readCharMatrix(Path path) {
-        var lines = readLines(path);
+        return toCharMatrix(readLines(path));
+    }
+
+    /**
+     * Returns the char matrix representation of the given list of strings.
+     */
+    public static char[][] toCharMatrix(List<String> lines) {
         var matrix = new char[lines.size()][];
         for (int i = 0, n = matrix.length; i < n; i++) {
             matrix[i] = lines.get(i).toCharArray();
@@ -88,13 +94,13 @@ public class InputUtils {
      * Reads blocks of lines (separated by blank line(s)) from the given input file.
      */
     public static List<List<String>> readLineBlocks(Path path) {
-        return collectLineBlocks(readString(path));
+        return toLineBlocks(readString(path));
     }
 
     /**
      * Collects blocks of lines (separated by blank line(s)) from the given string.
      */
-    public static List<List<String>> collectLineBlocks(String input) {
+    public static List<List<String>> toLineBlocks(String input) {
         return Arrays.stream(convertLineSeparators(input).split("\n(\n)+"))
                 .map(block -> List.of(block.split("\n")))
                 .toList();

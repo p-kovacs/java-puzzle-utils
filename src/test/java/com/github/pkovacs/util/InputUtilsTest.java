@@ -11,20 +11,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class InputUtilsTest extends InputUtils {
 
     @Test
-    void testCollectLineBlocks() {
+    void testToLineBlocks() {
         String input = "a\nb c d\ne\n\n\n\nf g\nh\n\ni j k";
-        var blocks = collectLineBlocks(input);
+        var blocks = toLineBlocks(input);
 
         assertEquals(3, blocks.size());
         assertEquals(List.of("a", "b c d", "e"), blocks.get(0));
         assertEquals(List.of("f g", "h"), blocks.get(1));
         assertEquals(List.of("i j k"), blocks.get(2));
 
-        assertEquals(3, collectLineBlocks(input + "\n").size());
-        assertEquals(3, collectLineBlocks(input + "\n\n\n\n").size());
+        assertEquals(3, toLineBlocks(input + "\n").size());
+        assertEquals(3, toLineBlocks(input + "\n\n\n\n").size());
 
         String inputWin = "a\r\nb c d\r\ne\r\n\r\nf g\r\nh\r\n\r\ni j k";
-        var blocks2 = collectLineBlocks(inputWin);
+        var blocks2 = toLineBlocks(inputWin);
         assertEquals(blocks, blocks2);
     }
 

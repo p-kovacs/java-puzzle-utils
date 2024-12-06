@@ -79,9 +79,7 @@ class BfsTest {
     @Test
     void testWithMaze() {
         // We have to find the shortest path in a maze from the top left tile to the bottom right tile.
-        // See maze.txt, '#' represents a wall tile, '.' represents an empty tile.
-
-        var input = InputUtils.readLines(InputUtils.getPath(getClass(), "maze.txt"));
+        var input = AbstractShortestPathTest.MAZE.lines().toList();
         var maze = new CharTable(input);
 
         var start = new Cell(0, 0);

@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.github.pkovacs.util.InputUtils;
 import com.github.pkovacs.util.alg.Dijkstra.Edge;
 import com.github.pkovacs.util.data.Cell;
 import com.github.pkovacs.util.data.CharTable;
@@ -23,6 +22,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractShortestPathTest {
+
+    static final String MAZE = """
+            .#........#.
+            .#.######...
+            .#.#....#.#.
+            .#.#.##.##..
+            .#.#.#.....#
+            .#.#.######.
+            ...#........
+            .#.#.#.####.
+            .#.#.#....#.
+            ...#.#.##...
+            """;
 
     abstract <T> Optional<Path<T>> findPath(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
@@ -51,9 +63,9 @@ abstract class AbstractShortestPathTest {
         // Walls should be bypassed or "blown up", but it takes detonationTime seconds to blow up a single wall
         // tile next to the current tile and step into its location, while a single step to an adjacent empty
         // tile takes only 1 second.
-        // See maze.txt, '#' represents a wall tile, '.' represents an empty tile.
+        // See MAZE, '#' represents a wall tile, '.' represents an empty tile.
 
-        var input = InputUtils.readLines(InputUtils.getPath(getClass(), "maze.txt"));
+        var input = MAZE.lines().toList();
         var maze = new CharTable(input);
         var start = new Cell(0, 0);
         var end = new Cell(maze.rowCount() - 1, maze.colCount() - 1);

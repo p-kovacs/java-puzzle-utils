@@ -10,9 +10,8 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.github.pkovacs.util.InputUtils;
-import com.github.pkovacs.util.data.Cell;
 import com.github.pkovacs.util.data.CharTable;
+import com.github.pkovacs.util.data.Pos;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
@@ -81,12 +80,11 @@ class BfsTest {
         // We have to find the shortest path in a maze from the top left tile to the bottom right tile.
         var input = AbstractShortestPathTest.MAZE.lines().toList();
         var maze = new CharTable(input);
-
-        var start = new Cell(0, 0);
-        var end = new Cell(maze.rowCount() - 1, maze.colCount() - 1);
+        var start = maze.topLeft();
+        var end = maze.bottomRight();
 
         var result = Bfs.findPath(start,
-                cell -> maze.neighbors(cell).filter(n -> maze.get(n) == '.').toList(),
+                p -> maze.neighbors(p).filter(n -> maze.get(n) == '.').toList(),
                 end::equals);
 
         assertTrue(result.isPresent());

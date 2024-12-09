@@ -14,9 +14,9 @@ import static java.util.stream.Collectors.joining;
  * Represents a position vector in D-dimensional coordinate space with integer precision. It is an immutable array of
  * {@code long} coordinates, which provides various useful methods and also supports lexicographical ordering.
  * <p>
- * This class is the D-dimensional generalization of {@link Point}.
+ * This class is the D-dimensional generalization of {@link Pos}.
  *
- * @see Point
+ * @see Pos
  * @see Box
  */
 public class Vector implements Comparable<Vector> {

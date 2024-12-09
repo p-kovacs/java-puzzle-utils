@@ -13,36 +13,49 @@ import java.util.stream.Stream;
 import com.github.pkovacs.util.Utils;
 
 /**
- * Represents a table (or matrix) of {@code char} values with fixed number of rows and columns. This class is
+ * Represents a table (or matrix) of {@code char} values with fixed number of columns and rows. This class is
  * essentially a wrapper for a {@code char[][]} array providing various convenient methods to access and modify
- * the data. A cell of the table is identified by a {@link Cell} object or two integer indices.
+ * the data. A cell of the table is identified by a {@link Pos} object or two integer indices, and it has an
+ * associated {@code char} value.
  * <p>
  * This class is the primitive type specialization of {@link Table} for {@code char}. Most methods are defined in
  * {@link AbstractTable}.
  * <p>
+ * WARNING: in accordance with {@link Pos}, the cells are accesed by {@code (x,y)} indices, that is, in (column,row)
+ * order, like the pixels of an image or screen. This is in contrast with the usual (row,column) indexing of matrices.
+ * That is, if you create a table from a matrix {@code char[][] m}, then {@code get(x, y)} will return the element
+ * {@code m[y][x]}. You should be aware of this when working with tables.
+ * <p>
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a nicely formatted compact result, which can be useful for debugging.
  * <p>
- * If your table is "sparse", consider using a {@code Map} with {@link Cell} keys (or Guava's {@code Table})
+ * If your table is "sparse", consider using a {@code Map} with {@link Pos} keys (or Guava's {@code Table})
  * instead of this class.
  *
  * @see IntTable
  * @see Table
  */
-public class CharTable extends AbstractTable<Character> {
+public final class CharTable extends AbstractTable<Character> {
 
     private final char[][] data;
 
     /**
-     * Creates a new table by wrapping the given {@code char[][]} array.
-     * The array is used directly, so changes to it are reflected in the table and vice versa.
+     * Creates a new table as a deep copy of the given {@code char[][]} matrix.
      * The "rows" of the given matrix must have the same length.
      */
     public CharTable(char[][] data) {
-        if (IntStream.range(1, data.length).anyMatch(i -> data[i].length != data[0].length)) {
+        if (Arrays.stream(data).anyMatch(row -> row.length != data[0].length)) {
             throw new IllegalArgumentException("Rows must have the same length.");
         }
-        this.data = data;
+
+        this.data = Utils.deepCopy(data);
+    }
+
+    /**
+     * Creates a new table as a deep copy of the given table.
+     */
+    public CharTable(CharTable other) {
+        this(other.data);
     }
 
     /**
@@ -50,160 +63,147 @@ public class CharTable extends AbstractTable<Character> {
      * which must have the same length.
      */
     public CharTable(List<String> data) {
-        this(data.stream().map(String::toCharArray).toArray(char[][]::new));
+        if (data.stream().anyMatch(row -> row.length() != data.getFirst().length())) {
+            throw new IllegalArgumentException("Rows must have the same length.");
+        }
+
+        this.data = data.stream().map(String::toCharArray).toArray(char[][]::new);
     }
 
     /**
-     * Creates a new table with the given number of rows and columns, filled with the given initial value.
+     * Creates a new table with the given width and height, filled with the given initial value.
      */
-    public CharTable(int rowCount, int colCount, char initialValue) {
-        data = new char[rowCount][colCount];
-        Arrays.stream(data).forEach(rowData -> Arrays.fill(rowData, initialValue));
+    public CharTable(int width, int height, char initialValue) {
+        data = new char[height][width];
+        fill(initialValue);
     }
 
     /**
-     * Creates a new table with the given number of rows and columns, and calculates initial values by applying
-     * the given function to the indices of each cell.
+     * Creates a new table with the given width and height, and calculates initial values by applying the given
+     * function to each cell.
      */
-    public CharTable(int rowCount, int colCount, BiFunction<Integer, Integer, Character> function) {
-        data = new char[rowCount][colCount];
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < colCount; j++) {
-                data[i][j] = function.apply(i, j);
+    public CharTable(int width, int height, Function<Pos, Character> function) {
+        this(width, height, (x, y) -> function.apply(new Pos(x, y)));
+    }
+
+    /**
+     * Private constructor used for transformations like rotation and mirroring.
+     */
+    public CharTable(int width, int height, BiFunction<Integer, Integer, Character> function) {
+        data = new char[height][width];
+        for (int y = 0; y < height; y++) {
+            var row = data[y];
+            for (int x = 0; x < width; x++) {
+                row[x] = function.apply(x, y);
             }
         }
     }
 
     /**
-     * Creates a new table as a deep copy of the given table.
-     */
-    public CharTable(CharTable other) {
-        data = new char[other.data.length][];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = other.data[i].clone();
-        }
-    }
-
-    /**
-     * Creates a new table by wrapping and shifting the given collection of positions. This method can be useful for
-     * debugging.
+     * Creates a new table by wrapping and shifting the given collection of {@link Pos} objects.
+     * This method can be useful for debugging.
      * <p>
      * The cells of the returned table correspond to the
      * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions
-     * shifted appropriately so that the top left position of the bounding box becomes (0, 0). The cells corresponding
-     * to the given positions are assigned the given {@code value}, while other cells are assigned the given
-     * {@code fillValue}.
+     * shifted appropriately so that the top left position of the bounding box becomes {@code (0,0)}. The cells
+     * corresponding to the given positions are assigned the given {@code value}, while other cells are assigned
+     * the given {@code fillValue}.
      */
-    public static CharTable wrap(Collection<? extends Position> positions, char value, char fillValue) {
+    public static CharTable wrap(Collection<Pos> positions, char value, char fillValue) {
         return wrap(positions, p -> value, fillValue);
     }
 
     /**
-     * Creates a new table by wrapping and shifting the given map with position keys. This method can be useful for
-     * debugging.
+     * Creates a new table by wrapping and shifting the given map with {@link Pos} keys.
+     * This method can be useful for debugging.
      * <p>
      * The cells of the returned table correspond to the
      * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the keys of the given
-     * map shifted appropriately so that the top left position of the bounding box becomes (0, 0). The cells
+     * map shifted appropriately so that the top left position of the bounding box becomes {@code (0,0)}. The cells
      * corresponding to the map keys are assigned according to the map, while other cells are assigned the given
      * {@code fillValue}.
      */
-    public static CharTable wrap(Map<? extends Position, Character> map, char fillValue) {
+    public static CharTable wrap(Map<Pos, Character> map, char fillValue) {
         return wrap(map.keySet(), map::get, fillValue);
     }
 
-    private static <T extends Position> CharTable wrap(Collection<T> positions, Function<T, Character> function,
-            char fillValue) {
-        int minRow = positions.stream().mapToInt(Position::y).min().orElseThrow();
-        int maxRow = positions.stream().mapToInt(Position::y).max().orElseThrow();
-        int minCol = positions.stream().mapToInt(Position::x).min().orElseThrow();
-        int maxCol = positions.stream().mapToInt(Position::x).max().orElseThrow();
+    private static CharTable wrap(Collection<Pos> positions, Function<Pos, Character> function, char fillValue) {
+        var xRange = Pos.xRange(positions);
+        var yRange = Pos.yRange(positions);
+        int minX = (int) xRange.min();
+        int minY = (int) yRange.min();
 
-        var table = new CharTable(maxRow - minRow + 1, maxCol - minCol + 1, fillValue);
-        positions.forEach(p -> table.set(p.y() - minRow, p.x() - minCol, function.apply(p)));
+        var table = new CharTable((int) xRange.count(), (int) yRange.count(), fillValue);
+        positions.forEach(p -> table.set(p.x - minX, p.y - minY, function.apply(p)));
         return table;
     }
 
     @Override
-    public int rowCount() {
+    public int width() {
+        return (data.length == 0) ? 0 : data[0].length;
+    }
+
+    @Override
+    public int height() {
         return data.length;
     }
 
     @Override
-    public int colCount() {
-        return data.length == 0 ? 0 : data[0].length;
+    Character get0(int x, int y) {
+        return data[y][x];
     }
 
     @Override
-    Character get0(int row, int col) {
-        return data[row][col];
+    void set0(int x, int y, Character value) {
+        data[y][x] = value;
     }
 
     @Override
-    void set0(int row, int col, Character value) {
-        data[row][col] = value;
-    }
-
-    @Override
-    CharTable newInstance(int rowCount, int colCount, BiFunction<Integer, Integer, Character> function) {
-        return new CharTable(rowCount, colCount, function);
+    CharTable newInstance(int width, int height, BiFunction<Integer, Integer, Character> function) {
+        return new CharTable(width, height, function);
     }
 
     /**
-     * Returns the {@code char[][]} array that backs this table. Changes to the returned array are reflected in the
+     * Returns the {@code char[][]} matrix that backs this table. Changes to the returned matrix are reflected in the
      * table, and vice versa.
      */
-    public char[][] asArray() {
+    public char[][] asMatrix() {
         return data;
     }
 
     /**
      * Returns the value associated with the specified cell.
      */
-    public char get(int row, int col) {
-        return data[row][col];
+    public char get(Pos pos) {
+        return data[pos.y][pos.x];
     }
 
     /**
      * Returns the value associated with the specified cell.
      */
-    public char get(Cell cell) {
-        return data[cell.row()][cell.col()];
+    public char get(int x, int y) {
+        return data[y][x];
     }
 
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(int row, int col, char value) {
-        data[row][col] = value;
+    public void set(Pos pos, char value) {
+        data[pos.y][pos.x] = value;
     }
 
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(Cell cell, char value) {
-        data[cell.row()][cell.col()] = value;
+    public void set(int x, int y, char value) {
+        data[y][x] = value;
     }
 
     /**
      * Sets all values in this table to the given value.
      */
     public void fill(char value) {
-        Arrays.stream(data).forEach(rowData -> Arrays.fill(rowData, value));
-    }
-
-    /**
-     * Returns an ordered stream of the values contained in the specified row of this table.
-     */
-    public Stream<Character> rowValues(int i) {
-        return Utils.streamOf(data[i]);
-    }
-
-    /**
-     * Returns an ordered stream of the values contained in the specified column of this table.
-     */
-    public Stream<Character> colValues(int j) {
-        return IntStream.range(0, rowCount()).mapToObj(i -> data[i][j]);
+        Arrays.stream(data).forEach(row -> Arrays.fill(row, value));
     }
 
     /**
@@ -211,6 +211,20 @@ public class CharTable extends AbstractTable<Character> {
      */
     public Stream<Character> values() {
         return Arrays.stream(data).flatMap(Utils::streamOf);
+    }
+
+    /**
+     * Returns an ordered stream of the values contained in the specified column of this table.
+     */
+    public Stream<Character> colValues(int x) {
+        return IntStream.range(0, height()).mapToObj(y -> data[y][x]);
+    }
+
+    /**
+     * Returns an ordered stream of the values contained in the specified row of this table.
+     */
+    public Stream<Character> rowValues(int y) {
+        return Utils.streamOf(data[y]);
     }
 
     /**

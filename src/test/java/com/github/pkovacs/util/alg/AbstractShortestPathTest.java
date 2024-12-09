@@ -12,8 +12,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.github.pkovacs.util.alg.Dijkstra.Edge;
-import com.github.pkovacs.util.data.Cell;
 import com.github.pkovacs.util.data.CharTable;
+import com.github.pkovacs.util.data.Pos;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
@@ -67,8 +67,8 @@ abstract class AbstractShortestPathTest {
 
         var input = MAZE.lines().toList();
         var maze = new CharTable(input);
-        var start = new Cell(0, 0);
-        var end = new Cell(maze.rowCount() - 1, maze.colCount() - 1);
+        var start = maze.topLeft();
+        var end = maze.bottomRight();
 
         // Find path with large detonationTime --> same as BFS
         long detonationTime = 32;
@@ -93,9 +93,9 @@ abstract class AbstractShortestPathTest {
         assertEquals(start.dist1(end), result.dist());
     }
 
-    private Path<Cell> findPathInMaze(CharTable maze, Cell start, Cell end, long detonationTime) {
+    private Path<Pos> findPathInMaze(CharTable maze, Pos start, Pos end, long detonationTime) {
         var result = findPath(start,
-                cell -> maze.neighbors(cell)
+                p -> maze.neighbors(p)
                         .map(n -> new Edge<>(n, maze.get(n) == '.' ? 1 : detonationTime))
                         .toList(),
                 end::equals);

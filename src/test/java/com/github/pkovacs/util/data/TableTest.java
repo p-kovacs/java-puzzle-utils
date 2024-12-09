@@ -13,42 +13,39 @@ class TableTest extends AbstractTableTest<String> {
 
     @Test
     void testConstructors() {
-        var table1 = createTestTable(2, 3);
+        var table1 = createTestTable(3, 2);
         var table2 = new Table<>(table1);
-
-        assertEquals(table1, table2);
-
         var table3 = new Table<>(new String[][] { { "A1", "A2", "A3" }, { "B1", "B2", "B3" } });
 
+        assertEquals(table1, table2);
         assertEquals(table1, table3);
-
-        var table4 = new Table<>(2, 3, this::getTestValue);
-
-        assertEquals(table1, table4);
+        assertEquals(table2, table3);
     }
 
     @Test
     void testGettersAndSetters() {
-        var table = new Table<String>(3, 4);
+        var table = new Table<String>(4, 3);
 
-        assertEquals(3, table.rowCount());
+        assertEquals(4, table.width());
+        assertEquals(3, table.height());
         assertEquals(4, table.colCount());
+        assertEquals(3, table.rowCount());
 
         assertContentEquals(List.of(
                 Arrays.asList(new String[4]),
                 Arrays.asList(new String[4]),
                 Arrays.asList(new String[4])), table);
 
-        table.cells().forEach(c -> table.set(c, String.valueOf((char) ('A' + c.row())) + (c.col() + 1)));
+        table.cells().forEach(p -> table.set(p, String.valueOf((char) ('A' + p.y)) + (p.x + 1)));
 
         assertContentEquals(List.of(
                 List.of("A1", "A2", "A3", "A4"),
                 List.of("B1", "B2", "B3", "B4"),
                 List.of("C1", "C2", "C3", "C4")), table);
 
-        table.cells().forEach(c -> table.update(c, x -> x + "!"));
+        table.cells().forEach(p -> table.update(p, x -> x + "!"));
         table.set(0, 0, "xyz");
-        table.set(new Cell(2, 2), "abc");
+        table.set(p(2, 2), "abc");
 
         assertContentEquals(List.of(
                 List.of("xyz", "A2!", "A3!", "A4!"),
@@ -65,7 +62,7 @@ class TableTest extends AbstractTableTest<String> {
 
     @Test
     void testStreamMethods() {
-        var table = createTestTable(3, 4);
+        var table = createTestTable(4, 3);
 
         assertEquals(table.values().toList(), table.cells().map(table::get).toList());
         assertEquals(table.rowValues(1).toList(), table.row(1).map(table::get).toList());
@@ -74,8 +71,7 @@ class TableTest extends AbstractTableTest<String> {
 
     @Test
     void testToString() {
-        var table = createTestTable(3, 4);
-
+        var table = createTestTable(4, 3);
         assertEquals("A1 A2 A3 A4\nB1 B2 B3 B4\nC1 C2 C3 C4\n", table.toString());
     }
 
@@ -88,12 +84,10 @@ class TableTest extends AbstractTableTest<String> {
     }
 
     @Override
-    Table<String> createTestTable(int rowCount, int colCount) {
-        return new Table<>(rowCount, colCount, this::getTestValue);
-    }
-
-    private String getTestValue(int row, int col) {
-        return String.valueOf((char) ('A' + row)) + (col + 1);
+    Table<String> createTestTable(int width, int height) {
+        var table = new Table<String>(width, height);
+        table.cells().forEach(p -> table.set(p, String.valueOf((char) ('A' + p.y)) + (p.x + 1)));
+        return table;
     }
 
 }

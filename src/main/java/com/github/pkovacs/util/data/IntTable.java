@@ -8,212 +8,210 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.github.pkovacs.util.Utils;
+
 /**
- * Represents a table (or matrix) of {@code int} values with fixed number of rows and columns. This class is
+ * Represents a table (or matrix) of {@code int} values with fixed number of columns and rows. This class is
  * essentially a wrapper for an {@code int[][]} array providing various convenient methods to access and modify
- * the data. A cell of the table is identified by a {@link Cell} object or two integer indices.
+ * the data. A cell of the table is identified by a {@link Pos} object or two integer indices, and it has an
+ * associated {@code int} value.
  * <p>
  * This class is the primitive type specialization of {@link Table} for {@code int}. Most methods are defined in
  * {@link AbstractTable}.
+ * <p>
+ * WARNING: in accordance with {@link Pos}, the cells are accesed by {@code (x,y)} indices, that is, in (column,row)
+ * order, like the pixels of an image or screen. This is in contrast with the usual (row,column) indexing of matrices.
+ * That is, if you create a table from a matrix {@code int[][] m}, then {@code get(x, y)} will return the element
+ * {@code m[y][x]}. You should be aware of this when working with tables.
  * <p>
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a nicely formatted result, with the values aligned in columns appropriately, which can be useful for
  * debugging.
  * <p>
- * If your table is "sparse", consider using a {@code Map} with {@link Cell} keys (or Guava's {@code Table})
+ * If your table is "sparse", consider using a {@code Map} with {@link Pos} keys (or Guava's {@code Table})
  * instead of this class.
  *
  * @see CharTable
  * @see Table
  */
-public class IntTable extends AbstractTable<Integer> {
+public final class IntTable extends AbstractTable<Integer> {
 
     private final int[][] data;
 
     /**
-     * Creates a new table by wrapping the given {@code int[][]} array.
-     * The array is used directly, so changes to it are reflected in the table and vice versa.
+     * Creates a new table as a deep copy of the given {@code int[][]} matrix.
      * The "rows" of the given matrix must have the same length.
      */
     public IntTable(int[][] data) {
-        if (IntStream.range(1, data.length).anyMatch(i -> data[i].length != data[0].length)) {
+        if (Arrays.stream(data).anyMatch(row -> row.length != data[0].length)) {
             throw new IllegalArgumentException("Rows must have the same length.");
         }
-        this.data = data;
-    }
 
-    /**
-     * Creates a new table with the given number of rows and columns, filled with zeros.
-     */
-    public IntTable(int rowCount, int colCount) {
-        data = new int[rowCount][colCount];
-    }
-
-    /**
-     * Creates a new table with the given number of rows and columns, filled with the given initial value.
-     */
-    public IntTable(int rowCount, int colCount, int initialValue) {
-        this(rowCount, colCount);
-        fill(initialValue);
-    }
-
-    /**
-     * Creates a new table with the given number of rows and columns, and calculates initial values by applying
-     * the given function to the indices of each cell.
-     */
-    public IntTable(int rowCount, int colCount, BiFunction<Integer, Integer, Integer> function) {
-        this(rowCount, colCount);
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < colCount; j++) {
-                data[i][j] = function.apply(i, j);
-            }
-        }
+        this.data = Utils.deepCopy(data);
     }
 
     /**
      * Creates a new table as a deep copy of the given table.
      */
     public IntTable(IntTable other) {
-        data = new int[other.data.length][];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = other.data[i].clone();
+        this(other.data);
+    }
+
+    /**
+     * Creates a new table with the given width and height, filled with zeros.
+     */
+    public IntTable(int width, int height) {
+        data = new int[height][width];
+    }
+
+    /**
+     * Creates a new table with the given width and height, filled with the given initial value.
+     */
+    public IntTable(int width, int height, int initialValue) {
+        data = new int[height][width];
+        fill(initialValue);
+    }
+
+    /**
+     * Creates a new table with the given width and height, and calculates initial values by applying the given
+     * function to each cell.
+     */
+    public IntTable(int width, int height, Function<Pos, Integer> function) {
+        this(width, height, (x, y) -> function.apply(new Pos(x, y)));
+    }
+
+    /**
+     * Private constructor used for transformations like rotation and mirroring.
+     */
+    private IntTable(int width, int height, BiFunction<Integer, Integer, Integer> function) {
+        data = new int[height][width];
+        for (int y = 0; y < height; y++) {
+            var row = data[y];
+            for (int x = 0; x < width; x++) {
+                row[x] = function.apply(x, y);
+            }
         }
     }
 
     /**
-     * Creates a new table by wrapping and shifting the given collection of positions. This method can be useful for
-     * debugging.
+     * Creates a new table by wrapping and shifting the given collection of {@link Pos} objects.
+     * This method can be useful for debugging.
      * <p>
      * The cells of the returned table correspond to the
      * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions
-     * shifted appropriately so that the top left position of the bounding box becomes (0, 0). The cells corresponding
-     * to the given positions are assigned the given {@code value}, while other cells are assigned the given
-     * {@code fillValue}.
+     * shifted appropriately so that the top left position of the bounding box becomes {@code (0,0)}. The cells
+     * corresponding to the given positions are assigned the given {@code value}, while other cells are assigned
+     * the given {@code fillValue}.
      */
-    public static IntTable wrap(Collection<? extends Position> positions, int value, int fillValue) {
+    public static IntTable wrap(Collection<Pos> positions, int value, int fillValue) {
         return wrap(positions, p -> value, fillValue);
     }
 
     /**
-     * Creates a new table by wrapping and shifting the given map with position keys. This method can be useful for
-     * debugging.
+     * Creates a new table by wrapping and shifting the given map with {@link Pos} keys.
+     * This method can be useful for debugging.
      * <p>
      * The cells of the returned table correspond to the
      * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the keys of the given
-     * map shifted appropriately so that the top left position of the bounding box becomes (0, 0). The cells
+     * map shifted appropriately so that the top left position of the bounding box becomes {@code (0,0)}. The cells
      * corresponding to the map keys are assigned according to the map, while other cells are assigned the given
      * {@code fillValue}.
      */
-    public static IntTable wrap(Map<? extends Position, Integer> map, int fillValue) {
+    public static IntTable wrap(Map<Pos, Integer> map, int fillValue) {
         return wrap(map.keySet(), map::get, fillValue);
     }
 
-    private static <T extends Position> IntTable wrap(Collection<T> positions, Function<T, Integer> function,
-            int fillValue) {
-        int minRow = positions.stream().mapToInt(Position::y).min().orElseThrow();
-        int maxRow = positions.stream().mapToInt(Position::y).max().orElseThrow();
-        int minCol = positions.stream().mapToInt(Position::x).min().orElseThrow();
-        int maxCol = positions.stream().mapToInt(Position::x).max().orElseThrow();
+    private static IntTable wrap(Collection<Pos> positions, Function<Pos, Integer> function, int fillValue) {
+        var xRange = Pos.xRange(positions);
+        var yRange = Pos.yRange(positions);
+        int minX = (int) xRange.min();
+        int minY = (int) yRange.min();
 
-        var table = new IntTable(maxRow - minRow + 1, maxCol - minCol + 1, fillValue);
-        positions.forEach(p -> table.set(p.y() - minRow, p.x() - minCol, function.apply(p)));
+        var table = new IntTable((int) xRange.count(), (int) yRange.count(), fillValue);
+        positions.forEach(p -> table.set(p.x - minX, p.y - minY, function.apply(p)));
         return table;
     }
 
     @Override
-    public int rowCount() {
+    public int width() {
+        return (data.length == 0) ? 0 : data[0].length;
+    }
+
+    @Override
+    public int height() {
         return data.length;
     }
 
     @Override
-    public int colCount() {
-        return data.length == 0 ? 0 : data[0].length;
+    Integer get0(int x, int y) {
+        return data[y][x];
     }
 
     @Override
-    Integer get0(int row, int col) {
-        return data[row][col];
+    void set0(int x, int y, Integer value) {
+        data[y][x] = value;
     }
 
     @Override
-    void set0(int row, int col, Integer value) {
-        data[row][col] = value;
-    }
-
-    @Override
-    IntTable newInstance(int rowCount, int colCount, BiFunction<Integer, Integer, Integer> function) {
-        return new IntTable(rowCount, colCount, function);
+    IntTable newInstance(int width, int height, BiFunction<Integer, Integer, Integer> function) {
+        return new IntTable(width, height, function);
     }
 
     /**
-     * Returns the {@code int[][]} array that backs this table. Changes to the returned array are reflected in the
+     * Returns the {@code int[][]} matrix that backs this table. Changes to the returned matrix are reflected in the
      * table, and vice versa.
      */
-    public int[][] asArray() {
+    public int[][] asMatrix() {
         return data;
     }
 
     /**
      * Returns the value associated with the specified cell.
      */
-    public int get(int row, int col) {
-        return data[row][col];
+    public int get(Pos pos) {
+        return data[pos.y][pos.x];
     }
 
     /**
      * Returns the value associated with the specified cell.
      */
-    public int get(Cell cell) {
-        return data[cell.row()][cell.col()];
+    public int get(int x, int y) {
+        return data[y][x];
     }
 
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(int row, int col, int value) {
-        data[row][col] = value;
+    public void set(Pos pos, int value) {
+        data[pos.y][pos.x] = value;
     }
 
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(Cell cell, int value) {
-        data[cell.row()][cell.col()] = value;
+    public void set(int x, int y, int value) {
+        data[y][x] = value;
     }
 
     /**
      * Increments the value associated with the specified cell and returns the new value.
      */
-    public int inc(int row, int col) {
-        return ++data[row][col];
+    public int inc(Pos pos) {
+        return ++data[pos.y][pos.x];
     }
 
     /**
      * Increments the value associated with the specified cell and returns the new value.
      */
-    public int inc(Cell cell) {
-        return ++data[cell.row()][cell.col()];
+    public int inc(int x, int y) {
+        return ++data[y][x];
     }
 
     /**
      * Sets all values in this table to the given value.
      */
     public void fill(int value) {
-        Arrays.stream(data).forEach(rowData -> Arrays.fill(rowData, value));
-    }
-
-    /**
-     * Returns an ordered {@code IntStream} of the values contained in the specified row of this table.
-     */
-    public IntStream rowValues(int i) {
-        return Arrays.stream(data[i]);
-    }
-
-    /**
-     * Returns an ordered {@code IntStream} of the values contained in the specified column of this table.
-     */
-    public IntStream colValues(int j) {
-        return IntStream.range(0, rowCount()).map(i -> data[i][j]);
+        Arrays.stream(data).forEach(row -> Arrays.fill(row, value));
     }
 
     /**
@@ -221,6 +219,20 @@ public class IntTable extends AbstractTable<Integer> {
      */
     public IntStream values() {
         return Arrays.stream(data).flatMapToInt(Arrays::stream);
+    }
+
+    /**
+     * Returns an ordered {@code IntStream} of the values contained in the specified column of this table.
+     */
+    public IntStream colValues(int x) {
+        return IntStream.range(0, height()).map(y -> data[y][x]);
+    }
+
+    /**
+     * Returns an ordered {@code IntStream} of the values contained in the specified row of this table.
+     */
+    public IntStream rowValues(int y) {
+        return Arrays.stream(data[y]);
     }
 
     /**

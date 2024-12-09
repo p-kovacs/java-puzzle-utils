@@ -2,61 +2,48 @@ package com.github.pkovacs.util.data;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Represents a table (or matrix) with fixed number of rows and columns. This class is essentially a wrapper for a
+ * Represents a table (or matrix) with fixed number of columns and rows. This class is essentially a wrapper for a
  * {@code V[][]} array providing various convenient methods to access and modify the data. A cell of the table
- * is identified by a {@link Cell} object or two integer indices. Most methods of this class are defined in
- * {@link AbstractTable}.
+ * is identified by a {@link Pos} object or two integer indices, and it has an associated value.
+ * Most methods of this class are defined in {@link AbstractTable}.
+ * <p>
+ * WARNING: in accordance with {@link Pos}, the cells are accesed by {@code (x,y)} indices, that is, in (column,row)
+ * order, like the pixels of an image or screen. This is in contrast with the usual (row,column) indexing of matrices.
+ * That is, if you create a table from a matrix {@code V[][] m}, then {@code get(x, y)} will return the element
+ * {@code m[y][x]}. You should be aware of this when working with tables.
  * <p>
  * The {@code equals} and {@code hashCode} methods rely on deep equality check, and the {@code toString} method
  * provides a formatted result, which can be useful for debugging.
  * <p>
  * For storing a table of {@code int} or {@code char} values, use {@link IntTable} or {@link CharTable}, respectively,
  * instead of this general class. Furthermore, if your table is "sparse", consider using a {@code Map} with
- * {@link Cell} or {@link Point} keys instead (or Guava's {@code Table} class).
+ * {@link Pos} keys instead (or Guava's {@code Table} class).
  *
  * @param <V> the type of the values associated with the cells of this table
  * @see IntTable
  * @see CharTable
  */
-public class Table<V> extends AbstractTable<V> {
+public final class Table<V> extends AbstractTable<V> {
 
     private final Object[][] data;
 
     /**
-     * Creates a new table by wrapping the given {@code V[][]} array.
-     * The array is used directly, so changes to it are reflected in the table and vice versa.
+     * Creates a new table as a deep copy of the given {@code V[][]} matrix.
      * The "rows" of the given matrix must have the same length.
      */
     public Table(V[][] data) {
-        if (IntStream.range(1, data.length).anyMatch(i -> data[i].length != data[0].length)) {
+        if (Arrays.stream(data).anyMatch(row -> row.length != data[0].length)) {
             throw new IllegalArgumentException("Rows must have the same length.");
         }
-        this.data = data;
-    }
 
-    /**
-     * Creates a new table with the given number of rows and columns.
-     * The initial value for each cell is {@code null}.
-     */
-    public Table(int rowCount, int colCount) {
-        data = new Object[rowCount][colCount];
-    }
-
-    /**
-     * Creates a new table with the given number of rows and columns, and calculates initial values by applying
-     * the given function to the indices of each cell.
-     */
-    public Table(int rowCount, int colCount, BiFunction<Integer, Integer, ? extends V> function) {
-        data = new Object[rowCount][colCount];
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < colCount; j++) {
-                data[i][j] = function.apply(i, j);
-            }
+        this.data = new Object[data.length][];
+        for (int i = 0; i < data.length; i++) {
+            this.data[i] = data[i].clone();
         }
     }
 
@@ -70,79 +57,92 @@ public class Table<V> extends AbstractTable<V> {
         }
     }
 
+    /**
+     * Creates a new table with the given width and height, filled with {@code null} values.
+     */
+    public Table(int width, int height) {
+        data = new Object[height][width];
+    }
+
+    /**
+     * Creates a new table with the given width and height, and calculates initial values by applying the given
+     * function to each cell.
+     */
+    public Table(int width, int height, Function<Pos, ? extends V> function) {
+        this(width, height, (x, y) -> function.apply(new Pos(x, y)));
+    }
+
+    /**
+     * Private constructor used for transformations like rotation and mirroring.
+     */
+    private Table(int width, int height, BiFunction<Integer, Integer, ? extends V> function) {
+        data = new Object[height][width];
+        for (int y = 0; y < height; y++) {
+            var row = data[y];
+            for (int x = 0; x < width; x++) {
+                row[x] = function.apply(x, y);
+            }
+        }
+    }
+
     @Override
-    public int rowCount() {
+    public int width() {
+        return (data.length == 0) ? 0 : data[0].length;
+    }
+
+    @Override
+    public int height() {
         return data.length;
     }
 
     @Override
-    public int colCount() {
-        return data.length == 0 ? 0 : data[0].length;
+    V get0(int x, int y) {
+        return (V) data[y][x];
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    V get0(int row, int col) {
-        return (V) data[row][col];
+    void set0(int x, int y, V value) {
+        data[y][x] = value;
     }
 
     @Override
-    void set0(int row, int col, V value) {
-        data[row][col] = value;
-    }
-
-    @Override
-    Table<V> newInstance(int rowCount, int colCount, BiFunction<Integer, Integer, V> function) {
-        return new Table<V>(rowCount, colCount, function);
+    Table<V> newInstance(int width, int height, BiFunction<Integer, Integer, V> function) {
+        return new Table<>(width, height, function);
     }
 
     /**
      * Returns the value associated with the specified cell.
      */
-    public V get(int row, int col) {
-        return get0(row, col);
+    public V get(Pos pos) {
+        return (V) data[pos.y][pos.x];
     }
 
     /**
      * Returns the value associated with the specified cell.
      */
-    public V get(Cell cell) {
-        return get0(cell.row(), cell.col());
+    public V get(int x, int y) {
+        return (V) data[y][x];
     }
 
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(int row, int col, V value) {
-        data[row][col] = value;
+    public void set(Pos pos, V value) {
+        data[pos.y][pos.x] = value;
     }
 
     /**
      * Sets the value associated with the specified cell.
      */
-    public void set(Cell cell, V value) {
-        data[cell.row()][cell.col()] = value;
+    public void set(int x, int y, V value) {
+        data[y][x] = value;
     }
 
     /**
      * Sets all values in this table to the given value.
      */
     public void fill(V value) {
-        Arrays.stream(data).forEach(rowData -> Arrays.fill(rowData, value));
-    }
-
-    /**
-     * Returns an ordered stream of the values contained in the specified row of this table.
-     */
-    public Stream<V> rowValues(int i) {
-        return row(i).map(this::get);
-    }
-
-    /**
-     * Returns an ordered stream of the values contained in the specified column of this table.
-     */
-    public Stream<V> colValues(int j) {
-        return col(j).map(this::get);
+        Arrays.stream(data).forEach(row -> Arrays.fill(row, value));
     }
 
     /**
@@ -150,6 +150,20 @@ public class Table<V> extends AbstractTable<V> {
      */
     public Stream<V> values() {
         return cells().map(this::get);
+    }
+
+    /**
+     * Returns an ordered stream of the values contained in the specified column of this table.
+     */
+    public Stream<V> colValues(int x) {
+        return col(x).map(this::get);
+    }
+
+    /**
+     * Returns an ordered stream of the values contained in the specified row of this table.
+     */
+    public Stream<V> rowValues(int y) {
+        return row(y).map(this::get);
     }
 
     @Override

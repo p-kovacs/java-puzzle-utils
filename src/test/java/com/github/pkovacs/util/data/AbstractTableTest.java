@@ -18,34 +18,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 abstract class AbstractTableTest<T> {
 
-    abstract AbstractTable<T> createTestTable(int rowCount, int colCount);
+    abstract AbstractTable<T> createTestTable(int width, int height);
 
     @Test
     void testBasicMethods() {
-        var table = createTestTable(3, 4);
+        var table = createTestTable(4, 3);
 
-        assertEquals(3, table.rowCount());
-        assertEquals(4, table.colCount());
+        assertEquals(4, table.width());
+        assertEquals(3, table.height());
         assertEquals(12, table.size());
         assertEquals(12, table.cells().count());
 
-        assertTrue(table.containsCell(new Cell(2, 3)));
-        assertFalse(table.containsCell(new Cell(3, 3)));
-        assertFalse(table.containsCell(new Cell(2, 4)));
+        assertTrue(table.containsCell(p(3, 2)));
+        assertFalse(table.containsCell(p(3, 3)));
+        assertFalse(table.containsCell(p(4, 2)));
 
-        var table2 = createTestTable(4, 3);
-        table2.cells().forEach(c -> table2.set0(c.row(), c.col(), table.get0(c.col(), c.row())));
+        var table2 = createTestTable(3, 4);
+        table2.cells().forEach(p -> table2.set0(p.x, p.y, table.get0(p.y, p.x)));
 
-        assertEquals(table.cells().map(c -> table.get0(c.row(), c.col())).collect(Collectors.toSet()),
-                table2.cells().map(c -> table2.get0(c.row(), c.col())).collect(Collectors.toSet()));
+        assertEquals(table.cells().map(p -> table.get0(p.x, p.y)).collect(Collectors.toSet()),
+                table2.cells().map(p -> table2.get0(p.x, p.y)).collect(Collectors.toSet()));
     }
 
     @Test
     void testCellAccessMethods() {
-        var table = createTestTable(3, 4);
+        var table = createTestTable(4, 3);
 
         assertEquals(Stream.concat(table.row(0), Stream.concat(table.row(1), table.row(2))).toList(),
-                table.cells().toList());
+                table.cells().toList()); // cells are listed row by row
         assertEquals(Utils.intersectionOf(table.row(0), table.col(0)),
                 Set.of(table.topLeft()));
         assertEquals(Utils.intersectionOf(table.row(2), table.col(0)),
@@ -60,82 +60,47 @@ abstract class AbstractTableTest<T> {
     void testNeighbors() {
         var table = createTestTable(3, 4);
 
-        assertEquals(List.of(
-                        new Cell(0, 2),
-                        new Cell(1, 1),
-                        new Cell(1, 3),
-                        new Cell(2, 2)),
-                table.neighbors(new Cell(1, 2)).toList());
-        assertEquals(List.of(
-                        new Cell(0, 1),
-                        new Cell(1, 0)),
-                table.neighbors(new Cell(0, 0)).toList());
-        assertEquals(List.of(
-                        new Cell(1, 1),
-                        new Cell(2, 0),
-                        new Cell(2, 2)),
-                table.neighbors(new Cell(2, 1)).toList());
-        assertEquals(List.of(
-                        new Cell(0, 0),
-                        new Cell(0, 1),
-                        new Cell(1, 0)),
-                table.neighborsAndSelf(new Cell(0, 0)).toList());
+        assertEquals(List.of(p(0, 2), p(1, 1), p(1, 3), p(2, 2)),
+                table.neighbors(p(1, 2)).toList());
+        assertEquals(List.of(p(0, 1), p(1, 0)),
+                table.neighbors(p(0, 0)).toList());
+        assertEquals(List.of(p(1, 1), p(2, 0), p(2, 2)),
+                table.neighbors(p(2, 1)).toList());
+        assertEquals(List.of(p(0, 0), p(0, 1), p(1, 0)),
+                table.neighborsAndSelf(p(0, 0)).toList());
 
-        assertEquals(List.of(
-                        new Cell(0, 1),
-                        new Cell(0, 2),
-                        new Cell(0, 3),
-                        new Cell(1, 1),
-                        new Cell(1, 3),
-                        new Cell(2, 1),
-                        new Cell(2, 2),
-                        new Cell(2, 3)),
-                table.extendedNeighbors(new Cell(1, 2)).toList());
-        assertEquals(List.of(
-                        new Cell(0, 1),
-                        new Cell(1, 0),
-                        new Cell(1, 1)),
-                table.extendedNeighbors(new Cell(0, 0)).toList());
-        assertEquals(List.of(
-                        new Cell(1, 0),
-                        new Cell(1, 1),
-                        new Cell(1, 2),
-                        new Cell(2, 0),
-                        new Cell(2, 2)),
-                table.extendedNeighbors(new Cell(2, 1)).toList());
-        assertEquals(List.of(
-                        new Cell(0, 0),
-                        new Cell(0, 1),
-                        new Cell(1, 0),
-                        new Cell(1, 1)),
-                table.extendedNeighborsAndSelf(new Cell(0, 0)).toList());
+        assertEquals(List.of(p(0, 1), p(0, 2), p(0, 3), p(1, 1),
+                        p(1, 3), p(2, 1), p(2, 2), p(2, 3)),
+                table.neighbors8(p(1, 2)).toList());
+        assertEquals(List.of(p(0, 1), p(1, 0), p(1, 1)),
+                table.neighbors8(p(0, 0)).toList());
+        assertEquals(List.of(p(1, 0), p(1, 1), p(1, 2), p(2, 0), p(2, 2)),
+                table.neighbors8(p(2, 1)).toList());
+        Pos result;
+        int x = 0;
+        result = p(1, x);
+        assertEquals(List.of(p(0, 0), p(0, 1), result, p(1, 1)),
+                table.neighbors8AndSelf(p(0, 0)).toList());
     }
 
     @Test
     void testRays() {
         var table = createTestTable(4, 5);
-        var cell = new Cell(3, 2);
+        var p = p(3, 2);
 
-        assertEquals(List.of(new Cell(2, 2), new Cell(1, 2), new Cell(0, 2)),
-                table.ray(cell, Direction.NORTH).toList());
-        assertEquals(List.of(new Cell(3, 3), new Cell(3, 4)),
-                table.ray(cell, Direction.EAST).toList());
-        assertEquals(List.of(),
-                table.ray(cell, Direction.SOUTH).toList());
-        assertEquals(List.of(new Cell(3, 1), new Cell(3, 0)),
-                table.ray(cell, Direction.WEST).toList());
+        assertEquals(List.of(p(3, 1), p(3, 0)), table.ray(p, Direction.NORTH).toList());
+        assertEquals(List.of(p(3, 3), p(3, 4)), table.ray(p, Direction.SOUTH).toList());
+        assertEquals(List.of(), table.ray(p, Direction.EAST).toList());
+        assertEquals(List.of(p(2, 2), p(1, 2), p(0, 2)), table.ray(p, Direction.WEST).toList());
 
-        assertEquals(List.of(new Cell(2, 1), new Cell(1, 0)),
-                table.ray(cell, new Cell(2, 1)).toList());
-        assertEquals(List.of(),
-                table.ray(cell, new Cell(4, 3)).toList());
-        assertEquals(List.of(new Cell(2, 3), new Cell(1, 4)),
-                table.ray(cell, new Cell(2, 3)).toList());
+        assertEquals(List.of(p(2, 1), p(1, 0)), table.ray(p, p(2, 1)).toList());
+        assertEquals(List.of(), table.ray(p, p(4, 3)).toList());
+        assertEquals(List.of(p(2, 3), p(1, 4)), table.ray(p, p(2, 3)).toList());
     }
 
     @Test
     void testTransformations() {
-        var table = createTestTable(3, 4);
+        var table = createTestTable(4, 3);
         var transposed = table.transpose();
         var right = table.rotateRight();
         var left = table.rotateLeft();
@@ -169,9 +134,9 @@ abstract class AbstractTableTest<T> {
 
     @Test
     void testEqualsAndHashCode() {
-        var table1 = createTestTable(3, 4);
-        var table2 = createTestTable(3, 4);
-        var table3 = createTestTable(3, 4);
+        var table1 = createTestTable(4, 3);
+        var table2 = createTestTable(4, 3);
+        var table3 = createTestTable(4, 3);
 
         assertEquals(table1, table2);
         assertEquals(table2, table3);
@@ -188,6 +153,10 @@ abstract class AbstractTableTest<T> {
         assertNotEquals(table1.hashCode(), table2.hashCode());
         assertNotEquals(table2.hashCode(), table3.hashCode());
         assertEquals(table1.hashCode(), table3.hashCode());
+    }
+
+    static Pos p(int x, int y) {
+        return new Pos(x, y);
     }
 
 }

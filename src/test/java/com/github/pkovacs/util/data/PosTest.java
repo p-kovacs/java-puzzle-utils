@@ -248,9 +248,12 @@ class PosTest {
                 p(44, 10), p(44, 11));
 
         assertEquals(List.of(),
-                Pos.box(p(40, 20), p(40, 19)).toList());
-        assertEquals(list1,
-                Pos.box(p(40, 20), p(42, 20)).toList());
+                Pos.box(new Range(40, 40), new Range(20, 19)).toList());
+        assertEquals(list1, Pos.box(new Range(40, 42), new Range(20, 20)).toList());
+        assertEquals(list2, Pos.box(new Range(42, 44), new Range(10, 11)).toList());
+
+        assertEquals(List.of(), Pos.box(p(40, 20), p(40, 19)).toList());
+        assertEquals(list1, Pos.box(p(40, 20), p(42, 20)).toList());
         assertEquals(list2, Pos.box(p(42, 10), p(44, 11)).toList());
 
         assertEquals(List.of(), Pos.box(p(42, 20), p(40, 20)).toList());

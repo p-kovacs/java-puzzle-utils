@@ -305,74 +305,6 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the bounding {@link Range} of the x coordinates of the given positions.
-     *
-     * @throws java.util.NoSuchElementException if the collection is empty
-     */
-    public static Range xRange(Collection<Pos> positions) {
-        return Range.bound(positions.stream().mapToInt(Pos::x));
-    }
-
-    /**
-     * Returns the bounding {@link Range} of the y coordinates of the given positions.
-     *
-     * @throws java.util.NoSuchElementException if the collection is empty
-     */
-    public static Range yRange(Collection<Pos> positions) {
-        return Range.bound(positions.stream().mapToInt(Pos::y));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within a box of the given width and height.
-     * If both arguments are positive, then the first element of the stream is {@code (0,0)}, and the last element is
-     * {@code (width-1,height-1)}. Otherwise, an empty stream is returned.
-     */
-    public static Stream<Pos> box(int width, int height) {
-        return box(ORIGIN, new Pos(width - 1, height - 1));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within the closed box {@code [min..max]}.
-     * If {@code min.x <= max.x} and {@code min.y <= max.y}, then the first element of the stream is {@code min},
-     * and the last element is {@code max}. Otherwise, an empty stream is returned.
-     */
-    public static Stream<Pos> box(Pos min, Pos max) {
-        int width = max.x - min.x + 1;
-        int height = max.y - min.y + 1;
-        if (width <= 0 || height <= 0) {
-            return Stream.empty();
-        }
-
-        return IntStream.range(0, width * height)
-                .mapToObj(i -> new Pos(min.x + i / height, min.y + i % height));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within the
-     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions.
-     * If the given array is empty, then an empty stream is returned.
-     */
-    public static Stream<Pos> boundingBox(Pos... positions) {
-        return boundingBox(Arrays.asList(positions));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within the
-     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions.
-     * If the given collection is empty, then an empty stream is returned.
-     */
-    public static Stream<Pos> boundingBox(Collection<Pos> positions) {
-        if (positions.isEmpty()) {
-            return Stream.empty();
-        }
-
-        var xRange = xRange(positions);
-        var yRange = yRange(positions);
-        return box(new Pos((int) xRange.min(), (int) yRange.min()),
-                new Pos((int) xRange.max(), (int) yRange.max()));
-    }
-
-    /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
      * (aka. L1 distance or Manhattan distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
@@ -448,11 +380,6 @@ public final class Pos implements Comparable<Pos> {
     }
 
     @Override
-    public int compareTo(Pos other) {
-        return x != other.x ? Integer.compare(x, other.x) : Integer.compare(y, other.y);
-    }
-
-    @Override
     public boolean equals(Object o) {
         return o instanceof Pos p && x == p.x && y == p.y;
     }
@@ -461,6 +388,99 @@ public final class Pos implements Comparable<Pos> {
     public int hashCode() {
         // Optimized for small integer values (the largest prime below the square root of 2^32 is used)
         return x * 65_521 + y;
+    }
+
+    @Override
+    public int compareTo(Pos other) {
+        return x != other.x ? Integer.compare(x, other.x) : Integer.compare(y, other.y);
+    }
+
+    /**
+     * Returns the bounding {@link Range} of the x coordinates of the given positions.
+     *
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public static Range xRange(Collection<Pos> positions) {
+        return Range.bound(positions.stream().mapToInt(Pos::x));
+    }
+
+    /**
+     * Returns the bounding {@link Range} of the y coordinates of the given positions.
+     *
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public static Range yRange(Collection<Pos> positions) {
+        return Range.bound(positions.stream().mapToInt(Pos::y));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of positions within a box of the given width and height.
+     * If both arguments are positive, then the first element of the stream is {@code (0,0)}, and the last element is
+     * {@code (width-1,height-1)}. Otherwise, an empty stream is returned.
+     */
+    public static Stream<Pos> box(int width, int height) {
+        return box(ORIGIN, new Pos(width - 1, height - 1));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of positions within the closed box defined by the given
+     * ranges of x and y coordinates. If both ranges are non-empty, then the first element of the stream is
+     * {@code (xRange.min,yRange.min)}, and the last element is {@code (xRange.max,yRange.max)}.
+     * Otherwise, an empty stream is returned.
+     */
+    public static Stream<Pos> box(Range xRange, Range yRange) {
+        if (xRange.isEmpty() || yRange.isEmpty()) {
+            return Stream.empty();
+        }
+        if (xRange.min() < Integer.MIN_VALUE || xRange.max() > Integer.MAX_VALUE
+                || yRange.min() < Integer.MIN_VALUE || yRange.max() > Integer.MAX_VALUE
+                || xRange.count() > Integer.MAX_VALUE || yRange.count() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("The ranges are too large.");
+        }
+
+        int xMin = (int) xRange.min();
+        int yMin = (int) yRange.min();
+        int width = (int) xRange.count();
+        int height = (int) yRange.count();
+
+        return IntStream.range(0, width * height)
+                .mapToObj(i -> new Pos(xMin + i / height, yMin + i % height));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of positions within the closed box {@code [min..max]}.
+     * If {@code min.x <= max.x} and {@code min.y <= max.y}, then the first element of the stream is {@code min},
+     * and the last element is {@code max}. Otherwise, an empty stream is returned.
+     */
+    public static Stream<Pos> box(Pos min, Pos max) {
+        int width = max.x - min.x + 1;
+        int height = max.y - min.y + 1;
+        if (width <= 0 || height <= 0) {
+            return Stream.empty();
+        }
+
+        return IntStream.range(0, width * height)
+                .mapToObj(i -> new Pos(min.x + i / height, min.y + i % height));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of positions within the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions.
+     * If the given array is empty, then an empty stream is returned.
+     */
+    public static Stream<Pos> boundingBox(Pos... positions) {
+        return boundingBox(Arrays.asList(positions));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of positions within the
+     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions.
+     * If the given collection is empty, then an empty stream is returned.
+     */
+    public static Stream<Pos> boundingBox(Collection<Pos> positions) {
+        return positions.isEmpty()
+                ? Stream.empty()
+                : box(xRange(positions), yRange(positions));
     }
 
 }

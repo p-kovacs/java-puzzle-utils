@@ -289,6 +289,11 @@ public final class Vector implements Comparable<Vector> {
     }
 
     @Override
+    public String toString() {
+        return "(" + Arrays.stream(coords).mapToObj(String::valueOf).collect(joining(", ")) + ")";
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -306,11 +311,6 @@ public final class Vector implements Comparable<Vector> {
     }
 
     @Override
-    public String toString() {
-        return "(" + Arrays.stream(coords).mapToObj(String::valueOf).collect(joining(", ")) + ")";
-    }
-
-    @Override
     public int compareTo(Vector other) {
         if (coords.length != other.coords.length) {
             return Integer.compare(coords.length, other.coords.length);
@@ -325,10 +325,40 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns an ordered stream of vectors within the closed box {@code [min..max]}.
+     * Returns a lexicographically sorted stream of vectors within the closed box defined by the given ranges
+     * of coordinates for each dimension. If any range is empty, then an empty stream is returned.
+     * <p>
+     * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
+     */
+    public static Stream<Vector> box(Range... ranges) {
+        return box(Arrays.asList(ranges));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of vectors within the closed box defined by the given ranges
+     * of coordinates for each dimension. If any range is empty, then an empty stream is returned.
+     * <p>
+     * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
+     */
+    public static Stream<Vector> box(List<Range> ranges) {
+        if (ranges.stream().anyMatch(Range::isEmpty)) {
+            return Stream.empty();
+        }
+
+        int dim = ranges.size();
+        var list = List.of(new Vector(ranges.stream().mapToLong(Range::min).toArray()));
+        for (int i = 0; i < dim; i++) {
+            int k = i;
+            var range = ranges.get(k);
+            list = list.stream().flatMap(v -> range.stream().mapToObj(c -> v.set(k, c))).toList();
+        }
+        return list.stream();
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of vectors within the closed box {@code [min..max]}.
      * If {@code min.get(k) <= max.get(k)} for each {@code 0 <= k < dim()}, then the first element of the stream is
-     * {@code min}, the last element is {@code max}, and the stream is lexicographically sorted.
-     * Otherwise, an empty stream is returned.
+     * {@code min}, and the last element is {@code max}. Otherwise, an empty stream is returned.
      * <p>
      * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
      *
@@ -344,7 +374,7 @@ public final class Vector implements Comparable<Vector> {
         for (int i = 0; i < dim; i++) {
             int k = i;
             list = list.stream()
-                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(val -> v.set(k, val)))
+                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(c -> v.set(k, c)))
                     .toList();
         }
         return list.stream();

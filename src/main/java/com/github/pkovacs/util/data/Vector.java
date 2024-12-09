@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.joining;
  * @see Pos
  * @see Box
  */
-public class Vector implements Comparable<Vector> {
+public final class Vector implements Comparable<Vector> {
 
     private final long[] coords;
 

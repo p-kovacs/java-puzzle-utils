@@ -308,7 +308,7 @@ public final class Pos implements Comparable<Pos> {
      * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
      * (aka. L1 distance or Manhattan distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
-    public int dist1() {
+    public long dist1() {
         return dist1(ORIGIN);
     }
 
@@ -316,15 +316,15 @@ public final class Pos implements Comparable<Pos> {
      * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
      * (aka. L1 distance or Manhattan distance) between this position and the given position.
      */
-    public int dist1(Pos other) {
-        return Math.abs(other.x - x) + Math.abs(other.y - y);
+    public long dist1(Pos other) {
+        return Math.abs((long) other.x - x) + Math.abs((long) other.y - y);
     }
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Chebyshev_distance">"maximum" distance</a>
      * (aka. L∞ distance or Chebyshev distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
-    public int distMax() {
+    public long distMax() {
         return distMax(ORIGIN);
     }
 
@@ -332,8 +332,8 @@ public final class Pos implements Comparable<Pos> {
      * Returns the <a href="https://en.wikipedia.org/wiki/Chebyshev_distance">"maximum" distance</a>
      * (aka. L∞ distance or Chebyshev distance) between this position and the given position.
      */
-    public int distMax(Pos other) {
-        return Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
+    public long distMax(Pos other) {
+        return Math.max(Math.abs((long) other.x - x), Math.abs((long) other.y - y));
     }
 
     /**
@@ -353,8 +353,8 @@ public final class Pos implements Comparable<Pos> {
      * Warning: this distance metric does not satisfy the triangle inequality.
      */
     public long distSq(Pos other) {
-        long dx = other.x - x;
-        long dy = other.y - y;
+        long dx = (long) other.x - x;
+        long dy = (long) other.y - y;
         return dx * dx + dy * dy;
     }
 

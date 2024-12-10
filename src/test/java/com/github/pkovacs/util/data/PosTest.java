@@ -110,13 +110,13 @@ class PosTest {
         assertTrue(a.neighbors().allMatch(a::isNeighbor8));
         assertEquals(4, a.neighbors8().filter(a::isNeighbor).count());
 
-        assertTrue(a.neighbors().mapToInt(a::dist1).allMatch(d -> d == 1));
-        assertTrue(a.neighbors().mapToInt(a::distMax).allMatch(d -> d == 1));
+        assertTrue(a.neighbors().mapToLong(a::dist1).allMatch(d -> d == 1));
+        assertTrue(a.neighbors().mapToLong(a::distMax).allMatch(d -> d == 1));
 
-        assertTrue(a.neighbors8().mapToInt(a::dist1).allMatch(d -> d <= 2));
-        assertTrue(a.neighbors8().mapToInt(a::distMax).allMatch(d -> d == 1));
-        assertEquals(12, a.neighbors8().mapToInt(a::dist1).sum());
-        assertEquals(8, a.neighbors8().mapToInt(a::distMax).sum());
+        assertTrue(a.neighbors8().mapToLong(a::dist1).allMatch(d -> d <= 2));
+        assertTrue(a.neighbors8().mapToLong(a::distMax).allMatch(d -> d == 1));
+        assertEquals(12, a.neighbors8().mapToLong(a::dist1).sum());
+        assertEquals(8, a.neighbors8().mapToLong(a::distMax).sum());
     }
 
     @Test
@@ -220,6 +220,11 @@ class PosTest {
         assertEquals(Math.sqrt(12 * 12 + 42 * 42), a.dist2(), 1e-10);
         assertEquals(Math.sqrt(12 * 12 + 18 * 18), a.dist2(b), 1e-10);
         assertEquals(0, a.dist2(a), 1e-10);
+
+        var c = p(Integer.MIN_VALUE, Integer.MIN_VALUE);
+
+        assertEquals(2 * (Integer.MAX_VALUE + 1L), c.dist1());
+        assertEquals(Integer.MAX_VALUE + 1L, c.distMax());
     }
 
     @Test

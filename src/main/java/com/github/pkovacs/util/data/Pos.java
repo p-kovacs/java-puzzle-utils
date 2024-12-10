@@ -2,7 +2,6 @@ package com.github.pkovacs.util.data;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -80,7 +79,7 @@ public final class Pos implements Comparable<Pos> {
      * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
      * non-negative coordinates.
      */
-    public Pos neighbor(Direction dir) {
+    public Pos neighbor(Dir dir) {
         return switch (dir) {
             case NORTH -> new Pos(x, y - 1);
             case EAST -> new Pos(x + 1, y);
@@ -94,7 +93,7 @@ public final class Pos implements Comparable<Pos> {
      * (to the north). That is, {@code (0,0)} represents the <i>bottom</i> left position among the ones with
      * non-negative coordinates.
      */
-    public Pos neighborWithUpwardY(Direction dir) {
+    public Pos neighborWithUpwardY(Dir dir) {
         return switch (dir) {
             case NORTH -> new Pos(x, y + 1);
             case EAST -> new Pos(x + 1, y);
@@ -112,7 +111,7 @@ public final class Pos implements Comparable<Pos> {
      *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
      */
     public Pos neighbor(char dir) {
-        return neighbor(Direction.fromChar(dir));
+        return neighbor(Dir.fromChar(dir));
     }
 
     /**
@@ -124,7 +123,7 @@ public final class Pos implements Comparable<Pos> {
      *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
      */
     public Pos neighborWithUpwardY(char dir) {
-        return neighborWithUpwardY(Direction.fromChar(dir));
+        return neighborWithUpwardY(Dir.fromChar(dir));
     }
 
     /**

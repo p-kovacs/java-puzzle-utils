@@ -8,31 +8,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DirectionTest {
+class DirTest {
 
     @Test
     void test() {
         for (char ch : new char[] { 'N', 'E', 'S', 'W' }) {
-            assertEquals(ch, Direction.fromChar(ch).toChar());
+            assertEquals(ch, Dir.fromChar(ch).toChar());
         }
         for (char ch : new char[] { 'n', 'e', 's', 'w' }) {
-            assertEquals(ch, Direction.fromChar(ch).toLowerCaseChar());
+            assertEquals(ch, Dir.fromChar(ch).toLowerCaseChar());
         }
 
         Map.of("U", 'N', "R", 'E', "D", 'S', "L", 'W').forEach((str, ch) -> {
-            assertEquals(ch, Direction.fromChar(str.charAt(0)).toChar());
-            assertEquals(ch, Direction.fromChar(str.toLowerCase(Locale.ROOT).charAt(0)).toChar());
+            assertEquals(ch, Dir.fromChar(str.charAt(0)).toChar());
+            assertEquals(ch, Dir.fromChar(str.toLowerCase(Locale.ROOT).charAt(0)).toChar());
         });
 
-        assertEquals(Direction.NORTH, Direction.SOUTH.opposite());
-        assertEquals(Direction.WEST, Direction.EAST.opposite());
+        assertEquals(Dir.NORTH, Dir.SOUTH.opposite());
+        assertEquals(Dir.WEST, Dir.EAST.opposite());
 
-        assertEquals(Direction.SOUTH, Direction.SOUTH.mirrorHorizontally());
-        assertEquals(Direction.WEST, Direction.EAST.mirrorHorizontally());
-        assertEquals(Direction.NORTH, Direction.SOUTH.mirrorVertically());
-        assertEquals(Direction.EAST, Direction.EAST.mirrorVertically());
+        assertEquals(Dir.SOUTH, Dir.SOUTH.mirrorHorizontally());
+        assertEquals(Dir.WEST, Dir.EAST.mirrorHorizontally());
+        assertEquals(Dir.NORTH, Dir.SOUTH.mirrorVertically());
+        assertEquals(Dir.EAST, Dir.EAST.mirrorVertically());
 
-        var dirs = Direction.values();
+        var dirs = Dir.values();
         for (int i = 0; i < 4; i++) {
             var dir1 = dirs[i];
             var dir2 = dirs[(i + 1) % 4];
@@ -43,10 +43,11 @@ class DirectionTest {
 
         Arrays.stream(dirs).forEach(dir -> {
             assertEquals(dir, dir.opposite().opposite());
-            assertEquals(dir.opposite(), dir.rotateRight().rotateRight());
-            assertEquals(dir.rotateLeft(), dir.rotateRight().rotateRight().rotateRight());
+            assertEquals(dir, dir.rotateRight().rotateRight().opposite());
             assertEquals(dir, dir.rotateLeft().opposite().rotateLeft());
-            assertEquals(dir.rotateRight(), dir.opposite().rotateLeft());
+            assertEquals(dir, dir.opposite().rotateLeft().rotateLeft());
+            assertEquals(dir.rotateLeft(), dir.rotateRight().rotateRight().rotateRight());
+            assertEquals(dir.rotateRight(), dir.rotateLeft().rotateLeft().rotateLeft());
             assertEquals(dir, dir.mirrorVertically().mirrorVertically());
             assertEquals(dir, dir.mirrorHorizontally().mirrorHorizontally());
             assertEquals(dir.opposite(), dir.mirrorHorizontally().mirrorVertically());

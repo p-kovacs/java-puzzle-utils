@@ -1,10 +1,10 @@
 package com.github.pkovacs.util.data;
 
 /**
- * Represents a direction in 2D space.
- * Provides methods to convert from/to characters and to rotate a direction.
+ * Represents a main direction (cardinal direction) in 2D space.
+ * Provides methods to convert from/to characters and to rotate and mirror a direction.
  */
-public enum Direction {
+public enum Dir {
 
     NORTH, EAST, SOUTH, WEST;
 
@@ -43,7 +43,7 @@ public enum Direction {
      *         'U' (up), 'R' (right), 'D' (down), 'L' (left), '^' (up), '>' (right), 'v' (down), '<' (left),
      *         and their lowercase variants.
      */
-    public static Direction fromChar(char ch) {
+    public static Dir fromChar(char ch) {
         return switch (ch) {
             case 'n', 'N', 'u', 'U', '^' -> NORTH;
             case 'e', 'E', 'r', 'R', '>' -> EAST;
@@ -70,7 +70,7 @@ public enum Direction {
     /**
      * Returns the opposite of this direction.
      */
-    public Direction opposite() {
+    public Dir opposite() {
         return switch (this) {
             case NORTH -> SOUTH;
             case EAST -> WEST;
@@ -80,21 +80,9 @@ public enum Direction {
     }
 
     /**
-     * Rotates this direction 90 degrees to the left.
+     * Rotates this direction 90 degrees to the right (clockwise).
      */
-    public Direction rotateLeft() {
-        return switch (this) {
-            case NORTH -> WEST;
-            case EAST -> NORTH;
-            case SOUTH -> EAST;
-            case WEST -> SOUTH;
-        };
-    }
-
-    /**
-     * Rotates this direction 90 degrees to the right.
-     */
-    public Direction rotateRight() {
+    public Dir rotateRight() {
         return switch (this) {
             case NORTH -> EAST;
             case EAST -> SOUTH;
@@ -104,9 +92,21 @@ public enum Direction {
     }
 
     /**
-     * Mirrors this direction horizontally.
+     * Rotates this direction 90 degrees to the left (counter-clockwise).
      */
-    public Direction mirrorHorizontally() {
+    public Dir rotateLeft() {
+        return switch (this) {
+            case NORTH -> WEST;
+            case EAST -> NORTH;
+            case SOUTH -> EAST;
+            case WEST -> SOUTH;
+        };
+    }
+
+    /**
+     * Mirrors this direction horizontally. That is, swaps east and west.
+     */
+    public Dir mirrorHorizontally() {
         return switch (this) {
             case EAST -> WEST;
             case WEST -> EAST;
@@ -115,9 +115,9 @@ public enum Direction {
     }
 
     /**
-     * Mirrors this direction vertically.
+     * Mirrors this direction vertically. That is, swaps north and south.
      */
-    public Direction mirrorVertically() {
+    public Dir mirrorVertically() {
         return switch (this) {
             case NORTH -> SOUTH;
             case SOUTH -> NORTH;

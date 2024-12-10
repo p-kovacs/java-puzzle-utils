@@ -165,7 +165,7 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      * this cell, the next element (if any) is the subsequent cell in the same direction, and so on while the cells
      * are contained in the table.
      */
-    public final Stream<Pos> ray(Pos pos, Direction dir) {
+    public final Stream<Pos> ray(Pos pos, Dir dir) {
         return ray(pos, pos.neighbor(dir));
     }
 

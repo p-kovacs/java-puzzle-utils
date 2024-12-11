@@ -122,6 +122,11 @@ class IntTableTest extends AbstractTableTest<Integer> {
 
         assertContentEquals(new int[][] { { 8, 9, 10, 11 }, { 0, 1, 2, 3 }, { 4, 5, 6, 7 } }, table);
 
+        assertEquals(List.of(8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7),
+                table.cells().map(table::get).toList());
+        assertEquals(List.of(8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7),
+                table.values().boxed().toList());
+
         assertArrayEquals(table.values().toArray(), table.cells().mapToInt(table::get).toArray());
         assertArrayEquals(table.rowValues(1).toArray(), table.row(1).mapToInt(table::get).toArray());
         assertArrayEquals(table.colValues(2).toArray(), table.col(2).mapToInt(table::get).toArray());
@@ -154,15 +159,32 @@ class IntTableTest extends AbstractTableTest<Integer> {
     }
 
     @Test
+    void testWithEmptyTable() {
+        var table1 = new IntTable(0, 42);
+        var table2 = new IntTable(23, 0);
+
+        assertTrue(table1.isEmpty());
+        assertTrue(table2.isEmpty());
+        assertEquals(0, table1.size());
+        assertEquals(0, table2.size());
+        assertEquals(List.of(), table1.cells().toList());
+        assertEquals(List.of(), table2.cells().toList());
+        assertEquals(List.of(), table1.values().boxed().toList());
+        assertEquals(List.of(), table2.values().boxed().toList());
+        assertThrows(IndexOutOfBoundsException.class, () -> table1.get(0, 0));
+        assertThrows(IndexOutOfBoundsException.class, () -> table2.get(0, 0));
+    }
+
+    @Test
     void testFindMethods() {
-        var table = new IntTable(new int[][] { { 1, 2, 3 }, { 10, 20, 30 }, { 1, 2, 3 }, { -1, -2, -3 } });
+        var table = new IntTable(new int[][] { { 3, 2, 1 }, { 10, 20, 30 }, { 1, 2, 3 }, { -1, -2, -3 } });
 
         assertEquals(p(2, 1), table.find(30));
         assertEquals(p(1, 0), table.find(2));
         assertThrows(NoSuchElementException.class, () -> table.find(42));
 
         assertEquals(List.of(p(2, 1)), table.findAll(30).toList());
-        assertEquals(List.of(p(1, 0), p(1, 2)), table.findAll(2).toList());
+        assertEquals(List.of(p(2, 0), p(0, 2)), table.findAll(1).toList());
         assertEquals(List.of(), table.findAll(42).toList());
     }
 
@@ -180,11 +202,13 @@ class IntTableTest extends AbstractTableTest<Integer> {
         assertEquals("     0     -1      2     -3\n  -100 424242   -102    103\n   200   -201    202   -203\n",
                 table3.toString());
 
-        var table4 = createTestTable(3, 4).transpose();
-        var table5 = createTestTable(3, 4).rotateRight();
-
-        assertEquals("  0 100 200\n  1 101 201\n  2 102 202\n  3 103 203\n", table4.toString());
-        assertEquals("200 100   0\n201 101   1\n202 102   2\n203 103   3\n", table5.toString());
+        assertEquals("  3   2   1   0\n103 102 101 100\n203 202 201 200\n",
+                table1.mirrorHorizontally().toString());
+        assertEquals("200 201 202 203\n100 101 102 103\n  0   1   2   3\n",
+                table1.mirrorVertically().toString());
+        assertEquals("200 100   0\n201 101   1\n202 102   2\n203 103   3\n", table1.rotateRight().toString());
+        assertEquals("  3 103 203\n  2 102 202\n  1 101 201\n  0 100 200\n", table1.rotateLeft().toString());
+        assertEquals("  0 100 200\n  1 101 201\n  2 102 202\n  3 103 203\n", table1.transpose().toString());
     }
 
     private static void assertContentEquals(int[][] expected, IntTable table) {

@@ -111,9 +111,29 @@ class CharTableTest extends AbstractTableTest<Character> {
     void testStreamMethods() {
         var table = createTestTable(4, 3);
 
-        assertEquals(table.values().toList(), table.cells().map(table::get).toList());
+        assertEquals("[0, 1, 2, 3, a, b, c, d, A, B, C, D]",
+                table.cells().map(table::get).toList().toString());
+        assertEquals("[0, 1, 2, 3, a, b, c, d, A, B, C, D]",
+                table.values().toList().toString());
         assertEquals(table.rowValues(1).toList(), table.row(1).map(table::get).toList());
         assertEquals(table.colValues(2).toList(), table.col(2).map(table::get).toList());
+    }
+
+    @Test
+    void testWithEmptyTable() {
+        var table1 = new CharTable(0, 42, ' ');
+        var table2 = new CharTable(23, 0, '@');
+
+        assertTrue(table1.isEmpty());
+        assertTrue(table2.isEmpty());
+        assertEquals(0, table1.size());
+        assertEquals(0, table2.size());
+        assertEquals(List.of(), table1.cells().toList());
+        assertEquals(List.of(), table2.cells().toList());
+        assertEquals(List.of(), table1.values().toList());
+        assertEquals(List.of(), table2.values().toList());
+        assertThrows(IndexOutOfBoundsException.class, () -> table1.get(0, 0));
+        assertThrows(IndexOutOfBoundsException.class, () -> table2.get(0, 0));
     }
 
     @Test
@@ -164,6 +184,11 @@ class CharTableTest extends AbstractTableTest<Character> {
     void testToString() {
         var table = createTestTable(4, 3);
         assertEquals("0123\nabcd\nABCD\n", table.toString());
+        assertEquals("3210\ndcba\nDCBA\n", table.mirrorHorizontally().toString());
+        assertEquals("ABCD\nabcd\n0123\n", table.mirrorVertically().toString());
+        assertEquals("Aa0\nBb1\nCc2\nDd3\n", table.rotateRight().toString());
+        assertEquals("3dD\n2cC\n1bB\n0aA\n", table.rotateLeft().toString());
+        assertEquals("0aA\n1bB\n2cC\n3dD\n", table.transpose().toString());
     }
 
     private static void assertContentEquals(List<String> expected, CharTable table) {

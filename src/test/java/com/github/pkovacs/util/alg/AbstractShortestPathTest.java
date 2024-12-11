@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import com.github.pkovacs.util.alg.Dijkstra.Edge;
 import com.github.pkovacs.util.data.CharTable;
+import com.github.pkovacs.util.data.Dir8;
 import com.github.pkovacs.util.data.Pos;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
@@ -105,6 +106,22 @@ abstract class AbstractShortestPathTest {
     }
 
     @Test
+    void testWithDirections() {
+        var result1 = findPath(Dir8.N,
+                dir -> List.of(new Edge<>(dir.next(), 3), new Edge<>(dir.prev(), 2)), Dir8.SE::equals);
+        var result2 = findPath(Dir8.N,
+                dir -> List.of(new Edge<>(dir.next(), 7), new Edge<>(dir.prev(), 4)), Dir8.SE::equals);
+
+        assertTrue(result1.isPresent());
+        assertEquals(9, result1.get().dist());
+        assertEquals(List.of(Dir8.N, Dir8.NE, Dir8.E, Dir8.SE), result1.get().nodes());
+
+        assertTrue(result2.isPresent());
+        assertEquals(20, result2.get().dist());
+        assertEquals(List.of(Dir8.N, Dir8.NW, Dir8.W, Dir8.SW, Dir8.S, Dir8.SE), result2.get().nodes());
+    }
+
+    @Test
     void testMultipleTargets() {
         var nodes = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
         Collections.shuffle(nodes, new Random(123456789));
@@ -122,20 +139,20 @@ abstract class AbstractShortestPathTest {
 
     @Test
     void testGenericParameters() {
-        Function<Collection<Integer>, Collection<Edge<List<Integer>>>> neighborProvider = c ->
+        Function<Collection<Integer>, Collection<Edge<List<Integer>>>> edgeProvider = c ->
                 IntStream.rangeClosed(0, 3)
                         .mapToObj(i -> new Edge<>(concat(c, i).toList(), Math.max(i * 10, 1)))
-                        .filter(e -> e.endNode().size() <= 10)
+                        .filter(e -> e.endNode().size() <= 6)
                         .toList();
 
         var start = List.of(1, 0);
-        var target = List.of(1, 0, 1, 0, 0, 1, 2);
+        var target = List.of(1, 0, 1, 0, 2, 1);
         Predicate<Collection<Integer>> predicate = target::equals;
 
-        var path = findPath(start, neighborProvider, predicate);
+        var path = findPath(start, edgeProvider, predicate);
 
         assertTrue(path.isPresent());
-        assertEquals(42, path.get().dist());
+        assertEquals(41, path.get().dist());
         assertEquals(target, path.get().endNode());
     }
 

@@ -10,8 +10,9 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.github.pkovacs.util.alg.Dijkstra.Edge;
 import com.github.pkovacs.util.data.CharTable;
-import com.github.pkovacs.util.data.Pos;
+import com.github.pkovacs.util.data.Dir8;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
@@ -175,15 +176,25 @@ class BfsTest {
     }
 
     @Test
+    void testWithDirections() {
+        var result = Bfs.<Dir8>findPathFromAny(List.of(Dir8.NW, Dir8.N),
+                dir -> List.of(dir.prev(), dir.next()), Dir8.SE::equals);
+
+        assertTrue(result.isPresent());
+        assertEquals(3, result.get().dist());
+        assertEquals(List.of(Dir8.N, Dir8.NE, Dir8.E, Dir8.SE), result.get().nodes());
+    }
+
+    @Test
     void testGenericParameters() {
-        Function<Collection<Integer>, Collection<List<Integer>>> neighborProvider = c ->
+        Function<Collection<Integer>, Collection<List<Integer>>> edgeProvider = c ->
                 IntStream.rangeClosed(0, 3).mapToObj(i -> concat(c, i).toList()).toList();
 
         var start = List.of(1, 0);
         var target = List.of(1, 0, 1, 0, 0, 1, 2);
         Predicate<List<Integer>> predicate = target::equals;
 
-        var path = Bfs.findPath(start, neighborProvider, predicate);
+        var path = Bfs.findPath(start, edgeProvider, predicate);
 
         assertTrue(path.isPresent());
         assertEquals(5, path.get().dist());

@@ -10,8 +10,6 @@ import com.github.pkovacs.util.Utils;
  * An immutable closed range of {@code long} integers {@code [min..max]}.
  * <p>
  * If you need a more general tool, consider using Guava's {@code Range} or {@code RangeSet}.
- *
- * @see Box
  */
 public record Range(long min, long max) {
 
@@ -67,21 +65,35 @@ public record Range(long min, long max) {
     }
 
     /**
-     * Returns true if this range is empty, that is, {@code max < min}.
+     * Returns true if this range is empty, that is, {@code min > max}.
      */
     public boolean isEmpty() {
-        return max < min;
+        return min > max;
+    }
+
+    /**
+     * Returns true if this range is non-empty, that is, {@code min <= max}.
+     */
+    public boolean isNonEmpty() {
+        return min <= max;
     }
 
     /**
      * Returns the number of integers within this range.
      */
-    public long count() {
+    public long size() {
         return Math.max(max - min + 1, 0);
     }
 
     /**
-     * Returns true if this range contains the given integer.
+     * Returns true if this range contains the given {@code int} value.
+     */
+    public boolean contains(int i) {
+        return i >= min && i <= max;
+    }
+
+    /**
+     * Returns true if this range contains the given {@code long} value.
      */
     public boolean contains(long i) {
         return i >= min && i <= max;
@@ -98,7 +110,7 @@ public record Range(long min, long max) {
      * Returns true if this range overlaps with the given range.
      */
     public boolean overlaps(Range other) {
-        return !intersection(other).isEmpty();
+        return intersection(other).isNonEmpty();
     }
 
     /**

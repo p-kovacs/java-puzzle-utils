@@ -23,7 +23,7 @@ class RangeTest {
         var z = new Range(5, 12);
 
         assertFalse(x.isEmpty());
-        assertEquals(31, x.count());
+        assertEquals(31, x.size());
 
         assertFalse(x.contains(10));
         assertTrue(x.contains(20));
@@ -47,7 +47,7 @@ class RangeTest {
         assertTrue(z.intersection(y).isEmpty());
 
         assertArrayEquals(new long[] { 5, 6, 7, 8, 9, 10, 11, 12 }, z.stream().toArray());
-        assertEquals(x.count(), x.stream().count());
+        assertEquals(x.size(), x.stream().count());
 
         assertEquals(new Range(7, 11), new Range(5, 9).shift(2));
         assertEquals(new Range(2, 6), new Range(5, 9).shift(-3));
@@ -65,9 +65,9 @@ class RangeTest {
         assertEquals(new Range(100, 234), Range.bound(list));
         assertEquals(new Range(100, 234), Range.bound(234, 100, 200));
         assertEquals(new Range(100, 100), Range.bound(100));
-        assertEquals(new Range(12, 33), Range.bound(IntStream.range(12, 34)));
+        assertEquals(new Range(12, 33), Range.bound(IntStream.range(12, 34).toArray()));
         assertEquals(new Range(100, 234), Range.bound(new long[] { 234, 100, 200 }));
-        assertEquals(new Range(1234, 5678), Range.bound(LongStream.rangeClosed(1234, 5678)));
+        assertEquals(new Range(1234, 5678), Range.bound(LongStream.rangeClosed(1234, 5678).toArray()));
 
         assertTrue(new Range(100, 99).isEmpty());
         assertFalse(Range.bound(100, 99).isEmpty());

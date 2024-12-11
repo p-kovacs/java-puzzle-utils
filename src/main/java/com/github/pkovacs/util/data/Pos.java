@@ -485,14 +485,14 @@ public final class Pos implements Comparable<Pos> {
         }
         if (xRange.min() < Integer.MIN_VALUE || xRange.max() > Integer.MAX_VALUE
                 || yRange.min() < Integer.MIN_VALUE || yRange.max() > Integer.MAX_VALUE
-                || xRange.count() > Integer.MAX_VALUE || yRange.count() > Integer.MAX_VALUE) {
+                || xRange.size() > Integer.MAX_VALUE || yRange.size() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("The ranges are too large.");
         }
 
         int xMin = (int) xRange.min();
         int yMin = (int) yRange.min();
-        int width = (int) xRange.count();
-        int height = (int) yRange.count();
+        int width = (int) xRange.size();
+        int height = (int) yRange.size();
 
         return IntStream.range(0, width * height)
                 .mapToObj(i -> new Pos(xMin + i / height, yMin + i % height));

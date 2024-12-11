@@ -1,5 +1,6 @@
 package com.github.pkovacs.util.alg;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -20,7 +21,11 @@ class BellmanFordTest extends AbstractShortestPathTest {
     <T> Optional<Path<T>> findPath(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
-        return BellmanFord.findPath(source, edgeProvider, targetPredicate);
+        var resultMap = BellmanFord.run(source, edgeProvider);
+        return resultMap.keySet().stream()
+                .filter(targetPredicate)
+                .map(resultMap::get)
+                .min(Comparator.comparing(Path::dist));
     }
 
     @Test
@@ -50,13 +55,12 @@ class BellmanFordTest extends AbstractShortestPathTest {
 
     @Test
     void testWithMultipleSources() {
-        var result = BellmanFord.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
-                i -> i >= 0 ? List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)) : List.of(),
-                i -> i == 42);
+        var resultMap = BellmanFord.runFromAll(IntStream.range(82, 100).boxed().toList(),
+                i -> i >= 0 ? List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)) : List.of());
 
-        assertTrue(result.isPresent());
-        assertEquals(12, result.get().dist());
-        assertEquals(List.of(84, 77, 70, 63, 56, 49, 42), result.get().nodes());
+        assertTrue(resultMap.containsKey(42));
+        assertEquals(12, resultMap.get(42).dist());
+        assertEquals(List.of(84, 77, 70, 63, 56, 49, 42), resultMap.get(42).nodes());
     }
 
 }

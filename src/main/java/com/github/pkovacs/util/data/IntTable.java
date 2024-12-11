@@ -127,7 +127,7 @@ public final class IntTable extends AbstractTable<Integer> {
         int minX = (int) xRange.min();
         int minY = (int) yRange.min();
 
-        var table = new IntTable((int) xRange.count(), (int) yRange.count(), fillValue);
+        var table = new IntTable((int) xRange.size(), (int) yRange.size(), fillValue);
         positions.forEach(p -> table.set(p.x - minX, p.y - minY, function.apply(p)));
         return table;
     }

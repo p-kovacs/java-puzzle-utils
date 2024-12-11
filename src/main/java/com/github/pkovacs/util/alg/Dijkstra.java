@@ -16,8 +16,9 @@ import java.util.function.Predicate;
  * <p>
  * The input is a directed or undirected graph with {@code long} edge weights (implicitly defined by an edge provider
  * function) and one or more source nodes. The edge provider function has to provide for each node {@code u} a
- * collection of {@code (node, weight)} pairs ({@link Edge} objects) describing the outgoing edges of {@code u}.
- * This function is applied at most once for each node, when the algorithm advances from that node.
+ * collection of {@code (node, weight)} pairs (as {@link Edge} objects) describing the outgoing edges of {@code u}
+ * together with their weights (costs). This function is called at most once for each node, when the algorithm
+ * advances from that node.
  * <p>
  * This algorithm only supports non-negative edge weights. If you also need negative edge weights, use
  * {@link BellmanFord} instead.
@@ -59,7 +60,7 @@ public final class Dijkstra {
      *
      * @param source the source node.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
-     *         edges of {@code u} as a collection of {@link Edge} objects.
+     *         weighted edges of {@code u} as {@link Edge} objects. This function is called at most once per node.
      * @param targetPredicate a predicate that returns true for the target node(s). It can accept multiple
      *         nodes, in which case a shortest path to one of the nearest target nodes is to be found.
      *         However, for a single target node {@code t}, you can simply use {@code t::equals}.
@@ -77,14 +78,14 @@ public final class Dijkstra {
      *
      * @param sources the source nodes.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
-     *         edges of {@code u} as a collection of {@link Edge} objects.
+     *         weighted edges of {@code u} as {@link Edge} objects. This function is called at most once per node.
      * @param targetPredicate a predicate that returns true for the target node(s). It can accept multiple
      *         nodes, in which case a shortest path to one of the nearest target nodes is to be found.
      *         However, for a single target node {@code t}, you can simply use {@code t::equals}.
      * @return a shortest {@link Path} to the nearest target node or an empty optional if no target nodes are
      *         reachable from the source nodes.
      */
-    public static <T> Optional<Path<T>> findPathFromAny(Iterable<? extends T> sources,
+    public static <T> Optional<Path<T>> findPathFromAny(Iterable<T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate) {
         var results = new HashMap<T, Path<T>>();
@@ -96,7 +97,7 @@ public final class Dijkstra {
      *
      * @param source the source node.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
-     *         edges of {@code u} as a collection of {@link Edge} objects.
+     *         weighted edges of {@code u} as {@link Edge} objects. This function is called at most once per node.
      * @return a map that associates a {@link Path} with each node reachable from the source node.
      */
     public static <T> Map<T, Path<T>> run(T source,
@@ -109,17 +110,17 @@ public final class Dijkstra {
      *
      * @param sources the source nodes.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
-     *         edges of {@code u} as a collection of {@link Edge} objects.
+     *         weighted edges of {@code u} as {@link Edge} objects. This function is called at most once per node.
      * @return a map that associates a {@link Path} with each node reachable from the source nodes.
      */
-    public static <T> Map<T, Path<T>> runFromAll(Iterable<? extends T> sources,
+    public static <T> Map<T, Path<T>> runFromAll(Iterable<T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
         var results = new HashMap<T, Path<T>>();
         runDijkstra(sources, edgeProvider, n -> false, results);
         return results;
     }
 
-    private static <T> Optional<Path<T>> runDijkstra(Iterable<? extends T> sources,
+    private static <T> Optional<Path<T>> runDijkstra(Iterable<T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate,
             HashMap<T, Path<T>> results) {
@@ -142,12 +143,12 @@ public final class Dijkstra {
             }
 
             for (var edge : edgeProvider.apply(path.endNode())) {
-                var neighbor = edge.endNode();
+                var node = edge.endNode();
                 var dist = path.dist() + edge.weight();
-                var current = results.get(neighbor);
+                var current = results.get(node);
                 if (current == null || dist < current.dist()) {
-                    var p = new Path<>(neighbor, dist, path);
-                    results.put(neighbor, p);
+                    var p = new Path<>(node, dist, path);
+                    results.put(node, p);
                     queue.add(p);
                 }
             }

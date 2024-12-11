@@ -11,9 +11,9 @@ import java.util.function.Predicate;
 /**
  * A general implementation of the BFS (breadth-first search) algorithm.
  * <p>
- * The input is a directed or undirected graph (implicitly defined by a neighbor provider function) and one or more
- * source nodes. The neighbor provider function has to provide for each node {@code u} the neighbor nodes directly
- * reachable form {@code u} via its outgoing edges. This function is applied at most once for each node, when the
+ * The input is a directed or undirected graph (implicitly defined by an edge provider function) and one or more
+ * source nodes. The edge provider function has to provide for each node {@code u} the adjacent nodes directly
+ * reachable form {@code u} via its outgoing edges. This function is called at most once for each node, when the
  * algorithm advances from that node.
  * <p>
  * A target predicate can also be used in order to find path to a single target node instead of all nodes. The
@@ -39,9 +39,9 @@ public final class Bfs {
      * @throws java.util.NoSuchElementException if no target nodes are reachable from the source node.
      */
     public static <T> int dist(T source,
-            Function<? super T, ? extends Iterable<T>> neighborProvider,
+            Function<? super T, ? extends Iterable<T>> edgeProvider,
             Predicate<? super T> targetPredicate) {
-        return (int) findPath(source, neighborProvider, targetPredicate).orElseThrow().dist();
+        return (int) findPath(source, edgeProvider, targetPredicate).orElseThrow().dist();
     }
 
     /**
@@ -49,8 +49,8 @@ public final class Bfs {
      * by the given predicate.
      *
      * @param source the source node.
-     * @param neighborProvider the neighbor provider function. For each node {@code u}, it has to provide the
-     *         end nodes of the outgoing edges of {@code u} as a collection.
+     * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the end nodes
+     *         of the outgoing edges of {@code u}. This function is called at most once per node.
      * @param targetPredicate a predicate that returns true for the target node(s). It can accept multiple
      *         nodes, in which case a shortest path to one of the nearest target nodes is to be found.
      *         However, for a single target node {@code t}, you can simply use {@code t::equals}.
@@ -58,9 +58,9 @@ public final class Bfs {
      *         reachable from the source node.
      */
     public static <T> Optional<Path<T>> findPath(T source,
-            Function<? super T, ? extends Iterable<T>> neighborProvider,
+            Function<? super T, ? extends Iterable<T>> edgeProvider,
             Predicate<? super T> targetPredicate) {
-        return findPathFromAny(List.of(source), neighborProvider, targetPredicate);
+        return findPathFromAny(List.of(source), edgeProvider, targetPredicate);
     }
 
     /**
@@ -68,19 +68,19 @@ public final class Bfs {
      * specified by the given predicate.
      *
      * @param sources the source nodes.
-     * @param neighborProvider the neighbor provider function. For each node {@code u}, it has to provide the
-     *         end nodes of the outgoing edges of {@code u} as a collection.
+     * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the end nodes
+     *         of the outgoing edges of {@code u}. This function is called at most once per node.
      * @param targetPredicate a predicate that returns true for the target node(s). It can accept multiple
      *         nodes, in which case a shortest path to one of the nearest target nodes is to be found.
      *         However, for a single target node {@code t}, you can simply use {@code t::equals}.
      * @return a shortest {@link Path} to the nearest target node or an empty optional if no target nodes are
      *         reachable from the source nodes.
      */
-    public static <T> Optional<Path<T>> findPathFromAny(Iterable<? extends T> sources,
-            Function<? super T, ? extends Iterable<T>> neighborProvider,
+    public static <T> Optional<Path<T>> findPathFromAny(Iterable<T> sources,
+            Function<? super T, ? extends Iterable<T>> edgeProvider,
             Predicate<? super T> targetPredicate) {
         var results = new HashMap<T, Path<T>>();
-        return runBfs(sources, neighborProvider, targetPredicate, results);
+        return runBfs(sources, edgeProvider, targetPredicate, results);
     }
 
     /**
@@ -88,13 +88,13 @@ public final class Bfs {
      * given source node.
      *
      * @param source the source node.
-     * @param neighborProvider the neighbor provider function. For each node {@code u}, it has to provide the
-     *         end nodes of the outgoing edges of {@code u} as a collection.
+     * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the end nodes
+     *         of the outgoing edges of {@code u}. This function is called at most once per node.
      * @return a map that associates a {@link Path} with each node reachable from the source node.
      */
     public static <T> Map<T, Path<T>> run(T source,
-            Function<? super T, ? extends Iterable<T>> neighborProvider) {
-        return runFromAll(List.of(source), neighborProvider);
+            Function<? super T, ? extends Iterable<T>> edgeProvider) {
+        return runFromAll(List.of(source), edgeProvider);
     }
 
     /**
@@ -102,22 +102,21 @@ public final class Bfs {
      * given source nodes.
      *
      * @param sources the source nodes.
-     * @param neighborProvider the neighbor provider function. For each node {@code u}, it has to provide the
-     *         end nodes of the outgoing edges of {@code u} as a collection.
+     * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the end nodes
+     *         of the outgoing edges of {@code u}. This function is called at most once per node.
      * @return a map that associates a {@link Path} with each node reachable from the source nodes.
      */
-    public static <T> Map<T, Path<T>> runFromAll(Iterable<? extends T> sources,
-            Function<? super T, ? extends Iterable<T>> neighborProvider) {
+    public static <T> Map<T, Path<T>> runFromAll(Iterable<T> sources,
+            Function<? super T, ? extends Iterable<T>> edgeProvider) {
         var results = new HashMap<T, Path<T>>();
-        runBfs(sources, neighborProvider, n -> false, results);
+        runBfs(sources, edgeProvider, n -> false, results);
         return results;
     }
 
-    private static <T> Optional<Path<T>> runBfs(Iterable<? extends T> sources,
-            Function<? super T, ? extends Iterable<T>> neighborProvider,
+    private static <T> Optional<Path<T>> runBfs(Iterable<T> sources,
+            Function<? super T, ? extends Iterable<T>> edgeProvider,
             Predicate<? super T> targetPredicate,
             Map<T, Path<T>> results) {
-
         var queue = new ArrayDeque<Path<T>>();
         for (var source : sources) {
             var path = new Path<>(source, 0, null);
@@ -131,10 +130,10 @@ public final class Bfs {
                 return Optional.of(path);
             }
 
-            for (T neighbor : neighborProvider.apply(path.endNode())) {
-                if (!results.containsKey(neighbor)) {
-                    var p = new Path<>(neighbor, path.dist() + 1, path);
-                    results.put(neighbor, p);
+            for (T node : edgeProvider.apply(path.endNode())) {
+                if (!results.containsKey(node)) {
+                    var p = new Path<>(node, path.dist() + 1, path);
+                    results.put(node, p);
                     queue.add(p);
                 }
             }

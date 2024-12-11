@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InputUtilsTest extends InputUtils {
@@ -39,15 +40,39 @@ class InputUtilsTest extends InputUtils {
     }
 
     @Test
-    void testParseIntFromChar() {
+    void testParseSingleIntegerFromChar() {
         assertEquals(0, parseInt('0'));
         assertEquals(5, parseInt('5'));
-        assertEquals(10, parseInt('a'));
-        assertEquals(10, parseInt('A'));
-        assertEquals(15, parseInt('f'));
-        assertEquals(15, parseInt('F'));
-        assertEquals(35, parseInt('z'));
-        assertEquals(35, parseInt('Z'));
+        assertThrows(NumberFormatException.class, () -> parseInt('a'));
+        assertThrows(NumberFormatException.class, () -> parseInt('A'));
+
+        assertEquals(0, parseInt('0', 16));
+        assertEquals(5, parseInt('5', 16));
+        assertEquals(10, parseInt('a', 16));
+        assertEquals(10, parseInt('A', 16));
+        assertEquals(15, parseInt('f', 16));
+        assertEquals(15, parseInt('F', 16));
+        assertEquals(35, parseInt('z', 36));
+        assertEquals(35, parseInt('Z', 36));
+        assertThrows(NumberFormatException.class, () -> parseInt('z', 35));
+        assertThrows(NumberFormatException.class, () -> parseInt('Z', 35));
+    }
+
+    @Test
+    void testParseSingleIntegerFromString() {
+        assertEquals(42, parseInt("42"));
+        assertEquals(-123, parseInt("-123"));
+        assertThrows(NumberFormatException.class, () -> parseInt("1a"));
+        assertThrows(NumberFormatException.class, () -> parseInt("2A"));
+
+        assertEquals(16, parseInt("10", 16));
+        assertEquals(34, parseInt("42", 8));
+        assertEquals(170, parseInt("aa", 16));
+        assertEquals(255, parseInt("FF", 16));
+        assertEquals(46655, parseInt("zzz", 36));
+        assertEquals(46655, parseInt("ZZZ", 36));
+        assertThrows(NumberFormatException.class, () -> parseInt("zzz", 35));
+        assertThrows(NumberFormatException.class, () -> parseInt("ZZZ", 35));
     }
 
     @Test

@@ -80,6 +80,13 @@ public class InputUtils {
     }
 
     /**
+     * Returns the char matrix representation of the lines of the given strings.
+     */
+    public static char[][] toCharMatrix(String input) {
+        return toCharMatrix(input.lines().toList());
+    }
+
+    /**
      * Returns the char matrix representation of the given list of strings.
      */
     public static char[][] toCharMatrix(List<String> lines) {
@@ -173,12 +180,51 @@ public class InputUtils {
     }
 
     /**
-     * Parses the given character as an integer in radix 36. That is, both digits and letters are accepted.
-     * Characters from '0' to '9' are parsed as integers from 0 to 9, while characters from 'a' to 'z' and
-     * from 'A' to 'Z' are parsed as integers from 10 to 35.
+     * Parses the given character as a signed decimal integer.
+     * This is just a shorthand for {@link Integer#parseInt(String)}.
      */
     public static int parseInt(char c) {
-        return Integer.parseInt(String.valueOf(c), 36);
+        return Integer.parseInt(String.valueOf(c));
+    }
+
+    /**
+     * Parses the given characteras a signed integer in the given radix.
+     * This is just a shorthand for {@link Integer#parseInt(String, int)}.
+     */
+    public static int parseInt(char c, int radix) {
+        return Integer.parseInt(String.valueOf(c), radix);
+    }
+
+    /**
+     * Parses the given string as a signed decimal integer.
+     * This is just a shorthand for {@link Integer#parseInt(String)}.
+     */
+    public static int parseInt(String s) {
+        return Integer.parseInt(s);
+    }
+
+    /**
+     * Parses the given string as a signed integer in the given radix.
+     * This is just a shorthand for {@link Integer#parseInt(String, int)}.
+     */
+    public static int parseInt(String s, int radix) {
+        return Integer.parseInt(s, radix);
+    }
+
+    /**
+     * Parses the given string as a signed decimal integer.
+     * This is just a shorthand for {@link Long#parseLong(String)}.
+     */
+    public static long parseLong(String s) {
+        return Long.parseLong(s);
+    }
+
+    /**
+     * Parses the given string as a signed integer in the given radix.
+     * This is just a shorthand for {@link Long#parseLong(String, int)}.
+     */
+    public static long parseLong(String s, int radix) {
+        return Long.parseLong(s, radix);
     }
 
     /**
@@ -229,7 +275,7 @@ public class InputUtils {
     /**
      * Represents a value parsed by {@link #parse(String, String)}.
      */
-    public final static class ParsedValue {
+    public static final class ParsedValue {
 
         private final Object value;
 

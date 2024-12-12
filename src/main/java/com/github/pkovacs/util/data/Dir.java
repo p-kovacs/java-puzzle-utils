@@ -54,6 +54,18 @@ public enum Dir {
     }
 
     /**
+     * Returns the {@link Dir8} value corresponding to this direction.
+     */
+    public Dir8 toDir8() {
+        return switch (this) {
+            case NORTH -> Dir8.N;
+            case EAST -> Dir8.E;
+            case SOUTH -> Dir8.S;
+            case WEST -> Dir8.W;
+        };
+    }
+
+    /**
      * Returns true if this direction is horizontal: EAST or WEST.
      */
     public boolean isHorizontal() {

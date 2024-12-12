@@ -96,6 +96,7 @@ public final class Table<V> extends AbstractTable<V> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     V get0(int x, int y) {
         return (V) data[y][x];
     }
@@ -113,6 +114,7 @@ public final class Table<V> extends AbstractTable<V> {
     /**
      * Returns the value associated with the specified cell.
      */
+    @SuppressWarnings("unchecked")
     public V get(Pos pos) {
         return (V) data[pos.y][pos.x];
     }
@@ -120,6 +122,7 @@ public final class Table<V> extends AbstractTable<V> {
     /**
      * Returns the value associated with the specified cell.
      */
+    @SuppressWarnings("unchecked")
     public V get(int x, int y) {
         return (V) data[y][x];
     }

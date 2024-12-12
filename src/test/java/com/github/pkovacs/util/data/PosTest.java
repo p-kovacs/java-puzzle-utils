@@ -51,20 +51,14 @@ class PosTest {
         assertEquals(p(42, 13), a.neighbor('d'));
         assertEquals(p(41, 12), a.neighbor('L'));
 
-        assertEquals(p(42, 13), a.neighborWithUpwardY(Dir.NORTH));
-        assertEquals(p(43, 12), a.neighborWithUpwardY(Dir.EAST));
-        assertEquals(p(42, 11), a.neighborWithUpwardY(Dir.SOUTH));
-        assertEquals(p(41, 12), a.neighborWithUpwardY(Dir.WEST));
-
-        assertEquals(p(42, 13), a.neighborWithUpwardY('n'));
-        assertEquals(p(43, 12), a.neighborWithUpwardY('E'));
-        assertEquals(p(42, 11), a.neighborWithUpwardY('s'));
-        assertEquals(p(41, 12), a.neighborWithUpwardY('W'));
-
-        assertEquals(p(42, 13), a.neighborWithUpwardY('u'));
-        assertEquals(p(43, 12), a.neighborWithUpwardY('R'));
-        assertEquals(p(42, 11), a.neighborWithUpwardY('d'));
-        assertEquals(p(41, 12), a.neighborWithUpwardY('L'));
+        assertEquals(p(42, 11), a.neighbor8(Dir8.N));
+        assertEquals(p(43, 11), a.neighbor8(Dir8.NE));
+        assertEquals(p(43, 12), a.neighbor8(Dir8.E));
+        assertEquals(p(43, 13), a.neighbor8(Dir8.SE));
+        assertEquals(p(42, 13), a.neighbor8(Dir8.S));
+        assertEquals(p(41, 13), a.neighbor8(Dir8.SW));
+        assertEquals(p(41, 12), a.neighbor8(Dir8.W));
+        assertEquals(p(41, 11), a.neighbor8(Dir8.NW));
 
         assertEquals(List.of(
                         p(41, 12),
@@ -120,6 +114,40 @@ class PosTest {
     }
 
     @Test
+    void testDirectionMethods() {
+        var a = p(42, 12);
+
+        assertEquals(Dir.N, a.dirTo(p(42, 10)));
+        assertEquals(Dir.E, a.dirTo(p(50, 12)));
+        assertEquals(Dir.S, a.dirTo(p(42, 20)));
+        assertEquals(Dir.W, a.dirTo(p(0, 12)));
+        assertThrows(IllegalArgumentException.class, () -> a.dirTo(a));
+        assertThrows(IllegalArgumentException.class, () -> a.dirTo(Pos.ORIGIN));
+        assertThrows(IllegalArgumentException.class, () -> a.dirTo(p(20, 0)));
+        assertThrows(IllegalArgumentException.class, () -> a.dirTo(p(30, 0)));
+
+        assertEquals(Dir8.N, a.dir8To(p(42, 10)));
+        assertEquals(Dir8.NE, a.dir8To(p(44, 10)));
+        assertEquals(Dir8.E, a.dir8To(p(50, 12)));
+        assertEquals(Dir8.SE, a.dir8To(p(50, 20)));
+        assertEquals(Dir8.S, a.dir8To(p(42, 20)));
+        assertEquals(Dir8.SW, a.dir8To(p(30, 24)));
+        assertEquals(Dir8.W, a.dir8To(p(0, 12)));
+        assertEquals(Dir8.NW, a.dir8To(p(30, 0)));
+        assertThrows(IllegalArgumentException.class, () -> a.dir8To(a));
+        assertThrows(IllegalArgumentException.class, () -> a.dir8To(Pos.ORIGIN));
+        assertThrows(IllegalArgumentException.class, () -> a.dirTo(p(20, 0)));
+
+        for (var dir : Dir.values()) {
+            assertEquals(dir, a.dirTo(a.neighbor(dir)));
+            assertEquals(a.neighbor(dir), a.neighbor8(dir.toDir8()));
+        }
+        for (var dir : Dir8.values()) {
+            assertEquals(dir, a.dir8To(a.neighbor8(dir)));
+        }
+    }
+
+    @Test
     void testVectorMethods() {
         var a = p(42, 12);
         var b = p(10, 20);
@@ -154,6 +182,10 @@ class PosTest {
         assertEquals(a, a.mirrorVertically().mirrorVertically());
         assertEquals(a.opposite(), a.mirrorHorizontally().mirrorVertically());
         assertEquals(a.opposite(), a.mirrorVertically().mirrorHorizontally());
+
+        assertEquals(a.opposite(), a.mirrorAcross(Pos.ORIGIN));
+        assertEquals(p(20, 2), a.mirrorAcross(p(30,6)));
+        assertEquals(p(6, 36), a.mirrorAcross(p(23,23)));
     }
 
     @Test
@@ -179,18 +211,19 @@ class PosTest {
         var a = p(12, 42);
 
         assertEquals(List.of(p(12, 41), p(12, 40), p(12, 39)),
-                a.ray(a.neighbor(Dir.NORTH)).limit(3).toList());
+                a.ray(Dir.NORTH).limit(3).toList());
         assertEquals(List.of(p(13, 42), p(14, 42), p(15, 42)),
-                a.ray(a.neighbor(Dir.EAST)).limit(3).toList());
+                a.ray(Dir.EAST).limit(3).toList());
         assertEquals(List.of(p(12, 43), p(12, 44), p(12, 45)),
-                a.ray(a.neighbor(Dir.SOUTH)).limit(3).toList());
+                a.ray(Dir.SOUTH).limit(3).toList());
         assertEquals(List.of(p(11, 42), p(10, 42), p(9, 42)),
-                a.ray(a.neighbor(Dir.WEST)).limit(3).toList());
+                a.ray(Dir.WEST).limit(3).toList());
 
         assertEquals(List.of(p(11, 41), p(10, 40), p(9, 39)),
-                a.ray(p(11, 41)).limit(3).toList());
+                a.ray(Dir8.NW).limit(3).toList());
         assertEquals(List.of(p(16, 46), p(17, 47), p(18, 48)),
-                a.ray(p(13, 43)).skip(3).limit(3).toList());
+                a.ray(Dir8.SE).skip(3).limit(3).toList());
+
         assertEquals(List.of(p(10, 52), p(8, 62), p(6, 72)),
                 a.ray(p(10, 52)).limit(3).toList());
     }

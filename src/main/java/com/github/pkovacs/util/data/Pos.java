@@ -78,6 +78,8 @@ public final class Pos implements Comparable<Pos> {
      * Returns the neighbor of this position in the given direction, assuming that axis y is directed <i>downward</i>
      * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
      * non-negative coordinates.
+     * <p>
+     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
      */
     public Pos neighbor(Dir dir) {
         return switch (dir) {
@@ -89,16 +91,22 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the neighbor of this position in the given direction, assuming that axis y is directed <i>upward</i>
-     * (to the north). That is, {@code (0,0)} represents the <i>bottom</i> left position among the ones with
-     * non-negative coordinates.
+     * Returns the "extended" neighbor of this position in the given direction (out of 8 directions), assuming
+     * that axis y is directed <i>downward</i> (to the south). That is, {@code (0,0)} represents the <i>top</i>
+     * left position among the ones with non-negative coordinates.
+     * <p>
+     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
      */
-    public Pos neighborWithUpwardY(Dir dir) {
+    public Pos neighbor8(Dir8 dir) {
         return switch (dir) {
-            case NORTH -> new Pos(x, y + 1);
-            case EAST -> new Pos(x + 1, y);
-            case SOUTH -> new Pos(x, y - 1);
-            case WEST -> new Pos(x - 1, y);
+            case N -> new Pos(x, y - 1);
+            case NE -> new Pos(x + 1, y - 1);
+            case E -> new Pos(x + 1, y);
+            case SE -> new Pos(x + 1, y + 1);
+            case S -> new Pos(x, y + 1);
+            case SW -> new Pos(x - 1, y + 1);
+            case W -> new Pos(x - 1, y);
+            case NW -> new Pos(x - 1, y - 1);
         };
     }
 
@@ -112,18 +120,6 @@ public final class Pos implements Comparable<Pos> {
      */
     public Pos neighbor(char dir) {
         return neighbor(Dir.fromChar(dir));
-    }
-
-    /**
-     * Returns the neighbor of this position in the given direction, assuming that axis y is directed <i>upward</i>
-     * (to the north). That is, {@code (0,0)} represents the <i>bottom</i> left position among the ones with
-     * non-negative coordinates.
-     *
-     * @param dir the direction character. One of 'N' (north), 'E' (east), 'S' (south), 'W' (west),
-     *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
-     */
-    public Pos neighborWithUpwardY(char dir) {
-        return neighborWithUpwardY(Dir.fromChar(dir));
     }
 
     /**
@@ -183,28 +179,102 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
+     * Returns the direction to the given other position, assuming that axis y is directed <i>downward</i>
+     * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
+     * non-negative coordinates.
+     * <p>
+     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
+     *
+     * @throws IllegalArgumentException if this position and the given position are equal or do not lay on a
+     *         common horizontal or vertical line.
+     */
+    public Dir dirTo(Pos other) {
+        Pos delta = other.minus(this);
+        if (delta.x == 0 && delta.y == 0) {
+            throw new IllegalArgumentException("The positions are equal.");
+        } else if (delta.x == 0) {
+            return delta.y < 0 ? Dir.N : Dir.S;
+        } else if (delta.y == 0) {
+            return delta.x < 0 ? Dir.W : Dir.E;
+        } else {
+            throw new IllegalArgumentException(
+                    "The positions do not lay on a common horizontal or vertical line.");
+        }
+    }
+
+    /**
+     * Returns the direction to the given other position, assuming that axis y is directed <i>downward</i>
+     * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
+     * non-negative coordinates.
+     * <p>
+     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
+     *
+     * @throws IllegalArgumentException if this position and the given position are equal or do not lay on a
+     *         common horizontal, vertical, or diagonal line.
+     */
+    public Dir8 dir8To(Pos other) {
+        Pos delta = other.minus(this);
+        if (delta.x == 0 && delta.y == 0) {
+            throw new IllegalArgumentException("The positions are equal.");
+        } else if (delta.x == 0) {
+            return delta.y < 0 ? Dir8.N : Dir8.S;
+        } else if (delta.y == 0) {
+            return delta.x < 0 ? Dir8.W : Dir8.E;
+        } else if (delta.x == delta.y) {
+            return delta.x < 0 ? Dir8.NW : Dir8.SE;
+        } else if (delta.x == -delta.y) {
+            return delta.x < 0 ? Dir8.SW : Dir8.NE;
+        } else {
+            throw new IllegalArgumentException(
+                    "The positions do not lay on a common horizontal, vertical, or diagonal line.");
+        }
+    }
+
+    /**
      * Returns an ordered stream of positions that constitutes a straight line segment from this position to the
      * given other position (horizontally, vertically, or diagonally). The first element of the stream is this
      * position, and the last element is the given other position (provided that they lay on a common line).
      *
-     * @throws IllegalArgumentException if the positions do not lay on a common horizontal, vertical, or
-     *         diagonal line.
+     * @throws IllegalArgumentException if this position and the given position do not lay on a common
+     *         horizontal, vertical, or diagonal line.
      */
     public Stream<Pos> lineTo(Pos other) {
-        int xDist = other.x - x;
-        int yDist = other.y - y;
-
-        if (equals(other)) {
+        Pos delta = other.minus(this);
+        if (delta.x == 0 && delta.y == 0) {
             return Stream.of(this);
-        } else if (xDist == 0 || yDist == 0 || Math.abs(xDist) == Math.abs(yDist)) {
-            int dist = Math.max(Math.abs(xDist), Math.abs(yDist));
-            int dx = xDist / dist;
-            int dy = yDist / dist;
+        } else if (delta.x == 0 || delta.y == 0 || Math.abs(delta.x) == Math.abs(delta.y)) {
+            int dist = Math.max(Math.abs(delta.x), Math.abs(delta.y));
+            int dx = delta.x / dist;
+            int dy = delta.y / dist;
             return IntStream.rangeClosed(0, dist).mapToObj(i -> new Pos(x + i * dx, y + i * dy));
         } else {
             throw new IllegalArgumentException(
                     "The positions do not lay on a common horizontal, vertical, or diagonal line.");
         }
+    }
+
+    /**
+     * Returns an <i>infinite</i> ordered stream of positions that constitutes a "ray" moving away from this position
+     * in the given direction, assuming that axis y is directed <i>downward</i> (to the south). The first element of
+     * the stream is the corresponding neighbor of this position, the next element is the subsequent position in
+     * the same direction (applying the same changes to the x and y coordinates), and so on.
+     * <p>
+     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
+     */
+    public Stream<Pos> ray(Dir dir) {
+        return ray(neighbor(dir));
+    }
+
+    /**
+     * Returns an <i>infinite</i> ordered stream of positions that constitutes a "ray" moving away from this position
+     * in the given direction, assuming that axis y is directed <i>downward</i> (to the south). The first element of
+     * the stream is the corresponding neighbor of this position, the next element is the subsequent position in
+     * the same direction (applying the same changes to the x and y coordinates), and so on.
+     * <p>
+     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
+     */
+    public Stream<Pos> ray(Dir8 dir) {
+        return ray(neighbor8(dir));
     }
 
     /**
@@ -218,9 +288,8 @@ public final class Pos implements Comparable<Pos> {
      * respectively).
      */
     public Stream<Pos> ray(Pos other) {
-        int dx = other.x - x;
-        int dy = other.y - y;
-        return Stream.iterate(other, t -> t.plus(dx, dy));
+        var delta = other.minus(this);
+        return Stream.iterate(other, t -> t.plus(delta));
     }
 
     /**
@@ -252,14 +321,14 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Creates a new position by rotating this position vector 90 degrees to the left.
+     * Creates a new position by rotating this position vector 90 degrees to the left around the {@link #ORIGIN}.
      */
     public Pos rotateLeft() {
         return new Pos(-y, x);
     }
 
     /**
-     * Creates a new position by rotating this position vector 90 degrees to the right.
+     * Creates a new position by rotating this position vector 90 degrees to the right around the {@link #ORIGIN}.
      */
     public Pos rotateRight() {
         return new Pos(y, -x);
@@ -277,6 +346,13 @@ public final class Pos implements Comparable<Pos> {
      */
     public Pos mirrorVertically() {
         return new Pos(x, -y);
+    }
+
+    /**
+     * Creates a new position by mirroring this position vector with respect to the given refelection center.
+     */
+    public Pos mirrorAcross(Pos center) {
+        return center.plus(center.minus(this));
     }
 
     /**

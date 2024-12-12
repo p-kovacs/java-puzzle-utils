@@ -1,38 +1,26 @@
 package com.github.pkovacs.util.data;
 
 /**
- * Represents a main direction (cardinal direction) in 2D space.
+ * Represents one of the 4 main directions (cardinal directions) in 2D space: N (north), E (east), S (south), W (west).
  * Provides methods to convert from/to characters and to rotate and mirror a direction.
  */
 public enum Dir {
 
-    NORTH, EAST, SOUTH, WEST;
+    N, E, S, W;
 
     /**
-     * Returns the uppercase character corresponding to this direction.
+     * Returns the direction corresponding to the given string.
      *
-     * @return 'N', 'E', 'S', or 'W'.
+     * @param the direction string. One of "NORTH", "EAST", "SOUTH", "WEST", and their lowercase variants, or
+     *         one of the characters accepted by {@link #fromChar(char)}.
      */
-    public char toChar() {
-        return switch (this) {
-            case NORTH -> 'N';
-            case EAST -> 'E';
-            case SOUTH -> 'S';
-            case WEST -> 'W';
-        };
-    }
-
-    /**
-     * Returns the lowercase character corresponding to this direction.
-     *
-     * @return 'n', 'e', 's', or 'w'.
-     */
-    public char toLowerCaseChar() {
-        return switch (this) {
-            case NORTH -> 'n';
-            case EAST -> 'e';
-            case SOUTH -> 's';
-            case WEST -> 'w';
+    public static Dir fromString(String str) {
+        return switch (str) {
+            case "n", "N", "u", "U", "^", "NORTH", "north" -> N;
+            case "e", "E", "r", "R", ">", "EAST", "east" -> E;
+            case "s", "S", "d", "D", "v", "V", "SOUTH", "south" -> S;
+            case "w", "W", "l", "L", "<", "WEST", "west" -> W;
+            default -> throw new IllegalArgumentException("Unknown direction: '" + str + "'.");
         };
     }
 
@@ -45,10 +33,10 @@ public enum Dir {
      */
     public static Dir fromChar(char ch) {
         return switch (ch) {
-            case 'n', 'N', 'u', 'U', '^' -> NORTH;
-            case 'e', 'E', 'r', 'R', '>' -> EAST;
-            case 's', 'S', 'd', 'D', 'v', 'V' -> SOUTH;
-            case 'w', 'W', 'l', 'L', '<' -> WEST;
+            case 'n', 'N', 'u', 'U', '^' -> N;
+            case 'e', 'E', 'r', 'R', '>' -> E;
+            case 's', 'S', 'd', 'D', 'v', 'V' -> S;
+            case 'w', 'W', 'l', 'L', '<' -> W;
             default -> throw new IllegalArgumentException("Unknown direction: '" + ch + "'.");
         };
     }
@@ -58,10 +46,10 @@ public enum Dir {
      */
     public Dir8 toDir8() {
         return switch (this) {
-            case NORTH -> Dir8.N;
-            case EAST -> Dir8.E;
-            case SOUTH -> Dir8.S;
-            case WEST -> Dir8.W;
+            case N -> Dir8.N;
+            case E -> Dir8.E;
+            case S -> Dir8.S;
+            case W -> Dir8.W;
         };
     }
 
@@ -69,14 +57,14 @@ public enum Dir {
      * Returns true if this direction is horizontal: EAST or WEST.
      */
     public boolean isHorizontal() {
-        return this == EAST || this == WEST;
+        return this == E || this == W;
     }
 
     /**
      * Returns true if this direction is vertical: NORTH or SOUTH.
      */
     public boolean isVertical() {
-        return this == NORTH || this == SOUTH;
+        return this == N || this == S;
     }
 
     /**
@@ -84,10 +72,10 @@ public enum Dir {
      */
     public Dir opposite() {
         return switch (this) {
-            case NORTH -> SOUTH;
-            case EAST -> WEST;
-            case SOUTH -> NORTH;
-            case WEST -> EAST;
+            case N -> S;
+            case E -> W;
+            case S -> N;
+            case W -> E;
         };
     }
 
@@ -96,10 +84,10 @@ public enum Dir {
      */
     public Dir rotateRight() {
         return switch (this) {
-            case NORTH -> EAST;
-            case EAST -> SOUTH;
-            case SOUTH -> WEST;
-            case WEST -> NORTH;
+            case N -> E;
+            case E -> S;
+            case S -> W;
+            case W -> N;
         };
     }
 
@@ -108,10 +96,10 @@ public enum Dir {
      */
     public Dir rotateLeft() {
         return switch (this) {
-            case NORTH -> WEST;
-            case EAST -> NORTH;
-            case SOUTH -> EAST;
-            case WEST -> SOUTH;
+            case N -> W;
+            case E -> N;
+            case S -> E;
+            case W -> S;
         };
     }
 
@@ -120,8 +108,8 @@ public enum Dir {
      */
     public Dir mirrorHorizontally() {
         return switch (this) {
-            case EAST -> WEST;
-            case WEST -> EAST;
+            case E -> W;
+            case W -> E;
             default -> this;
         };
     }
@@ -131,8 +119,8 @@ public enum Dir {
      */
     public Dir mirrorVertically() {
         return switch (this) {
-            case NORTH -> SOUTH;
-            case SOUTH -> NORTH;
+            case N -> S;
+            case S -> N;
             default -> this;
         };
     }

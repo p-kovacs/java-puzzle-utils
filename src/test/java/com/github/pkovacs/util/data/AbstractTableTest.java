@@ -88,10 +88,10 @@ abstract class AbstractTableTest<T> {
         var table = createTestTable(4, 5);
         var p = p(3, 2);
 
-        assertEquals(List.of(p(3, 1), p(3, 0)), table.ray(p, Dir.NORTH).toList());
-        assertEquals(List.of(p(3, 3), p(3, 4)), table.ray(p, Dir.SOUTH).toList());
-        assertEquals(List.of(), table.ray(p, Dir.EAST).toList());
-        assertEquals(List.of(p(2, 2), p(1, 2), p(0, 2)), table.ray(p, Dir.WEST).toList());
+        assertEquals(List.of(p(3, 1), p(3, 0)), table.ray(p, Dir.N).toList());
+        assertEquals(List.of(p(3, 3), p(3, 4)), table.ray(p, Dir.S).toList());
+        assertEquals(List.of(), table.ray(p, Dir.E).toList());
+        assertEquals(List.of(p(2, 2), p(1, 2), p(0, 2)), table.ray(p, Dir.W).toList());
 
         assertEquals(List.of(p(2, 1), p(1, 0)), table.ray(p, p(2, 1)).toList());
         assertEquals(List.of(), table.ray(p, p(4, 3)).toList());

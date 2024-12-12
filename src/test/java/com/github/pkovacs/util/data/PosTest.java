@@ -36,10 +36,10 @@ class PosTest {
     void testNeighborMethods() {
         var a = p(42, 12);
 
-        assertEquals(p(42, 11), a.neighbor(Dir.NORTH));
-        assertEquals(p(43, 12), a.neighbor(Dir.EAST));
-        assertEquals(p(42, 13), a.neighbor(Dir.SOUTH));
-        assertEquals(p(41, 12), a.neighbor(Dir.WEST));
+        assertEquals(p(42, 11), a.neighbor(Dir.N));
+        assertEquals(p(43, 12), a.neighbor(Dir.E));
+        assertEquals(p(42, 13), a.neighbor(Dir.S));
+        assertEquals(p(41, 12), a.neighbor(Dir.W));
 
         assertEquals(p(42, 11), a.neighbor('n'));
         assertEquals(p(43, 12), a.neighbor('E'));
@@ -211,13 +211,13 @@ class PosTest {
         var a = p(12, 42);
 
         assertEquals(List.of(p(12, 41), p(12, 40), p(12, 39)),
-                a.ray(Dir.NORTH).limit(3).toList());
+                a.ray(Dir.N).limit(3).toList());
         assertEquals(List.of(p(13, 42), p(14, 42), p(15, 42)),
-                a.ray(Dir.EAST).limit(3).toList());
+                a.ray(Dir.E).limit(3).toList());
         assertEquals(List.of(p(12, 43), p(12, 44), p(12, 45)),
-                a.ray(Dir.SOUTH).limit(3).toList());
+                a.ray(Dir.S).limit(3).toList());
         assertEquals(List.of(p(11, 42), p(10, 42), p(9, 42)),
-                a.ray(Dir.WEST).limit(3).toList());
+                a.ray(Dir.W).limit(3).toList());
 
         assertEquals(List.of(p(11, 41), p(10, 40), p(9, 39)),
                 a.ray(Dir8.NW).limit(3).toList());

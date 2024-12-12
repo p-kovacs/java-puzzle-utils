@@ -12,25 +12,26 @@ class DirTest {
 
     @Test
     void test() {
+        Map.of("NORTH", Dir.N, "EAST", Dir.E, "SOUTH", Dir.S, "WEST", Dir.W,
+                        "north", Dir.N, "east", Dir.E, "south", Dir.S, "west", Dir.W)
+                .forEach((str, dir) -> assertEquals(dir, Dir.fromString(str)));
+        Map.of("N", Dir.N, "E", Dir.E, "S", Dir.S, "W", Dir.W)
+                .forEach((str, dir) -> assertEquals(dir, Dir.fromString(str)));
+        Map.of("U", Dir.N, "R", Dir.E, "D", Dir.S, "L", Dir.W,
+                        "^", Dir.N, ">", Dir.E, "v", Dir.S, "<", Dir.W)
+                .forEach((str, dir) -> assertEquals(dir, Dir.fromString(str)));
+
         for (char ch : new char[] { 'N', 'E', 'S', 'W' }) {
-            assertEquals(ch, Dir.fromChar(ch).toChar());
-        }
-        for (char ch : new char[] { 'n', 'e', 's', 'w' }) {
-            assertEquals(ch, Dir.fromChar(ch).toLowerCaseChar());
+            assertEquals("" + ch, Dir.fromChar(ch).toString());
         }
 
-        Map.of("U", 'N', "R", 'E', "D", 'S', "L", 'W').forEach((str, ch) -> {
-            assertEquals(ch, Dir.fromChar(str.charAt(0)).toChar());
-            assertEquals(ch, Dir.fromChar(str.toLowerCase(Locale.ROOT).charAt(0)).toChar());
-        });
+        assertEquals(Dir.N, Dir.S.opposite());
+        assertEquals(Dir.W, Dir.E.opposite());
 
-        assertEquals(Dir.NORTH, Dir.SOUTH.opposite());
-        assertEquals(Dir.WEST, Dir.EAST.opposite());
-
-        assertEquals(Dir.SOUTH, Dir.SOUTH.mirrorHorizontally());
-        assertEquals(Dir.WEST, Dir.EAST.mirrorHorizontally());
-        assertEquals(Dir.NORTH, Dir.SOUTH.mirrorVertically());
-        assertEquals(Dir.EAST, Dir.EAST.mirrorVertically());
+        assertEquals(Dir.S, Dir.S.mirrorHorizontally());
+        assertEquals(Dir.W, Dir.E.mirrorHorizontally());
+        assertEquals(Dir.N, Dir.S.mirrorVertically());
+        assertEquals(Dir.E, Dir.E.mirrorVertically());
 
         var dirs = Dir.values();
         for (int i = 0; i < 4; i++) {

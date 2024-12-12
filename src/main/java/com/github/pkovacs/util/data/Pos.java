@@ -83,10 +83,10 @@ public final class Pos implements Comparable<Pos> {
      */
     public Pos neighbor(Dir dir) {
         return switch (dir) {
-            case NORTH -> new Pos(x, y - 1);
-            case EAST -> new Pos(x + 1, y);
-            case SOUTH -> new Pos(x, y + 1);
-            case WEST -> new Pos(x - 1, y);
+            case N -> new Pos(x, y - 1);
+            case E -> new Pos(x + 1, y);
+            case S -> new Pos(x, y + 1);
+            case W -> new Pos(x - 1, y);
         };
     }
 

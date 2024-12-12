@@ -1,7 +1,5 @@
 package com.github.pkovacs.util.data;
 
-import java.util.Locale;
-
 /**
  * Represents one of the 8 directions (cardinal and intercardinal directions) in 2D space.
  */
@@ -10,18 +8,18 @@ public enum Dir8 {
     N, NE, E, SE, S, SW, W, NW;
 
     /**
-     * Returns the direction corresponding to the given string.
+     * Returns the direction corresponding to the given string representation.
      */
     public static Dir8 fromString(String str) {
-        return switch (str.toLowerCase(Locale.ROOT)) {
-            case "n" -> N;
-            case "ne" -> NE;
-            case "e" -> E;
-            case "se" -> SE;
-            case "s" -> S;
-            case "sw" -> SW;
-            case "w" -> W;
-            case "nw" -> NW;
+        return switch (str) {
+            case "N", "n" -> N;
+            case "NE", "ne" -> NE;
+            case "E", "e" -> E;
+            case "SE", "se" -> SE;
+            case "S", "s" -> S;
+            case "SW", "sw" -> SW;
+            case "W", "w" -> W;
+            case "NW", "nw" -> NW;
             default -> throw new IllegalArgumentException("Unknown direction: '" + str + "'.");
         };
     }

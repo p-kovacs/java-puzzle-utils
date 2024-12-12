@@ -221,26 +221,11 @@ public final class Pos implements Comparable<Pos> {
     public Stream<Pos> ray(Pos other) {
         int dx = other.x - x;
         int dy = other.y - y;
-        return Stream.iterate(other, t -> t.add(dx, dy));
+        return Stream.iterate(other, t -> t.plus(dx, dy));
     }
 
     /**
      * Creates a new position by adding the given delta values to the coordinates of this position vector.
-     */
-    public Pos add(int dx, int dy) {
-        return new Pos(x + dx, y + dy);
-    }
-
-    /**
-     * Creates a new position by adding the given position vector to this one.
-     */
-    public Pos add(Pos other) {
-        return new Pos(x + other.x, y + other.y);
-    }
-
-    /**
-     * Creates a new position by adding the given delta values to the coordinates of this position vector.
-     * This is just an alias for {@link #add(int, int)}.
      */
     public Pos plus(int dx, int dy) {
         return new Pos(x + dx, y + dy);
@@ -248,7 +233,6 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Creates a new position by adding the given position vector to this one.
-     * This is just an alias for {@link #add(Pos)}.
      */
     public Pos plus(Pos other) {
         return new Pos(x + other.x, y + other.y);
@@ -256,14 +240,6 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Creates a new position by subtracting the given position vector from this one.
-     */
-    public Pos subtract(Pos other) {
-        return new Pos(x - other.x, y - other.y);
-    }
-
-    /**
-     * Creates a new position by subtracting the given position vector from this one.
-     * This is just an alias for {@link #subtract(Pos)}.
      */
     public Pos minus(Pos other) {
         return new Pos(x - other.x, y - other.y);

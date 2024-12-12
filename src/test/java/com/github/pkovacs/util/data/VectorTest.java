@@ -23,13 +23,13 @@ class VectorTest {
         assertThrows(IndexOutOfBoundsException.class, b::z);
         assertThrows(IndexOutOfBoundsException.class, () -> b.get(2));
 
-        assertEquals(b, a.add(b));
-        assertEquals(v(44, 15), b.add(2, 3));
+        assertEquals(b, a.plus(b));
+        assertEquals(v(44, 15), b.plus(2, 3));
         assertEquals(v(-1, 12), b.set(0, -1));
         assertEquals(v(42, 100), b.set(1, 100));
         assertThrows(IndexOutOfBoundsException.class, () -> b.set(2, 0));
 
-        a = a.add(b).subtract(v(2, 2));
+        a = a.plus(b).minus(v(2, 2));
         assertEquals(v(40, 10), a);
         assertEquals(50, a.dist1());
         assertEquals(v(-40, -10), a.opposite());
@@ -38,8 +38,8 @@ class VectorTest {
         var e = v(42, 12);
         assertEquals(v(0, 0), e.multiply(0));
         assertEquals(e, e.multiply(1));
-        assertEquals(e.add(e), e.multiply(2));
-        assertEquals(e.add(e).add(e).add(e).add(e), e.multiply(5));
+        assertEquals(e.plus(e), e.multiply(2));
+        assertEquals(e.plus(e).plus(e).plus(e).plus(e), e.multiply(5));
 
         assertEquals("(42, 12)", v(42, 12).toString());
         assertEquals("(42, -12)", v(42, -12).toString());
@@ -150,19 +150,19 @@ class VectorTest {
         assertEquals(b.y(), 12);
         assertEquals(b.z(), 314);
 
-        assertEquals(b, a.add(b));
-        assertEquals(v(44, 15, 214), b.add(2, 3, -100));
+        assertEquals(b, a.plus(b));
+        assertEquals(v(44, 15, 214), b.plus(2, 3, -100));
 
-        a = a.add(b).subtract(v(2, 2, 14));
+        a = a.plus(b).minus(v(2, 2, 14));
         assertEquals(v(40, 10, 300), a);
         assertEquals(v(-40, -10, -300), a.opposite());
 
         var c = v(42, 12, -3);
         assertEquals(Vector.origin(c.dim()), c.multiply(0));
         assertEquals(c, c.multiply(1));
-        assertEquals(c.add(c), c.multiply(2));
-        assertEquals(c.add(c).add(c).add(c).add(c), c.multiply(5));
-        assertEquals(c.add(c.multiply(7)).subtract(c.multiply(4)), c.multiply(4));
+        assertEquals(c.plus(c), c.multiply(2));
+        assertEquals(c.plus(c).plus(c).plus(c).plus(c), c.multiply(5));
+        assertEquals(c.plus(c.multiply(7)).minus(c.multiply(4)), c.multiply(4));
 
         assertEquals("(42, 12, -3)", c.toString());
     }
@@ -284,16 +284,16 @@ class VectorTest {
         assertEquals(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100, b.distSq());
         assertEquals(Math.sqrt(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100), b.dist2(), 1e-10);
 
-        assertThrows(IllegalArgumentException.class, () -> b.add(new long[] { 10, 20, 30, 40, 50 }));
-        assertThrows(IllegalArgumentException.class, () -> b.add(c));
-        assertThrows(IllegalArgumentException.class, () -> c.subtract(b));
+        assertThrows(IllegalArgumentException.class, () -> b.plus(new long[] { 10, 20, 30, 40, 50 }));
+        assertThrows(IllegalArgumentException.class, () -> b.plus(c));
+        assertThrows(IllegalArgumentException.class, () -> c.minus(b));
         assertThrows(IllegalArgumentException.class, () -> b.dist1(c));
         assertThrows(IllegalArgumentException.class, () -> b.distMax(c));
         assertThrows(IllegalArgumentException.class, () -> c.distSq(b));
         assertThrows(IllegalArgumentException.class, () -> c.dist2(b));
 
-        assertEquals(b, a.add(b));
-        assertEquals(a, b.subtract(b));
+        assertEquals(b, a.plus(b));
+        assertEquals(a, b.minus(b));
 
         assertEquals("(1, -2, 3, -4, 5, -6, 7, -8, 9, -10)", b.toString());
     }

@@ -25,8 +25,8 @@ class PosTest {
         assertNotEquals(a, b);
         assertEquals(b, c);
 
-        assertEquals(p(30, 20), a.add(-12, 8));
-        assertEquals(p(24, 84), b.add(c.x, c.y));
+        assertEquals(p(30, 20), a.plus(-12, 8));
+        assertEquals(p(24, 84), b.plus(c.x, c.y));
 
         assertEquals("(12,42)", p(12, 42).toString());
         assertEquals("(-3,-5)", p(-3, -5).toString());
@@ -125,15 +125,10 @@ class PosTest {
         var b = p(10, 20);
 
         assertEquals(p(-42, -12), a.opposite());
-        assertEquals(p(52, 32), a.add(b));
-        assertEquals(p(52, 32), b.add(a));
         assertEquals(p(52, 32), a.plus(b));
         assertEquals(p(52, 32), b.plus(a));
-        assertEquals(p(32, -8), a.subtract(b));
-        assertEquals(p(-32, 8), b.subtract(a));
         assertEquals(p(32, -8), a.minus(b));
         assertEquals(p(-32, 8), b.minus(a));
-        assertEquals(a.add(b.opposite()), a.subtract(b));
         assertEquals(b.plus(a.opposite()), b.minus(a));
     }
 

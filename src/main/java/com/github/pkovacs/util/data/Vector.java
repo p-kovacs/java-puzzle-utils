@@ -161,8 +161,8 @@ public final class Vector implements Comparable<Vector> {
      * @throws IllegalArgumentException if the number of delta values is not equal to the dimension of the
      *         vector
      */
-    public Vector add(long... delta) {
-        return add(new Vector(delta));
+    public Vector plus(long... delta) {
+        return plus(new Vector(delta));
     }
 
     /**
@@ -170,7 +170,7 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public Vector add(Vector v) {
+    public Vector plus(Vector v) {
         return newInstance(checkDimensions(this, v), i -> coords[i] + v.coords[i]);
     }
 
@@ -179,7 +179,7 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public Vector subtract(Vector v) {
+    public Vector minus(Vector v) {
         return newInstance(checkDimensions(this, v), i -> coords[i] - v.coords[i]);
     }
 
@@ -227,7 +227,7 @@ public final class Vector implements Comparable<Vector> {
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
     public long dist1(Vector v) {
-        return subtract(v).dist1();
+        return v.minus(this).dist1();
     }
 
     /**
@@ -245,7 +245,7 @@ public final class Vector implements Comparable<Vector> {
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
     public long distMax(Vector v) {
-        return subtract(v).distMax();
+        return v.minus(this).distMax();
     }
 
     /**
@@ -267,7 +267,7 @@ public final class Vector implements Comparable<Vector> {
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
     public long distSq(Vector v) {
-        return subtract(v).distSq();
+        return v.minus(this).distSq();
     }
 
     /**
@@ -285,7 +285,7 @@ public final class Vector implements Comparable<Vector> {
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
     public double dist2(Vector v) {
-        return subtract(v).dist2();
+        return v.minus(this).dist2();
     }
 
     @Override

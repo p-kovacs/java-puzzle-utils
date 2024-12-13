@@ -1,5 +1,6 @@
 package com.github.pkovacs.util.alg;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -7,8 +8,6 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import com.github.pkovacs.util.alg.Dijkstra.Edge;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,18 +24,14 @@ class DijkstraTest extends AbstractShortestPathTest {
 
     @Test
     void testDijkstraWithSimpleGraph() {
-        ListMultimap<String, Edge<String>> graph = MultimapBuilder.hashKeys().arrayListValues().build();
-        graph.put("A", new Edge<>("B", 1));
-        graph.put("A", new Edge<>("C", 1));
-        graph.put("A", new Edge<>("D", 1));
-        graph.put("B", new Edge<>("E", 2));
-        graph.put("C", new Edge<>("E", 3));
-        graph.put("D", new Edge<>("G", 4));
-        graph.put("E", new Edge<>("D", 5));
-        graph.put("E", new Edge<>("F", 5));
-        graph.put("E", new Edge<>("G", 5));
-        graph.put("F", new Edge<>("B", 6));
-        graph.put("F", new Edge<>("G", 6));
+        var graph = new HashMap<String, List<Edge<String>>>();
+        graph.put("A", List.of(new Edge<>("B", 1), new Edge<>("C", 1), new Edge<>("D", 1)));
+        graph.put("B", List.of(new Edge<>("E", 2)));
+        graph.put("C", List.of(new Edge<>("E", 3)));
+        graph.put("D", List.of(new Edge<>("G", 4)));
+        graph.put("E", List.of(new Edge<>("D", 5), new Edge<>("F", 5), new Edge<>("G", 5)));
+        graph.put("F", List.of(new Edge<>("B", 6), new Edge<>("G", 6)));
+        graph.put("G", List.of());
 
         assertEquals(0, Dijkstra.dist("A", graph::get, "A"::equals));
         assertEquals(1, Dijkstra.dist("A", graph::get, "B"::equals));

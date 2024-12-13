@@ -3,6 +3,7 @@ package com.github.pkovacs.util.alg;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -15,8 +16,6 @@ import com.github.pkovacs.util.alg.Dijkstra.Edge;
 import com.github.pkovacs.util.data.CharTable;
 import com.github.pkovacs.util.data.Dir8;
 import com.github.pkovacs.util.data.Pos;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,14 +42,12 @@ abstract class AbstractShortestPathTest {
 
     @Test
     void testWithSimpleGraph() {
-        ListMultimap<String, Edge<String>> graph = MultimapBuilder.hashKeys().arrayListValues().build();
-        graph.put("A", new Edge<>("B", 10));
-        graph.put("A", new Edge<>("D", 5));
-        graph.put("B", new Edge<>("C", 1));
-        graph.put("C", new Edge<>("E", 1));
-        graph.put("D", new Edge<>("B", 3));
-        graph.put("D", new Edge<>("C", 9));
-        graph.put("D", new Edge<>("E", 11));
+        var graph = new HashMap<String, List<Edge<String>>>();
+        graph.put("A", List.of(new Edge<>("B", 10), new Edge<>("D", 5)));
+        graph.put("B", List.of(new Edge<>("C", 1)));
+        graph.put("C", List.of(new Edge<>("E", 1)));
+        graph.put("D", List.of(new Edge<>("B", 3), new Edge<>("C", 9), new Edge<>("E", 11)));
+        graph.put("E", List.of());
 
         var result = findPath("A", graph::get, "E"::equals);
         assertTrue(result.isPresent());

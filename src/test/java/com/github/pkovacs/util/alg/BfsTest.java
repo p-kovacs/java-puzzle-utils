@@ -3,6 +3,7 @@ package com.github.pkovacs.util.alg;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -10,11 +11,8 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.github.pkovacs.util.alg.Dijkstra.Edge;
 import com.github.pkovacs.util.data.CharTable;
 import com.github.pkovacs.util.data.Dir8;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.MultimapBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,18 +22,14 @@ class BfsTest {
 
     @Test
     void testWithSimpleGraph() {
-        ListMultimap<String, String> graph = MultimapBuilder.hashKeys().arrayListValues().build();
-        graph.put("A", "B");
-        graph.put("A", "C");
-        graph.put("A", "D");
-        graph.put("B", "E");
-        graph.put("C", "E");
-        graph.put("D", "G");
-        graph.put("E", "D");
-        graph.put("E", "F");
-        graph.put("E", "G");
-        graph.put("F", "B");
-        graph.put("F", "G");
+        var graph = new HashMap<String, List<String>>();
+        graph.put("A", List.of("B", "C", "D"));
+        graph.put("B", List.of("E"));
+        graph.put("C", List.of("E"));
+        graph.put("D", List.of("G"));
+        graph.put("E", List.of("D", "F", "G"));
+        graph.put("F", List.of("B", "G"));
+        graph.put("G", List.of());
 
         assertEquals(0, Bfs.dist("A", graph::get, "A"::equals));
         assertEquals(1, Bfs.dist("A", graph::get, "B"::equals));
@@ -57,7 +51,7 @@ class BfsTest {
         assertEquals(2, result1.get().dist());
         assertEquals(List.of("A", "D", "G"), result1.get().nodes());
 
-        graph.put("A", "G");
+        graph.put("A", List.of("B", "C", "D", "G"));
         var result2 = Bfs.findPath("A", graph::get, "G"::equals);
 
         assertTrue(result2.isPresent());
@@ -177,7 +171,7 @@ class BfsTest {
 
     @Test
     void testWithDirections() {
-        var result = Bfs.<Dir8>findPathFromAny(List.of(Dir8.NW, Dir8.N),
+        var result = Bfs.findPathFromAny(List.of(Dir8.NW, Dir8.N),
                 dir -> List.of(dir.prev(), dir.next()), Dir8.SE::equals);
 
         assertTrue(result.isPresent());

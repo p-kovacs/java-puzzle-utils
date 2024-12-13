@@ -1,6 +1,8 @@
 package com.github.pkovacs.util.data;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
@@ -56,11 +58,17 @@ public record Range(long min, long max) {
     }
 
     /**
-     * Constructs the bounding range of the {@code long} values of the given numbers.
+     * Constructs the bounding range of the given integers.
      *
+     * @throws IllegalArgumentException if any of the given numbers is not of type {@code Integer} or
+     *         {@code Long}
      * @throws java.util.NoSuchElementException if the collection is empty
      */
     public static Range bound(Collection<? extends Number> numbers) {
+        if (numbers.stream().map(Object::getClass).anyMatch(c -> c != Integer.class && c != Long.class)) {
+            throw new IllegalArgumentException("Only Integer and Long values are supported");
+        }
+
         return Range.bound(numbers.stream().mapToLong(Number::longValue));
     }
 
@@ -100,24 +108,82 @@ public record Range(long min, long max) {
     }
 
     /**
-     * Returns true if this range contains the given range.
+     * Returns true if this range contains all elements of the given other range.
      */
     public boolean containsAll(Range other) {
         return other.min >= min && other.max <= max;
     }
 
     /**
-     * Returns true if this range overlaps with the given range.
+     * Returns true if this range contains all given {@code int} values.
+     */
+    public boolean containsAll(int... ints) {
+        return Arrays.stream(ints).allMatch(this::contains);
+    }
+
+    /**
+     * Returns true if this range contains all given {@code long} values.
+     */
+    public boolean containsAll(long... longs) {
+        return Arrays.stream(longs).allMatch(this::contains);
+    }
+
+    /**
+     * Returns true if this range contains all elements of the given collection.
+     *
+     * @throws IllegalArgumentException if any of the given numbers is not of type {@code Integer} or
+     *         {@code Long}
+     * @throws java.util.NoSuchElementException if the collection is empty
+     */
+    public boolean containsAll(Collection<? extends Number> numbers) {
+        if (numbers.stream().map(Object::getClass).anyMatch(c -> c != Integer.class && c != Long.class)) {
+            throw new IllegalArgumentException("Only Integer and Long values are supported");
+        }
+
+        return numbers.stream().map(Number::longValue).allMatch(this::contains);
+    }
+
+    /**
+     * Returns true if this range overlaps with the given other range (they have a non-empty intersection).
      */
     public boolean overlaps(Range other) {
         return intersection(other).isNonEmpty();
     }
 
     /**
-     * Returns the intersection of this range and the given range.
+     * Returns the intersection of this range and the given other range.
+     * <p>
+     * For example, the intersection of {@code [1..6]} and {@code [4..9]} is {@code [4..6]}.
      */
     public Range intersection(Range other) {
         return new Range(Math.max(min, other.min), Math.min(max, other.max));
+    }
+
+    /**
+     * Returns the minimal range that contains all elements of both this range and the given other range.
+     * <p>
+     * For example, the span of {@code [1..3]} and {@code [6..9]} is {@code [1..9]}.
+     */
+    public Range span(Range other) {
+        return new Range(Math.min(min, other.min), Math.max(max, other.max));
+    }
+
+    /**
+     * Returns the maximal range lying between this range and the given non-overlapping other range. The resulting
+     * range may be empty if the two ranges are adjacent but non-overlapping.
+     * <p>
+     * For example, the gap between {@code [1..3]} and {@code [7..10]} is {@code [4..6]}; the gap between
+     * {@code [1..3]} and {@code [4..8]} is the empty range {@code [4..3]}; and an exception is thrown when
+     * the two ranges are overlapping like {@code [1..5]} and {@code [5..8]}.
+     *
+     * @throws IllegalArgumentException if this range overlaps with the given other range
+     */
+    public Range gap(Range other) {
+        if (overlaps(other)) {
+            throw new IllegalArgumentException("Overlapping ranges: " + this + " and " + other + ".");
+        }
+
+        return new Range(Math.min(max, other.max) + 1, Math.max(min, other.min) - 1);
     }
 
     /**
@@ -146,6 +212,20 @@ public record Range(long min, long max) {
      */
     public LongStream stream() {
         return LongStream.rangeClosed(min, max);
+    }
+
+    /**
+     * Returns a sorted list of the {@code long} values within this range.
+     */
+    public List<Long> toList() {
+        return stream().boxed().toList();
+    }
+
+    /**
+     * Returns a sorted array of the {@code long} values within this range.
+     */
+    public long[] toArray() {
+        return stream().toArray();
     }
 
     @Override

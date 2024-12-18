@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import com.github.pkovacs.util.Utils;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,11 @@ class RangeTest {
         assertEquals(x, Range.closedOpen(12, 43));
 
         assertEquals("[12..42]", x.toString());
+
+        var a = new Range(x.min, x.max - 1);
+        var b = new Range(x.min, x.max + 1);
+        assertEquals(List.of(z, x, y), Stream.of(x, y, z).sorted().toList());
+        assertEquals(List.of(z, a, x, b, y), Stream.of(a, b, x, y, z).sorted().toList());
     }
 
     @Test

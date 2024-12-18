@@ -9,14 +9,15 @@ import java.util.stream.LongStream;
 import com.github.pkovacs.util.Utils;
 
 /**
- * An immutable closed range of {@code long} integers {@code [min..max]}.
+ * An immutable closed range of {@code long} integers {@code [min..max]}. Provides various useful methods and also
+ * supports lexicographical ordering (first by {@code min}, then by {@code max}).
  * <p>
  * If you need a more general tool, consider using Guava's {@code Range} or {@code RangeSet}.
  *
  * @apiNote This class is not a record in order to provide easier access to {@link #min} and {@link #max} as
  *         public final fields.
  */
-public final class Range {
+public final class Range implements Comparable<Range> {
 
     /**
      * The minimum value of this range.
@@ -295,6 +296,11 @@ public final class Range {
     @Override
     public int hashCode() {
         return (int) (min * 65_521 + max);
+    }
+
+    @Override
+    public int compareTo(Range other) {
+        return min != other.min ? Long.compare(min, other.min) : Long.compare(max, other.max);
     }
 
 }

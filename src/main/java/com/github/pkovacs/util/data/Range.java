@@ -12,13 +12,67 @@ import com.github.pkovacs.util.Utils;
  * An immutable closed range of {@code long} integers {@code [min..max]}.
  * <p>
  * If you need a more general tool, consider using Guava's {@code Range} or {@code RangeSet}.
+ *
+ * @apiNote This class is not a record in order to provide easier access to {@link #min} and {@link #max} as
+ *         public final fields.
  */
-public record Range(long min, long max) {
+public final class Range {
+
+    /**
+     * The minimum value of this range.
+     *
+     * @apiNote This field is deliberately made public to similify the usage of this class.
+     */
+    public final long min;
+
+    /**
+     * The maximum value of this range.
+     *
+     * @apiNote This field is deliberately made public to similify the usage of this class.
+     */
+    public final long max;
 
     /**
      * Constructs a new closed range {@code [min..max]}.
      */
-    public Range {
+    public Range(long min, long max) {
+        this.min = min;
+        this.max = max;
+    }
+
+    /**
+     * Returns a new closed range {@code [min..max]}.
+     */
+    public static Range closed(long min, long max) {
+        return new Range(min, max);
+    }
+
+    /**
+     * Returns a new range that contains all values greater than or equal to the given lower bound and strictly
+     * less than the given upper bound. That is, it returns the closed range {@code [lower..upper - 1]}.
+     */
+    public static Range closedOpen(long lower, long upper) {
+        return new Range(lower, upper - 1);
+    }
+
+    /**
+     * Returns the minimum value of this range.
+     *
+     * @apiNote You can also use the public final field {@link #min} directly, but this method is practical when
+     *         used as a method reference: {@code Range::min}.
+     */
+    public long min() {
+        return min;
+    }
+
+    /**
+     * Returns the maximum value of this range.
+     *
+     * @apiNote You can also use the public final field {@link #max} directly, but this method is practical when
+     *         used as a method reference: {@code Range::max}.
+     */
+    public long max() {
+        return max;
     }
 
     /**
@@ -231,6 +285,16 @@ public record Range(long min, long max) {
     @Override
     public String toString() {
         return "[" + min + ".." + max + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Range r && r.min == min && r.max == max;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (min * 65_521 + max);
     }
 
 }

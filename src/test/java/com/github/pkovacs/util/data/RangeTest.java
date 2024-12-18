@@ -22,6 +22,11 @@ class RangeTest {
         var y = new Range(30, 50);
         var z = new Range(5, 12);
 
+        assertEquals(12, x.min);
+        assertEquals(12, x.min());
+        assertEquals(42, x.max);
+        assertEquals(42, x.max());
+
         assertFalse(x.isEmpty());
         assertTrue(x.isNonEmpty());
         assertEquals(31, x.size());
@@ -37,6 +42,9 @@ class RangeTest {
         assertEquals(Utils.listOf(array), z.stream().boxed().toList());
         assertEquals(Utils.listOf(array), z.toList());
         assertEquals(x.size(), x.stream().count());
+
+        assertEquals(x, Range.closed(12, 42));
+        assertEquals(x, Range.closedOpen(12, 43));
 
         assertEquals("[12..42]", x.toString());
     }

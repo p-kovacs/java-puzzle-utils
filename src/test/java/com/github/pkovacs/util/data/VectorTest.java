@@ -25,9 +25,9 @@ class VectorTest {
 
         assertEquals(b, a.plus(b));
         assertEquals(v(44, 15), b.plus(2, 3));
-        assertEquals(v(-1, 12), b.set(0, -1));
-        assertEquals(v(42, 100), b.set(1, 100));
-        assertThrows(IndexOutOfBoundsException.class, () -> b.set(2, 0));
+        assertEquals(v(-1, 12), b.with(0, -1));
+        assertEquals(v(42, 100), b.with(1, 100));
+        assertThrows(IndexOutOfBoundsException.class, () -> b.with(2, 0));
 
         a = a.plus(b).minus(v(2, 2));
         assertEquals(v(40, 10), a);

@@ -102,7 +102,7 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IndexOutOfBoundsException if {@code k >= dim()}
      */
-    public Vector set(int k, long value) {
+    public Vector with(int k, long value) {
         long[] newCoords = coords.clone();
         newCoords[k] = value;
         return new Vector(newCoords);
@@ -123,11 +123,11 @@ public final class Vector implements Comparable<Vector> {
     public Stream<Vector> neighborsAndSelf() {
         var list = new ArrayList<Vector>();
         for (int k = 0; k < dim(); k++) {
-            list.add(set(k, coords[k] - 1));
+            list.add(with(k, coords[k] - 1));
         }
         list.add(this);
         for (int k = dim() - 1; k >= 0; k--) {
-            list.add(set(k, coords[k] + 1));
+            list.add(with(k, coords[k] + 1));
         }
         return list.stream();
     }
@@ -149,7 +149,7 @@ public final class Vector implements Comparable<Vector> {
         for (int i = 0; i < dim(); i++) {
             int k = i;
             list = list.stream()
-                    .flatMap(v -> Stream.of(v.set(k, v.get(k) - 1), v, v.set(k, v.get(k) + 1)))
+                    .flatMap(v -> Stream.of(v.with(k, v.get(k) - 1), v, v.with(k, v.get(k) + 1)))
                     .toList();
         }
         return list.stream();
@@ -350,7 +350,7 @@ public final class Vector implements Comparable<Vector> {
         for (int i = 0; i < dim; i++) {
             int k = i;
             var range = ranges.get(k);
-            list = list.stream().flatMap(v -> range.stream().mapToObj(c -> v.set(k, c))).toList();
+            list = list.stream().flatMap(v -> range.stream().mapToObj(c -> v.with(k, c))).toList();
         }
         return list.stream();
     }
@@ -374,7 +374,7 @@ public final class Vector implements Comparable<Vector> {
         for (int i = 0; i < dim; i++) {
             int k = i;
             list = list.stream()
-                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(c -> v.set(k, c)))
+                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(c -> v.with(k, c)))
                     .toList();
         }
         return list.stream();

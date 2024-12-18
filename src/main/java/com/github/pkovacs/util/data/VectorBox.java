@@ -16,14 +16,14 @@ import java.util.stream.Stream;
  * @see Vector
  * @see Range
  */
-public record Box(Vector min, Vector max) {
+public record VectorBox(Vector min, Vector max) {
 
     /**
      * Constructs a new box {@code [min..max]}.
      *
      * @throws IllegalArgumentException if the given vectors have different dimensions
      */
-    public Box {
+    public VectorBox {
         if (min.dim() != max.dim()) {
             throw new IllegalArgumentException("The vectors have different dimensions.");
         }
@@ -36,8 +36,8 @@ public record Box(Vector min, Vector max) {
      * @throws IllegalArgumentException if the given vectors have different dimensions
      * @throws NoSuchElementException if the collection is empty
      */
-    public static Box bound(Collection<Vector> vectors) {
-        return new Box(bound(vectors, Math::min), bound(vectors, Math::max));
+    public static VectorBox bound(Collection<Vector> vectors) {
+        return new VectorBox(bound(vectors, Math::min), bound(vectors, Math::max));
     }
 
     /**
@@ -76,28 +76,28 @@ public record Box(Vector min, Vector max) {
     /**
      * Returns true if this box contains the given other box.
      */
-    public boolean containsAll(Box other) {
+    public boolean containsAll(VectorBox other) {
         return intersection(other).equals(other);
     }
 
     /**
      * Returns true if this box overlaps with the given other box.
      */
-    public boolean overlaps(Box other) {
+    public boolean overlaps(VectorBox other) {
         return !intersection(other).isEmpty();
     }
 
     /**
      * Returns the intersection of this box and the given other box.
      */
-    public Box intersection(Box other) {
+    public VectorBox intersection(VectorBox other) {
         if (other.dim() != dim()) {
             throw new IllegalArgumentException("The boxes have different dimensions.");
         }
 
         long[] lower = IntStream.range(0, dim()).mapToLong(k -> Math.max(min.get(k), other.min.get(k))).toArray();
         long[] upper = IntStream.range(0, dim()).mapToLong(k -> Math.min(max.get(k), other.max.get(k))).toArray();
-        return new Box(new Vector(lower), new Vector(upper));
+        return new VectorBox(new Vector(lower), new Vector(upper));
     }
 
     /**

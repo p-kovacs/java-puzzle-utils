@@ -11,12 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class BoxTest {
+class VectorBoxTest {
 
     @Test
     void testTwoDim() {
-        var x = new Box(new Vector(5, 12), new Vector(12, 42));
-        var y = new Box(new Vector(8, 24), new Vector(20, 30));
+        var x = new VectorBox(new Vector(5, 12), new Vector(12, 42));
+        var y = new VectorBox(new Vector(8, 24), new Vector(20, 30));
 
         assertFalse(x.isEmpty());
         assertEquals(8 * 31, x.count());
@@ -34,7 +34,7 @@ class BoxTest {
         assertTrue(x.overlaps(y));
         assertTrue(x.overlaps(x));
 
-        var z = new Box(new Vector(8, 24), new Vector(12, 30));
+        var z = new VectorBox(new Vector(8, 24), new Vector(12, 30));
         assertEquals(z, x.intersection(y));
         assertEquals(z, y.intersection(x));
         assertTrue(x.contains(z.min()));
@@ -46,15 +46,15 @@ class BoxTest {
 
         assertEquals("[(5, 12) .. (12, 42)]", x.toString());
 
-        var list = new Box(new Vector(10, 20), new Vector(14, 25)).stream().toList();
+        var list = new VectorBox(new Vector(10, 20), new Vector(14, 25)).stream().toList();
         assertEquals(5 * 6, list.size());
         assertTrue(IntStream.range(0, list.size() - 1).allMatch(i -> list.get(i).compareTo(list.get(i + 1)) <= 0));
     }
 
     @Test
     void testThreeDim() {
-        var x = new Box(new Vector(5, 12, 1), new Vector(12, 42, 100));
-        var y = new Box(new Vector(8, 24, -48), new Vector(20, 40, 80));
+        var x = new VectorBox(new Vector(5, 12, 1), new Vector(12, 42, 100));
+        var y = new VectorBox(new Vector(8, 24, -48), new Vector(20, 40, 80));
 
         assertFalse(x.isEmpty());
         assertEquals(8 * 31 * 100, x.count());
@@ -76,7 +76,7 @@ class BoxTest {
         assertTrue(x.overlaps(y));
         assertTrue(x.overlaps(x));
 
-        var z = new Box(new Vector(8, 24, 1), new Vector(12, 40, 80));
+        var z = new VectorBox(new Vector(8, 24, 1), new Vector(12, 40, 80));
         assertEquals(z, x.intersection(y));
         assertEquals(z, y.intersection(x));
         assertTrue(x.contains(z.min()));
@@ -89,15 +89,15 @@ class BoxTest {
         assertEquals("[(5, 12, 1) .. (12, 42, 100)]", x.toString());
         assertEquals("[(8, 24, -48) .. (20, 40, 80)]", y.toString());
 
-        var list = new Box(new Vector(10, 20, 30), new Vector(14, 21, 32)).stream().toList();
+        var list = new VectorBox(new Vector(10, 20, 30), new Vector(14, 21, 32)).stream().toList();
         assertEquals(5 * 2 * 3, list.size());
         assertTrue(IntStream.range(0, list.size() - 1).allMatch(i -> list.get(i).compareTo(list.get(i + 1)) <= 0));
     }
 
     @Test
     void testGeneral() {
-        var x = new Box(new Vector(5, 40, 1, 0, 1000), new Vector(6, 42, 4, 0, 1005));
-        var y = new Box(new Vector(5, 40, 2, 0, 1001), new Vector(6, 41, 4, 0, 1002));
+        var x = new VectorBox(new Vector(5, 40, 1, 0, 1000), new Vector(6, 42, 4, 0, 1005));
+        var y = new VectorBox(new Vector(5, 40, 2, 0, 1001), new Vector(6, 41, 4, 0, 1002));
 
         assertFalse(x.isEmpty());
         assertEquals(2 * 3 * 4 * 6, x.count());
@@ -121,10 +121,10 @@ class BoxTest {
 
     @Test
     void testExceptions() {
-        assertThrows(IllegalArgumentException.class, () -> new Box(new Vector(5, 12), new Vector(12, 42, 100)));
+        assertThrows(IllegalArgumentException.class, () -> new VectorBox(new Vector(5, 12), new Vector(12, 42, 100)));
 
-        var x = new Box(new Vector(5, 12), new Vector(12, 42));
-        var y = new Box(new Vector(5, 12, 1), new Vector(12, 42, 100));
+        var x = new VectorBox(new Vector(5, 12), new Vector(12, 42));
+        var y = new VectorBox(new Vector(5, 12, 1), new Vector(12, 42, 100));
         assertThrows(IllegalArgumentException.class, () -> x.contains(y.min()));
         assertThrows(IllegalArgumentException.class, () -> y.contains(x.max()));
         assertThrows(IllegalArgumentException.class, () -> x.containsAll(y));
@@ -143,15 +143,15 @@ class BoxTest {
                 new Vector(8, -24, -48),
                 new Vector(20, 40, 100));
 
-        assertEquals(new Box(new Vector(5, -24), new Vector(20, 42)), Box.bound(list2d));
-        assertEquals(new Box(new Vector(5, -24, -48), new Vector(20, 42, 100)), Box.bound(list3d));
-        assertEquals(new Box(list2d.get(0), list2d.get(1)), Box.bound(list2d.subList(0, 2)));
-        assertEquals(new Box(list3d.get(0), list3d.get(0)), Box.bound(list3d.subList(0, 1)));
+        assertEquals(new VectorBox(new Vector(5, -24), new Vector(20, 42)), VectorBox.bound(list2d));
+        assertEquals(new VectorBox(new Vector(5, -24, -48), new Vector(20, 42, 100)), VectorBox.bound(list3d));
+        assertEquals(new VectorBox(list2d.get(0), list2d.get(1)), VectorBox.bound(list2d.subList(0, 2)));
+        assertEquals(new VectorBox(list3d.get(0), list3d.get(0)), VectorBox.bound(list3d.subList(0, 1)));
 
-        assertTrue(new Box(new Vector(5, 10), new Vector(10, 5)).isEmpty());
-        assertFalse(Box.bound(List.of(new Vector(5, 10), new Vector(10, 5))).isEmpty());
+        assertTrue(new VectorBox(new Vector(5, 10), new Vector(10, 5)).isEmpty());
+        assertFalse(VectorBox.bound(List.of(new Vector(5, 10), new Vector(10, 5))).isEmpty());
 
-        assertThrows(NoSuchElementException.class, () -> Box.bound(List.of()));
+        assertThrows(NoSuchElementException.class, () -> VectorBox.bound(List.of()));
     }
 
 }

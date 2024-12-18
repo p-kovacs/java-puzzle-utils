@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.joining;
  * This class is the D-dimensional generalization of {@link Pos}.
  *
  * @see Pos
- * @see Box
+ * @see VectorBox
  */
 public final class Vector implements Comparable<Vector> {
 

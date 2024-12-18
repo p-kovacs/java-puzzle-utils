@@ -322,6 +322,13 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
+     * Creates a new position by multiplying both coordinates of this position vector by the given scalar factor.
+     */
+    public Pos multiply(long factor) {
+        return new Pos(factor * x, factor * y);
+    }
+
+    /**
      * Creates a new position by rotating this position vector 90 degrees to the left around the {@link #ORIGIN}.
      */
     public Pos rotateLeft() {

@@ -157,6 +157,10 @@ class PosTest {
         assertEquals(p(32, -8), a.minus(b));
         assertEquals(p(-32, 8), b.minus(a));
         assertEquals(b.plus(a.opposite()), b.minus(a));
+
+        assertEquals(p(420, 120), a.multiply(10));
+        assertEquals(p(-84, -24), a.multiply(-2));
+        assertEquals(p(42_000_000_000_000L, 12_000_000_000_000L), a.multiply(1_000_000_000_000L));
     }
 
     @Test
@@ -294,7 +298,7 @@ class PosTest {
         assertEquals(list2, Pos.boundingBox(p(44, 10), p(43, 11), p(42, 10)).toList());
     }
 
-    private static Pos p(int x, int y) {
+    private static Pos p(long x, long y) {
         return new Pos(x, y);
     }
 

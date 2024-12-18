@@ -3,10 +3,11 @@ package com.github.pkovacs.util.data;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
- * Represents a position (point or position vector) in 2D coordinate space as an immutable pair of {@code int}
+ * Represents a position (point or position vector) in 2D coordinate space as an immutable pair of {@code long}
  * values: {@code (x,y)}. Provides various useful methods and also supports lexicographical ordering (first by
  * {@code x}, then by {@code y}).
  *
@@ -23,18 +24,18 @@ public final class Pos implements Comparable<Pos> {
      * The x coordinate (or column index).
      * This field is deliberately made public to similify the usage of this class.
      */
-    public final int x;
+    public final long x;
 
     /**
      * The y coordinate (or row index).
      * This field is deliberately made public to similify the usage of this class.
      */
-    public final int y;
+    public final long y;
 
     /**
      * Constructs a new position.
      */
-    public Pos(int x, int y) {
+    public Pos(long x, long y) {
         this.x = x;
         this.y = y;
     }
@@ -45,7 +46,7 @@ public final class Pos implements Comparable<Pos> {
      * @apiNote You can also use the public final field {@link #x} directly, but this method is practical when
      *         used as a method reference: {@code Pos::x}.
      */
-    public int x() {
+    public long x() {
         return x;
     }
 
@@ -55,7 +56,7 @@ public final class Pos implements Comparable<Pos> {
      * @apiNote You can also use the public final field {@link #y} directly, but this method is practical when
      *         used as a method reference: {@code Pos::y}.
      */
-    public int y() {
+    public long y() {
         return y;
     }
 
@@ -243,10 +244,10 @@ public final class Pos implements Comparable<Pos> {
         if (delta.x == 0 && delta.y == 0) {
             return Stream.of(this);
         } else if (delta.x == 0 || delta.y == 0 || Math.abs(delta.x) == Math.abs(delta.y)) {
-            int dist = Math.max(Math.abs(delta.x), Math.abs(delta.y));
-            int dx = delta.x / dist;
-            int dy = delta.y / dist;
-            return IntStream.rangeClosed(0, dist).mapToObj(i -> new Pos(x + i * dx, y + i * dy));
+            long dist = Math.max(Math.abs(delta.x), Math.abs(delta.y));
+            long dx = delta.x / dist;
+            long dy = delta.y / dist;
+            return LongStream.rangeClosed(0, dist).mapToObj(i -> new Pos(x + i * dx, y + i * dy));
         } else {
             throw new IllegalArgumentException(
                     "The positions do not lay on a common horizontal, vertical, or diagonal line.");
@@ -368,7 +369,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L1 distance or Manhattan distance) between this position and the given other position.
      */
     public long dist1(Pos other) {
-        return Math.abs((long) other.x - x) + Math.abs((long) other.y - y);
+        return Math.abs(other.x - x) + Math.abs(other.y - y);
     }
 
     /**
@@ -384,7 +385,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L∞ distance or Chebyshev distance) between this position and the given other position.
      */
     public long distMax(Pos other) {
-        return Math.max(Math.abs((long) other.x - x), Math.abs((long) other.y - y));
+        return Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
     }
 
     /**
@@ -404,8 +405,8 @@ public final class Pos implements Comparable<Pos> {
      * Warning: this distance metric does not satisfy the triangle inequality.
      */
     public long distSq(Pos other) {
-        long dx = (long) other.x - x;
-        long dy = (long) other.y - y;
+        long dx = other.x - x;
+        long dy = other.y - y;
         return dx * dx + dy * dy;
     }
 
@@ -438,12 +439,12 @@ public final class Pos implements Comparable<Pos> {
     @Override
     public int hashCode() {
         // Optimized for small integer values (the largest prime below the square root of 2^32 is used)
-        return x * 65_521 + y;
+        return (int) (x * 65_521 + y);
     }
 
     @Override
     public int compareTo(Pos other) {
-        return x != other.x ? Integer.compare(x, other.x) : Integer.compare(y, other.y);
+        return x != other.x ? Long.compare(x, other.x) : Long.compare(y, other.y);
     }
 
     /**
@@ -452,7 +453,7 @@ public final class Pos implements Comparable<Pos> {
      * @throws java.util.NoSuchElementException if the collection is empty
      */
     public static Range xRange(Collection<Pos> positions) {
-        return Range.bound(positions.stream().mapToInt(Pos::x));
+        return Range.bound(positions.stream().mapToLong(Pos::x));
     }
 
     /**
@@ -461,7 +462,7 @@ public final class Pos implements Comparable<Pos> {
      * @throws java.util.NoSuchElementException if the collection is empty
      */
     public static Range yRange(Collection<Pos> positions) {
-        return Range.bound(positions.stream().mapToInt(Pos::y));
+        return Range.bound(positions.stream().mapToLong(Pos::y));
     }
 
     /**
@@ -504,13 +505,13 @@ public final class Pos implements Comparable<Pos> {
      * and the last element is {@code max}. Otherwise, an empty stream is returned.
      */
     public static Stream<Pos> box(Pos min, Pos max) {
-        int width = max.x - min.x + 1;
-        int height = max.y - min.y + 1;
+        long width = max.x - min.x + 1;
+        long height = max.y - min.y + 1;
         if (width <= 0 || height <= 0) {
             return Stream.empty();
         }
 
-        return IntStream.range(0, width * height)
+        return LongStream.range(0, width * height)
                 .mapToObj(i -> new Pos(min.x + i / height, min.y + i % height));
     }
 

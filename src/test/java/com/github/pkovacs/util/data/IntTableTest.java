@@ -68,7 +68,7 @@ class IntTableTest extends AbstractTableTest<Integer> {
 
         assertContentEquals(new int[][] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, table);
 
-        table.cells().forEach(p -> table.set(p, p.y * 100 + p.x));
+        table.cells().forEach(p -> table.set(p, (int) (p.y * 100 + p.x)));
 
         assertContentEquals(new int[][] { { 0, 1, 2, 3 }, { 100, 101, 102, 103 }, { 200, 201, 202, 203 } }, table);
 
@@ -116,7 +116,7 @@ class IntTableTest extends AbstractTableTest<Integer> {
 
     @Test
     void testStreamMethods() {
-        var table = new IntTable(4, 3, p -> ((p.y + 2) % 3) * 4 + p.x);
+        var table = new IntTable(4, 3, p -> (int) (((p.y + 2) % 3) * 4 + p.x));
 
         assertContentEquals(new int[][] { { 8, 9, 10, 11 }, { 0, 1, 2, 3 }, { 4, 5, 6, 7 } }, table);
 
@@ -215,7 +215,7 @@ class IntTableTest extends AbstractTableTest<Integer> {
 
     @Override
     IntTable createTestTable(int width, int height) {
-        return new IntTable(width, height, p -> p.y * 100 + p.x);
+        return new IntTable(width, height, p -> (int) (p.y * 100 + p.x));
     }
 
 }

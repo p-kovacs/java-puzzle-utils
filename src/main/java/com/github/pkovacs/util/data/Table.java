@@ -116,7 +116,7 @@ public final class Table<V> extends AbstractTable<V> {
      */
     @SuppressWarnings("unchecked")
     public V get(Pos pos) {
-        return (V) data[pos.y][pos.x];
+        return (V) data[(int) pos.y][(int) pos.x];
     }
 
     /**
@@ -131,7 +131,7 @@ public final class Table<V> extends AbstractTable<V> {
      * Sets the value associated with the specified cell.
      */
     public void set(Pos pos, V value) {
-        data[pos.y][pos.x] = value;
+        data[(int) pos.y][(int) pos.x] = value;
     }
 
     /**

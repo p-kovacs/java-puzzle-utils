@@ -130,11 +130,11 @@ public final class CharTable extends AbstractTable<Character> {
     private static CharTable wrap(Collection<Pos> positions, Function<Pos, Character> function, char fillValue) {
         var xRange = Pos.xRange(positions);
         var yRange = Pos.yRange(positions);
-        int minX = (int) xRange.min();
-        int minY = (int) yRange.min();
+        long minX = xRange.min();
+        long minY = yRange.min();
 
         var table = new CharTable((int) xRange.size(), (int) yRange.size(), fillValue);
-        positions.forEach(p -> table.set(p.x - minX, p.y - minY, function.apply(p)));
+        positions.forEach(p -> table.set((int) (p.x - minX), (int) (p.y - minY), function.apply(p)));
         return table;
     }
 
@@ -175,7 +175,7 @@ public final class CharTable extends AbstractTable<Character> {
      * Returns the value associated with the specified cell.
      */
     public char get(Pos pos) {
-        return data[pos.y][pos.x];
+        return data[(int) pos.y][(int) pos.x];
     }
 
     /**
@@ -189,7 +189,7 @@ public final class CharTable extends AbstractTable<Character> {
      * Sets the value associated with the specified cell.
      */
     public void set(Pos pos, char value) {
-        data[pos.y][pos.x] = value;
+        data[(int) pos.y][(int) pos.x] = value;
     }
 
     /**

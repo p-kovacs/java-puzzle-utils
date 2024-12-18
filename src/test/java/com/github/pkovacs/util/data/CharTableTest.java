@@ -199,7 +199,7 @@ class CharTableTest extends AbstractTableTest<Character> {
 
     @Override
     CharTable createTestTable(int width, int height) {
-        var table = new CharTable(width, height, p -> switch (p.y % 3) {
+        var table = new CharTable(width, height, p -> switch ((int) (p.y % 3)) {
             case 0 -> (char) ('0' + p.x);
             case 1 -> (char) ('a' + p.x);
             default -> (char) ('A' + p.x);

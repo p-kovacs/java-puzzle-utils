@@ -124,11 +124,11 @@ public final class IntTable extends AbstractTable<Integer> {
     private static IntTable wrap(Collection<Pos> positions, Function<Pos, Integer> function, int fillValue) {
         var xRange = Pos.xRange(positions);
         var yRange = Pos.yRange(positions);
-        int minX = (int) xRange.min();
-        int minY = (int) yRange.min();
+        long minX = xRange.min();
+        long minY = yRange.min();
 
         var table = new IntTable((int) xRange.size(), (int) yRange.size(), fillValue);
-        positions.forEach(p -> table.set(p.x - minX, p.y - minY, function.apply(p)));
+        positions.forEach(p -> table.set((int) (p.x - minX), (int) (p.y - minY), function.apply(p)));
         return table;
     }
 
@@ -169,7 +169,7 @@ public final class IntTable extends AbstractTable<Integer> {
      * Returns the value associated with the specified cell.
      */
     public int get(Pos pos) {
-        return data[pos.y][pos.x];
+        return data[(int) pos.y][(int) pos.x];
     }
 
     /**
@@ -183,7 +183,7 @@ public final class IntTable extends AbstractTable<Integer> {
      * Sets the value associated with the specified cell.
      */
     public void set(Pos pos, int value) {
-        data[pos.y][pos.x] = value;
+        data[(int) pos.y][(int) pos.x] = value;
     }
 
     /**
@@ -197,7 +197,7 @@ public final class IntTable extends AbstractTable<Integer> {
      * Increments the value associated with the specified cell and returns the new value.
      */
     public int inc(Pos pos) {
-        return ++data[pos.y][pos.x];
+        return ++data[(int) pos.y][(int) pos.x];
     }
 
     /**

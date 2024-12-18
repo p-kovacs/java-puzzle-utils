@@ -34,10 +34,10 @@ abstract class AbstractTableTest<T> {
         assertFalse(table.containsCell(p(4, 2)));
 
         var table2 = createTestTable(3, 4);
-        table2.cells().forEach(p -> table2.set0(p.x, p.y, table.get0(p.y, p.x)));
+        table2.cells().forEach(p -> table2.set0((int) p.x, (int) p.y, table.get0((int) p.y, (int) p.x)));
 
-        assertEquals(table.cells().map(p -> table.get0(p.x, p.y)).collect(Collectors.toSet()),
-                table2.cells().map(p -> table2.get0(p.x, p.y)).collect(Collectors.toSet()));
+        assertEquals(table.cells().map(p -> table.get0((int) p.x, (int) p.y)).collect(Collectors.toSet()),
+                table2.cells().map(p -> table2.get0((int) p.x, (int) p.y)).collect(Collectors.toSet()));
     }
 
     @Test

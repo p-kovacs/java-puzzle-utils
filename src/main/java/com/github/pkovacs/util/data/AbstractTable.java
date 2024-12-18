@@ -182,7 +182,7 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      * Returns an ordered stream of all cells with the given associated value in this table (row by row).
      */
     public final Stream<Pos> findAll(V value) {
-        return cells().filter(p -> value.equals(get0(p.x, p.y)));
+        return cells().filter(p -> value.equals(get0((int) p.x, (int) p.y)));
     }
 
     /**
@@ -190,7 +190,7 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      * and returns the new value.
      */
     public final V update(Pos pos, Function<? super V, ? extends V> function) {
-        return update(pos.x, pos.y, function);
+        return update((int) pos.x, (int) pos.y, function);
     }
 
     /**

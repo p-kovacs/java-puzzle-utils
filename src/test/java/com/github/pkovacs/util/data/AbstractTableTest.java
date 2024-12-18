@@ -105,12 +105,12 @@ abstract class AbstractTableTest<T> {
         var right = table.rotateRight();
         var left = table.rotateLeft();
 
-        assertEquals(table.rowCount(), transposed.colCount());
-        assertEquals(table.colCount(), transposed.rowCount());
-        assertEquals(table.rowCount(), right.colCount());
-        assertEquals(table.colCount(), right.rowCount());
-        assertEquals(table.rowCount(), left.colCount());
-        assertEquals(table.colCount(), left.rowCount());
+        assertEquals(table.height(), transposed.width());
+        assertEquals(table.width(), transposed.height());
+        assertEquals(table.height(), right.width());
+        assertEquals(table.width(), right.height());
+        assertEquals(table.height(), left.width());
+        assertEquals(table.width(), left.height());
 
         assertNotEquals(transposed, right);
         assertNotEquals(transposed, left);

@@ -28,8 +28,6 @@ class TableTest extends AbstractTableTest<String> {
 
         assertEquals(4, table.width());
         assertEquals(3, table.height());
-        assertEquals(4, table.colCount());
-        assertEquals(3, table.rowCount());
 
         assertContentEquals(List.of(
                 Arrays.asList(new String[4]),
@@ -76,7 +74,7 @@ class TableTest extends AbstractTableTest<String> {
     }
 
     private static void assertContentEquals(List<List<String>> expected, Table<String> table) {
-        var actual = IntStream.range(0, table.rowCount())
+        var actual = IntStream.range(0, table.height())
                 .mapToObj(table::rowValues)
                 .map(Stream::toList)
                 .toList();

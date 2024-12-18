@@ -65,8 +65,6 @@ class IntTableTest extends AbstractTableTest<Integer> {
 
         assertEquals(4, table.width());
         assertEquals(3, table.height());
-        assertEquals(4, table.colCount());
-        assertEquals(3, table.rowCount());
 
         assertContentEquals(new int[][] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, table);
 

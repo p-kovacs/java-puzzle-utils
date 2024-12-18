@@ -27,20 +27,6 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
     public abstract int height();
 
     /**
-     * Returns the number of columns in this table. This is just an alias for {@link #width()}.
-     */
-    public final int colCount() {
-        return width();
-    }
-
-    /**
-     * Returns the number of rows in this table. This is just an alias for {@link #height()}.
-     */
-    public final int rowCount() {
-        return height();
-    }
-
-    /**
      * Returns true if this range is empty, that is, {@code max < min}.
      */
     public final boolean isEmpty() {

@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class VectorTest {
+class VectorDTest {
 
     @Test
     void testBasicMethodsTwoDim() {
-        var a = Vector.origin(2);
+        var a = VectorD.origin(2);
         var b = v(42, 12);
 
         assertEquals(b.x(), 42);
@@ -24,7 +24,7 @@ class VectorTest {
         assertThrows(IndexOutOfBoundsException.class, () -> b.get(2));
 
         assertEquals(b, a.plus(b));
-        assertEquals(v(44, 15), b.plus(2, 3));
+        assertEquals(v(44, 15), b.plus(v(2, 3)));
         assertEquals(v(-1, 12), b.with(0, -1));
         assertEquals(v(42, 100), b.with(1, 100));
         assertThrows(IndexOutOfBoundsException.class, () -> b.with(2, 0));
@@ -41,8 +41,8 @@ class VectorTest {
         assertEquals(e.plus(e), e.multiply(2));
         assertEquals(e.plus(e).plus(e).plus(e).plus(e), e.multiply(5));
 
-        assertEquals("(42, 12)", v(42, 12).toString());
-        assertEquals("(42, -12)", v(42, -12).toString());
+        assertEquals("(42,12)", v(42, 12).toString());
+        assertEquals("(42,-12)", v(42, -12).toString());
     }
 
     @Test
@@ -106,41 +106,8 @@ class VectorTest {
     }
 
     @Test
-    void testBoxTwoDim() {
-        assertEquals(List.of(),
-                Vector.box(v(10, 20), v(10, 10)).toList());
-        assertEquals(List.of(v(10, 20)),
-                Vector.box(v(10, 20), v(10, 20)).toList());
-        assertEquals(List.of(v(10, 20), v(11, 20)),
-                Vector.box(v(10, 20), v(11, 20)).toList());
-        assertEquals(List.of(v(10, 20), v(10, 21), v(10, 22)),
-                Vector.box(v(10, 20), v(10, 22)).toList());
-        assertEquals(List.of(
-                        v(10, 20), v(10, 21), v(10, 22),
-                        v(11, 20), v(11, 21), v(11, 22),
-                        v(12, 20), v(12, 21), v(12, 22),
-                        v(13, 20), v(13, 21), v(13, 22)),
-                Vector.box(v(10, 20), v(13, 22)).toList());
-
-        assertEquals(List.of(),
-                Vector.box(new Range(10, 10), new Range(20, 10)).toList());
-        assertEquals(List.of(v(10, 20)),
-                Vector.box(new Range(10, 10), new Range(20, 20)).toList());
-        assertEquals(List.of(v(10, 20), v(11, 20)),
-                Vector.box(new Range(10, 11), new Range(20, 20)).toList());
-        assertEquals(List.of(v(10, 20), v(10, 21), v(10, 22)),
-                Vector.box(new Range(10, 10), new Range(20, 22)).toList());
-        assertEquals(List.of(
-                        v(10, 20), v(10, 21), v(10, 22),
-                        v(11, 20), v(11, 21), v(11, 22),
-                        v(12, 20), v(12, 21), v(12, 22),
-                        v(13, 20), v(13, 21), v(13, 22)),
-                Vector.box(new Range(10, 13), new Range(20, 22)).toList());
-    }
-
-    @Test
     void testBasicMethodsThreeDim() {
-        var a = Vector.origin(3);
+        var a = VectorD.origin(3);
         var b = v(42, 12, 314);
 
         assertEquals(3, a.dim());
@@ -151,20 +118,20 @@ class VectorTest {
         assertEquals(b.z(), 314);
 
         assertEquals(b, a.plus(b));
-        assertEquals(v(44, 15, 214), b.plus(2, 3, -100));
+        assertEquals(v(44, 15, 214), b.plus(v(2, 3, -100)));
 
         a = a.plus(b).minus(v(2, 2, 14));
         assertEquals(v(40, 10, 300), a);
         assertEquals(v(-40, -10, -300), a.opposite());
 
         var c = v(42, 12, -3);
-        assertEquals(Vector.origin(c.dim()), c.multiply(0));
+        assertEquals(VectorD.origin(c.dim()), c.multiply(0));
         assertEquals(c, c.multiply(1));
         assertEquals(c.plus(c), c.multiply(2));
         assertEquals(c.plus(c).plus(c).plus(c).plus(c), c.multiply(5));
         assertEquals(c.plus(c.multiply(7)).minus(c.multiply(4)), c.multiply(4));
 
-        assertEquals("(42, 12, -3)", c.toString());
+        assertEquals("(42,12,-3)", c.toString());
     }
 
     @Test
@@ -218,58 +185,10 @@ class VectorTest {
     }
 
     @Test
-    void testBoxThreeDim() {
-        assertEquals(List.of(),
-                Vector.box(v(10, 20, 30), v(10, 10, 40)).toList());
-        assertEquals(List.of(v(10, 20, 30)),
-                Vector.box(v(10, 20, 30), v(10, 20, 30)).toList());
-        assertEquals(List.of(v(10, 20, 30), v(11, 20, 30)),
-                Vector.box(v(10, 20, 30), v(11, 20, 30)).toList());
-        assertEquals(List.of(v(10, 20, 30), v(10, 21, 30)),
-                Vector.box(v(10, 20, 30), v(10, 21, 30)).toList());
-        assertEquals(List.of(v(10, 20, 30), v(10, 20, 31), v(10, 20, 32), v(10, 20, 33)),
-                Vector.box(v(10, 20, 30), v(10, 20, 33)).toList());
-        assertEquals(List.of(
-                        v(10, 20, 30), v(10, 20, 31), v(10, 20, 32),
-                        v(10, 21, 30), v(10, 21, 31), v(10, 21, 32),
-                        v(11, 20, 30), v(11, 20, 31), v(11, 20, 32),
-                        v(11, 21, 30), v(11, 21, 31), v(11, 21, 32),
-                        v(12, 20, 30), v(12, 20, 31), v(12, 20, 32),
-                        v(12, 21, 30), v(12, 21, 31), v(12, 21, 32),
-                        v(13, 20, 30), v(13, 20, 31), v(13, 20, 32),
-                        v(13, 21, 30), v(13, 21, 31), v(13, 21, 32)),
-                Vector.box(v(10, 20, 30), v(13, 21, 32)).toList());
-
-        assertEquals(List.of(),
-                Vector.box(new Range(10, 10), new Range(20, 10), new Range(30, 40)).toList());
-        assertEquals(List.of(v(10, 20, 30)),
-                Vector.box(new Range(10, 10), new Range(20, 20), new Range(30, 30)).toList());
-        assertEquals(List.of(v(10, 20, 30), v(11, 20, 30)),
-                Vector.box(new Range(10, 11), new Range(20, 20), new Range(30, 30)).toList());
-        assertEquals(List.of(v(10, 20, 30), v(10, 21, 30)),
-                Vector.box(new Range(10, 10), new Range(20, 21), new Range(30, 30)).toList());
-        assertEquals(List.of(v(10, 20, 30), v(10, 20, 31), v(10, 20, 32), v(10, 20, 33)),
-                Vector.box(new Range(10, 10), new Range(20, 20), new Range(30, 33)).toList());
-        assertEquals(List.of(
-                        v(10, 20, 30), v(10, 20, 31), v(10, 20, 32),
-                        v(10, 21, 30), v(10, 21, 31), v(10, 21, 32),
-                        v(11, 20, 30), v(11, 20, 31), v(11, 20, 32),
-                        v(11, 21, 30), v(11, 21, 31), v(11, 21, 32),
-                        v(12, 20, 30), v(12, 20, 31), v(12, 20, 32),
-                        v(12, 21, 30), v(12, 21, 31), v(12, 21, 32),
-                        v(13, 20, 30), v(13, 20, 31), v(13, 20, 32),
-                        v(13, 21, 30), v(13, 21, 31), v(13, 21, 32)),
-                Vector.box(new Range(10, 13), new Range(20, 21), new Range(30, 32)).toList());
-
-        assertEquals(Vector.box(new Range(10, 13), new Range(20, 21), new Range(30, 32)).toList(),
-                Vector.box(List.of(new Range(10, 13), new Range(20, 21), new Range(30, 32))).toList());
-    }
-
-    @Test
     void testGeneral() {
-        var a = Vector.origin(10);
-        var b = new Vector(1, -2, 3, -4, 5, -6, 7, -8, 9, -10);
-        var c = new Vector(1, 2, 3, 4, 5, 6, 7, 8);
+        var a = VectorD.origin(10);
+        var b = new VectorD(1, -2, 3, -4, 5, -6, 7, -8, 9, -10);
+        var c = new VectorD(1, 2, 3, 4, 5, 6, 7, 8);
 
         assertEquals(10, a.dim());
         assertEquals(10, b.dim());
@@ -284,7 +203,7 @@ class VectorTest {
         assertEquals(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100, b.distSq());
         assertEquals(Math.sqrt(1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100), b.dist2(), 1e-10);
 
-        assertThrows(IllegalArgumentException.class, () -> b.plus(new long[] { 10, 20, 30, 40, 50 }));
+        assertThrows(IllegalArgumentException.class, () -> b.plus(new VectorD(10, 20, 30, 40, 50)));
         assertThrows(IllegalArgumentException.class, () -> b.plus(c));
         assertThrows(IllegalArgumentException.class, () -> c.minus(b));
         assertThrows(IllegalArgumentException.class, () -> b.dist1(c));
@@ -295,7 +214,7 @@ class VectorTest {
         assertEquals(b, a.plus(b));
         assertEquals(a, b.minus(b));
 
-        assertEquals("(1, -2, 3, -4, 5, -6, 7, -8, 9, -10)", b.toString());
+        assertEquals("(1,-2,3,-4,5,-6,7,-8,9,-10)", b.toString());
     }
 
     @Test
@@ -309,10 +228,10 @@ class VectorTest {
                 v(42, 12, 3),
                 v(42, 12, 2),
                 v(42, 12, 1),
-                new Vector(5, 8, 1, 0),
-                new Vector(5, 8, 1, -1),
-                new Vector(5, 8, 1, 1),
-                new Vector(5, 8, 0, 0));
+                new VectorD(5, 8, 1, 0),
+                new VectorD(5, 8, 1, -1),
+                new VectorD(5, 8, 1, 1),
+                new VectorD(5, 8, 0, 0));
         var sortedList = List.of(
                 v(41, 12),
                 v(42, 11),
@@ -322,20 +241,20 @@ class VectorTest {
                 v(42, 12, 1),
                 v(42, 12, 2),
                 v(42, 12, 3),
-                new Vector(5, 8, 0, 0),
-                new Vector(5, 8, 1, -1),
-                new Vector(5, 8, 1, 0),
-                new Vector(5, 8, 1, 1));
+                new VectorD(5, 8, 0, 0),
+                new VectorD(5, 8, 1, -1),
+                new VectorD(5, 8, 1, 0),
+                new VectorD(5, 8, 1, 1));
 
         assertEquals(sortedList, list.stream().sorted().toList());
     }
 
-    private static Vector v(long x, long y) {
-        return new Vector(x, y);
+    private static VectorD v(long x, long y) {
+        return new VectorD(x, y);
     }
 
-    private static Vector v(long x, long y, long z) {
-        return new Vector(x, y, z);
+    private static VectorD v(long x, long y, long z) {
+        return new VectorD(x, y, z);
     }
 
 }

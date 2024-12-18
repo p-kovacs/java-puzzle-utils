@@ -4,45 +4,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
 /**
- * Represents a position vector in D-dimensional coordinate space with integer precision. It is an immutable array of
- * {@code long} coordinates, which provides various useful methods and also supports lexicographical ordering.
+ * Represents a position vector in D-dimensional coordinate space with integer precision. It is represented as an
+ * immutable array of {@code long} coordinates. Provides various useful methods and supports lexicographical ordering.
  * <p>
  * This class is the D-dimensional generalization of {@link Pos}.
  *
  * @see Pos
  * @see VectorBox
  */
-public final class Vector implements Comparable<Vector> {
+public final class VectorD implements Comparable<VectorD> {
 
     private final long[] coords;
-
-    /**
-     * Creates a 2D vector with the given coordinates.
-     */
-    public Vector(long x, long y) {
-        coords = new long[] { x, y };
-    }
-
-    /**
-     * Creates a 3D vector with the given coordinates.
-     */
-    public Vector(long x, long y, long z) {
-        coords = new long[] { x, y, z };
-    }
 
     /**
      * Creates a D-dimensional vector with the given coordinates.
      *
      * @throws IllegalArgumentException if less than two coordinates are given
      */
-    public Vector(long... coords) {
+    public VectorD(long... coords) {
         if (coords.length < 2) {
             throw new IllegalArgumentException("At least two coordinates are required.");
         }
@@ -50,12 +34,24 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
+     * Creates a D-dimensional vector with the given coordinates.
+     *
+     * @throws IllegalArgumentException if less than two coordinates are given
+     */
+    public VectorD(List<Long> coords) {
+        if (coords.size() < 2) {
+            throw new IllegalArgumentException("At least two coordinates are required.");
+        }
+        this.coords = coords.stream().mapToLong(i -> i).toArray();
+    }
+
+    /**
      * Returns the origin vector with the given dimension.
      *
      * @throws IllegalArgumentException if the dimension is less than two
      */
-    public static Vector origin(int dim) {
-        return new Vector(new long[dim]);
+    public static VectorD origin(int dim) {
+        return new VectorD(new long[dim]);
     }
 
     /**
@@ -102,17 +98,17 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IndexOutOfBoundsException if {@code k >= dim()}
      */
-    public Vector with(int k, long value) {
+    public VectorD with(int k, long value) {
         long[] newCoords = coords.clone();
         newCoords[k] = value;
-        return new Vector(newCoords);
+        return new VectorD(newCoords);
     }
 
     /**
      * Returns a lexicographically sorted stream of the neighbors of this vector.
      * The stream contains {@code 2 * dim()} vectors, and for each vector {@code v}, {@code v.dist1(this) == 1}.
      */
-    public Stream<Vector> neighbors() {
+    public Stream<VectorD> neighbors() {
         return neighborsAndSelf().filter(p -> p != this);
     }
 
@@ -120,8 +116,8 @@ public final class Vector implements Comparable<Vector> {
      * Returns a lexicographically sorted stream of this vector and its neighbors.
      * The stream contains {@code 2 * dim() + 1} vectors, and for each vector {@code v}, {@code v.dist1(this) <= 1}.
      */
-    public Stream<Vector> neighborsAndSelf() {
-        var list = new ArrayList<Vector>();
+    public Stream<VectorD> neighborsAndSelf() {
+        var list = new ArrayList<VectorD>();
         for (int k = 0; k < dim(); k++) {
             list.add(with(k, coords[k] - 1));
         }
@@ -136,7 +132,7 @@ public final class Vector implements Comparable<Vector> {
      * Returns a lexicographically sorted stream of the "extended" neighbors of this vector.
      * The stream contains {@code 3^dim() - 1} vectors, and for each vector {@code v}, {@code v.distMax(this) == 1}.
      */
-    public Stream<Vector> extendedNeighbors() {
+    public Stream<VectorD> extendedNeighbors() {
         return extendedNeighborsAndSelf().filter(p -> p != this);
     }
 
@@ -144,7 +140,7 @@ public final class Vector implements Comparable<Vector> {
      * Returns a lexicographically sorted stream of this vector and its "extended" neighbors.
      * The stream contains {@code 3^dim()} vectors, and for each vector {@code v}, {@code v.distMax(this) <= 1}.
      */
-    public Stream<Vector> extendedNeighborsAndSelf() {
+    public Stream<VectorD> extendedNeighborsAndSelf() {
         var list = List.of(this);
         for (int i = 0; i < dim(); i++) {
             int k = i;
@@ -156,21 +152,11 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Creates a new vector by adding the given delta values to the coordinates of this vector.
-     *
-     * @throws IllegalArgumentException if the number of delta values is not equal to the dimension of the
-     *         vector
-     */
-    public Vector plus(long... delta) {
-        return plus(new Vector(delta));
-    }
-
-    /**
      * Creates a new vector by adding the given other vector to this one.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public Vector plus(Vector other) {
+    public VectorD plus(VectorD other) {
         return newInstance(checkDimensions(this, other), i -> coords[i] + other.coords[i]);
     }
 
@@ -179,37 +165,37 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public Vector minus(Vector other) {
+    public VectorD minus(VectorD other) {
         return newInstance(checkDimensions(this, other), i -> coords[i] - other.coords[i]);
     }
 
     /**
      * Creates a new vector that is the opposite of this vector.
      */
-    public Vector opposite() {
+    public VectorD opposite() {
         return newInstance(dim(), i -> -coords[i]);
     }
 
     /**
      * Creates a new vector by multiplying each coordinate of this vector by the given scalar factor.
      */
-    public Vector multiply(long factor) {
+    public VectorD multiply(long factor) {
         return newInstance(dim(), i -> factor * coords[i]);
     }
 
-    private static int checkDimensions(Vector a, Vector b) {
+    private static int checkDimensions(VectorD a, VectorD b) {
         if (a.coords.length != b.coords.length) {
             throw new IllegalArgumentException("Vectors have different dimensions.");
         }
         return a.coords.length;
     }
 
-    private static Vector newInstance(int dim, Function<Integer, Long> function) {
+    private static VectorD newInstance(int dim, Function<Integer, Long> function) {
         long[] newCoords = new long[dim];
         for (int i = 0; i < newCoords.length; i++) {
             newCoords[i] = function.apply(i);
         }
-        return new Vector(newCoords);
+        return new VectorD(newCoords);
     }
 
     /**
@@ -226,7 +212,7 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public long dist1(Vector other) {
+    public long dist1(VectorD other) {
         return other.minus(this).dist1();
     }
 
@@ -244,7 +230,7 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public long distMax(Vector other) {
+    public long distMax(VectorD other) {
         return other.minus(this).distMax();
     }
 
@@ -266,7 +252,7 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public long distSq(Vector other) {
+    public long distSq(VectorD other) {
         return other.minus(this).distSq();
     }
 
@@ -284,25 +270,18 @@ public final class Vector implements Comparable<Vector> {
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public double dist2(Vector other) {
+    public double dist2(VectorD other) {
         return other.minus(this).dist2();
     }
 
     @Override
     public String toString() {
-        return "(" + Arrays.stream(coords).mapToObj(String::valueOf).collect(joining(", ")) + ")";
+        return "(" + Arrays.stream(coords).mapToObj(String::valueOf).collect(joining(",")) + ")";
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        return Arrays.equals(coords, ((Vector) obj).coords);
+    public boolean equals(Object o) {
+        return this == o || (o instanceof VectorD v && Arrays.equals(coords, v.coords));
     }
 
     @Override
@@ -311,7 +290,7 @@ public final class Vector implements Comparable<Vector> {
     }
 
     @Override
-    public int compareTo(Vector other) {
+    public int compareTo(VectorD other) {
         if (coords.length != other.coords.length) {
             return Integer.compare(coords.length, other.coords.length);
         }
@@ -322,62 +301,6 @@ public final class Vector implements Comparable<Vector> {
             }
         }
         return 0;
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of vectors within the closed box defined by the given ranges
-     * of coordinates for each dimension. If any range is empty, then an empty stream is returned.
-     * <p>
-     * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
-     */
-    public static Stream<Vector> box(Range... ranges) {
-        return box(Arrays.asList(ranges));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of vectors within the closed box defined by the given ranges
-     * of coordinates for each dimension. If any range is empty, then an empty stream is returned.
-     * <p>
-     * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
-     */
-    public static Stream<Vector> box(List<Range> ranges) {
-        if (ranges.stream().anyMatch(Range::isEmpty)) {
-            return Stream.empty();
-        }
-
-        int dim = ranges.size();
-        var list = List.of(new Vector(ranges.stream().mapToLong(Range::min).toArray()));
-        for (int i = 0; i < dim; i++) {
-            int k = i;
-            var range = ranges.get(k);
-            list = list.stream().flatMap(v -> range.stream().mapToObj(c -> v.with(k, c))).toList();
-        }
-        return list.stream();
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of vectors within the closed box {@code [min..max]}.
-     * If {@code min.get(k) <= max.get(k)} for each {@code 0 <= k < dim()}, then the first element of the stream is
-     * {@code min}, and the last element is {@code max}. Otherwise, an empty stream is returned.
-     * <p>
-     * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
-     *
-     * @throws IllegalArgumentException if the given vectors have different dimensions
-     */
-    public static Stream<Vector> box(Vector min, Vector max) {
-        int dim = checkDimensions(min, max);
-        if (IntStream.range(0, dim).anyMatch(k -> min.get(k) > max.get(k))) {
-            return Stream.empty();
-        }
-
-        var list = List.of(min);
-        for (int i = 0; i < dim; i++) {
-            int k = i;
-            list = list.stream()
-                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(c -> v.with(k, c)))
-                    .toList();
-        }
-        return list.stream();
     }
 
 }

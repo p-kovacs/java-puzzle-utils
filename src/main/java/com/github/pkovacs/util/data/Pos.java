@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  *
  * @apiNote This class is not a record in order to provide easier access to {@link #x} and {@link #y} as public
  *         final fields.
- * @see Vector
+ * @see VectorD
  */
 public final class Pos implements Comparable<Pos> {
 

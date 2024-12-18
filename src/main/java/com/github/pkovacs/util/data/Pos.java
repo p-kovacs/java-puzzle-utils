@@ -61,6 +61,20 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
+     * Returns a new position with the given x coordinate and the original y coordinate of this position.
+     */
+    public Pos withX(long newX) {
+        return new Pos(newX, y);
+    }
+
+    /**
+     * Returns a new position with the given y coordinate and the original x coordinate of this position.
+     */
+    public Pos withY(long newY) {
+        return new Pos(x, newY);
+    }
+
+    /**
      * Returns true if the given other position is one of the 4 "regular" neighbors of this position.
      */
     public boolean isNeighbor(Pos other) {

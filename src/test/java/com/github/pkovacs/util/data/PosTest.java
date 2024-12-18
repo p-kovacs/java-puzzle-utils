@@ -27,6 +27,9 @@ class PosTest {
 
         assertEquals("(12,42)", p(12, 42).toString());
         assertEquals("(-3,-5)", p(-3, -5).toString());
+
+        assertEquals(p(23, 12), a.withX(23));
+        assertEquals(p(42, 23), a.withY(23));
     }
 
     @Test

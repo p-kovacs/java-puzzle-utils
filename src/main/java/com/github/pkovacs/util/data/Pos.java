@@ -4,33 +4,36 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
- * Represents a position (point or position vector) in 2D coordinate space as an immutable pair of {@code long}
+ * Represents an immutable position (point or position vector) in 2D coordinate space as a pair of {@code long}
  * values: {@code (x,y)}. Provides various useful methods and supports lexicographical ordering (first by {@code x},
  * then by {@code y}).
  *
- * @apiNote This class is not a record in order to provide easier access to {@link #x} and {@link #y} as public
- *         final fields.
- * @see VectorD
+ * @apiNote This class is not a record in order to provide easier access to {@link #x} and {@link #y} as
+ *         public final fields.
+ * @see Vector
+ * @see Box
  */
 public final class Pos implements Comparable<Pos> {
 
-    /** The origin: {@code (0,0)}. */
+    /** The origin in 2D space: {@code (0,0)}. */
     public static final Pos ORIGIN = new Pos(0, 0);
 
     /**
      * The x coordinate (or column index).
-     * This field is deliberately made public to similify the usage of this class.
+     *
+     * @apiNote This field is made public to similify the usage of this class.
      */
     public final long x;
 
     /**
      * The y coordinate (or row index).
-     * This field is deliberately made public to similify the usage of this class.
+     *
+     * @apiNote This field is made public to similify the usage of this class.
      */
     public final long y;
 
     /**
-     * Constructs a new position.
+     * Constructs a new position with the given coordinates.
      */
     public Pos(long x, long y) {
         this.x = x;
@@ -142,7 +145,8 @@ public final class Pos implements Comparable<Pos> {
                 new Pos(x - 1, y),
                 new Pos(x, y - 1),
                 new Pos(x, y + 1),
-                new Pos(x + 1, y));
+                new Pos(x + 1, y)
+        );
     }
 
     /**
@@ -154,7 +158,8 @@ public final class Pos implements Comparable<Pos> {
                 new Pos(x, y - 1),
                 this,
                 new Pos(x, y + 1),
-                new Pos(x + 1, y));
+                new Pos(x + 1, y)
+        );
     }
 
     /**
@@ -170,7 +175,8 @@ public final class Pos implements Comparable<Pos> {
                 new Pos(x, y + 1),
                 new Pos(x + 1, y - 1),
                 new Pos(x + 1, y),
-                new Pos(x + 1, y + 1));
+                new Pos(x + 1, y + 1)
+        );
     }
 
     /**
@@ -187,7 +193,8 @@ public final class Pos implements Comparable<Pos> {
                 new Pos(x, y + 1),
                 new Pos(x + 1, y - 1),
                 new Pos(x + 1, y),
-                new Pos(x + 1, y + 1));
+                new Pos(x + 1, y + 1)
+        );
     }
 
     /**
@@ -307,7 +314,7 @@ public final class Pos implements Comparable<Pos> {
     /**
      * Creates a new position by adding the given delta values to the coordinates of this position vector.
      */
-    public Pos plus(int dx, int dy) {
+    public Pos plus(long dx, long dy) {
         return new Pos(x + dx, y + dy);
     }
 
@@ -379,7 +386,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L1 distance or Manhattan distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
     public long dist1() {
-        return dist1(ORIGIN);
+        return Math.abs(x) + Math.abs(y);
     }
 
     /**
@@ -387,7 +394,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L1 distance or Manhattan distance) between this position and the given other position.
      */
     public long dist1(Pos other) {
-        return Math.abs(other.x - x) + Math.abs(other.y - y);
+        return other.minus(this).dist1();
     }
 
     /**
@@ -395,7 +402,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L∞ distance or Chebyshev distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
     public long distMax() {
-        return distMax(ORIGIN);
+        return Math.max(Math.abs(x), Math.abs(y));
     }
 
     /**
@@ -403,7 +410,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L∞ distance or Chebyshev distance) between this position and the given other position.
      */
     public long distMax(Pos other) {
-        return Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
+        return other.minus(this).distMax();
     }
 
     /**
@@ -413,7 +420,7 @@ public final class Pos implements Comparable<Pos> {
      * Warning: this distance metric does not satisfy the triangle inequality.
      */
     public long distSq() {
-        return distSq(ORIGIN);
+        return x * x + y * y;
     }
 
     /**
@@ -423,9 +430,7 @@ public final class Pos implements Comparable<Pos> {
      * Warning: this distance metric does not satisfy the triangle inequality.
      */
     public long distSq(Pos other) {
-        long dx = other.x - x;
-        long dy = other.y - y;
-        return dx * dx + dy * dy;
+        return other.minus(this).distSq();
     }
 
     /**
@@ -433,7 +438,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L2 distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
     public double dist2() {
-        return dist2(ORIGIN);
+        return Math.sqrt(distSq());
     }
 
     /**
@@ -441,7 +446,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L2 distance) between this position and the given other position.
      */
     public double dist2(Pos other) {
-        return Math.sqrt(distSq(other));
+        return other.minus(this).dist2();
     }
 
     @Override
@@ -456,8 +461,7 @@ public final class Pos implements Comparable<Pos> {
 
     @Override
     public int hashCode() {
-        // Optimized for small integer values (the largest prime below the square root of 2^32 is used)
-        return (int) (x * 65_521 + y);
+        return (int) (65521 * x + y); // optimized for small integers
     }
 
     @Override

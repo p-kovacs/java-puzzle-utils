@@ -294,7 +294,7 @@ public final class Range implements Comparable<Range> {
 
     @Override
     public int hashCode() {
-        return (int) (min * 65_521 + max);
+        return (int) (65521 * min + max); // optimized for small integers
     }
 
     @Override

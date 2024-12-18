@@ -24,11 +24,11 @@ class PosTest {
         assertNotEquals(a, b);
         assertEquals(b, c);
 
-        assertEquals("(12,42)", p(12, 42).toString());
-        assertEquals("(-3,-5)", p(-3, -5).toString());
-
         assertEquals(p(23, 12), a.withX(23));
         assertEquals(p(42, 23), a.withY(23));
+
+        assertEquals("(12,42)", p(12, 42).toString());
+        assertEquals("(-3,-5)", p(-3, -5).toString());
     }
 
     @Test
@@ -147,7 +147,7 @@ class PosTest {
     }
 
     @Test
-    void testVectorMethods() {
+    void testOperations() {
         var a = p(42, 12);
         var b = p(10, 20);
 

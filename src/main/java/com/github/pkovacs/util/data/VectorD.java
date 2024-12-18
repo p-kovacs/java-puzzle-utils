@@ -9,13 +9,13 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.joining;
 
 /**
- * Represents a position vector in D-dimensional coordinate space with integer precision. It is represented as an
- * immutable array of {@code long} coordinates. Provides various useful methods and supports lexicographical ordering.
+ * Represents an immutable position vector in D-dimensional coordinate space with integer precision. It is represented
+ * as an array of {@code long} coordinates. Provides various useful methods and supports lexicographical ordering.
  * <p>
- * This class is the D-dimensional generalization of {@link Pos}.
+ * This class is the D-dimensional generalization of {@link Pos} and {@link Vector}.
  *
  * @see Pos
- * @see VectorBox
+ * @see Vector
  */
 public final class VectorD implements Comparable<VectorD> {
 
@@ -62,29 +62,6 @@ public final class VectorD implements Comparable<VectorD> {
     }
 
     /**
-     * Returns the x coordinate of this vector. It is the same as {@link #get(int) get(0)}.
-     */
-    public long x() {
-        return coords[0];
-    }
-
-    /**
-     * Returns the y coordinate of this vector. It is the same as {@link #get(int) get(1)}.
-     */
-    public long y() {
-        return coords[1];
-    }
-
-    /**
-     * Returns the z coordinate of this vector. It is the same as {@link #get(int) get(2)}.
-     *
-     * @throws IndexOutOfBoundsException if this is a 2D vector
-     */
-    public long z() {
-        return coords[2];
-    }
-
-    /**
      * Returns the k-th coordinate of this vector.
      *
      * @throws IndexOutOfBoundsException if {@code k >= dim()}
@@ -105,16 +82,34 @@ public final class VectorD implements Comparable<VectorD> {
     }
 
     /**
-     * Returns a lexicographically sorted stream of the neighbors of this vector.
-     * The stream contains {@code 2 * dim()} vectors, and for each vector {@code v}, {@code v.dist1(this) == 1}.
+     * Returns true if the given other vector is one of the "regular" neighbors of this vector
+     * (that is, {@code this.dist1(other) == 1}).
+     */
+    public boolean isNeighbor(VectorD other) {
+        return dist1(other) == 1;
+    }
+
+    /**
+     * Returns true if the given other vector is one of the "extended" neighbors of this vector
+     * (that is, {@code this.distMax(other) == 1}).
+     */
+    public boolean isExtendedNeighbor(VectorD other) {
+        return distMax(other) == 1;
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the "regular" neighbors of this vector.
+     * The stream contains {@code 2 * dim()} vectors, and for each returned vector {@code v},
+     * {@code this.dist1(v) == 1}.
      */
     public Stream<VectorD> neighbors() {
         return neighborsAndSelf().filter(p -> p != this);
     }
 
     /**
-     * Returns a lexicographically sorted stream of this vector and its neighbors.
-     * The stream contains {@code 2 * dim() + 1} vectors, and for each vector {@code v}, {@code v.dist1(this) <= 1}.
+     * Returns a lexicographically sorted stream of this vector and its "regular" neighbors.
+     * The stream contains {@code 2 * dim() + 1} vectors, and for each returned vector {@code v},
+     * {@code this.dist1(v) <= 1}.
      */
     public Stream<VectorD> neighborsAndSelf() {
         var list = new ArrayList<VectorD>();
@@ -130,7 +125,8 @@ public final class VectorD implements Comparable<VectorD> {
 
     /**
      * Returns a lexicographically sorted stream of the "extended" neighbors of this vector.
-     * The stream contains {@code 3^dim() - 1} vectors, and for each vector {@code v}, {@code v.distMax(this) == 1}.
+     * The stream contains {@code 3^dim() - 1} vectors, and for each returned vector {@code v},
+     * {@code this.distMax(v) == 1}.
      */
     public Stream<VectorD> extendedNeighbors() {
         return extendedNeighborsAndSelf().filter(p -> p != this);
@@ -138,7 +134,8 @@ public final class VectorD implements Comparable<VectorD> {
 
     /**
      * Returns a lexicographically sorted stream of this vector and its "extended" neighbors.
-     * The stream contains {@code 3^dim()} vectors, and for each vector {@code v}, {@code v.distMax(this) <= 1}.
+     * The stream contains {@code 3^dim()} vectors, and for each returned vector {@code v},
+     * {@code this.distMax(v) <= 1}.
      */
     public Stream<VectorD> extendedNeighborsAndSelf() {
         var list = List.of(this);

@@ -16,11 +16,8 @@ class VectorDTest {
         var a = VectorD.origin(2);
         var b = v(42, 12);
 
-        assertEquals(b.x(), 42);
-        assertEquals(b.get(0), 42);
-        assertEquals(b.y(), 12);
-        assertEquals(b.get(1), 12);
-        assertThrows(IndexOutOfBoundsException.class, b::z);
+        assertEquals(42, b.get(0));
+        assertEquals(12, b.get(1));
         assertThrows(IndexOutOfBoundsException.class, () -> b.get(2));
 
         assertEquals(b, a.plus(b));
@@ -70,18 +67,20 @@ class VectorDTest {
     void testNeighborMethodsTwoDim() {
         var a = v(42, 12);
 
-        assertEquals(List.of(
-                        v(41, 12),
-                        v(42, 11),
-                        v(42, 12),
-                        v(42, 13),
-                        v(43, 12)),
+        assertEquals(List.of(v(41, 12), v(42, 11), v(42, 12), v(42, 13), v(43, 12)),
                 a.neighborsAndSelf().toList());
         assertEquals(4, a.neighbors().count());
+        assertEquals(4, a.neighbors().distinct().count());
         assertEquals(5, a.neighborsAndSelf().count());
+        assertEquals(5, a.neighborsAndSelf().distinct().count());
         assertTrue(a.neighbors().allMatch(v -> v.dist1(a) == 1));
         assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) <= 1));
         assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) == 1 || v == a));
+        assertTrue(a.neighbors().allMatch(a::isNeighbor));
+        assertTrue(a.neighbors().allMatch(a::isExtendedNeighbor));
+        assertEquals(4, a.neighborsAndSelf().filter(a::isNeighbor).count());
+        assertEquals(4, a.neighborsAndSelf().filter(a::isExtendedNeighbor).count());
+        assertTrue(a.neighborsAndSelf().allMatch(v -> v == a || v.isExtendedNeighbor(a)));
         assertEquals(a.neighbors().sorted().toList(), a.neighbors().toList());
         assertEquals(a.neighborsAndSelf().sorted().toList(), a.neighborsAndSelf().toList());
 
@@ -97,10 +96,18 @@ class VectorDTest {
                         v(43, 13)),
                 a.extendedNeighborsAndSelf().toList());
         assertEquals(8, a.extendedNeighbors().count());
+        assertEquals(8, a.extendedNeighbors().distinct().count());
         assertEquals(9, a.extendedNeighborsAndSelf().count());
+        assertEquals(9, a.extendedNeighborsAndSelf().distinct().count());
         assertTrue(a.extendedNeighbors().allMatch(v -> v.distMax(a) == 1));
         assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) <= 1));
         assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) == 1 || v == a));
+        assertEquals(4, a.extendedNeighbors().filter(a::isNeighbor).count());
+        assertEquals(8, a.extendedNeighbors().filter(a::isExtendedNeighbor).count());
+        assertTrue(a.extendedNeighbors().allMatch(a::isExtendedNeighbor));
+        assertEquals(4, a.extendedNeighborsAndSelf().filter(a::isNeighbor).count());
+        assertEquals(8, a.extendedNeighborsAndSelf().filter(a::isExtendedNeighbor).count());
+        assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v == a || v.isExtendedNeighbor(a)));
         assertEquals(a.extendedNeighbors().sorted().toList(), a.extendedNeighbors().toList());
         assertEquals(a.extendedNeighborsAndSelf().sorted().toList(), a.extendedNeighborsAndSelf().toList());
     }
@@ -112,10 +119,6 @@ class VectorDTest {
 
         assertEquals(3, a.dim());
         assertEquals(3, b.dim());
-
-        assertEquals(b.x(), 42);
-        assertEquals(b.y(), 12);
-        assertEquals(b.z(), 314);
 
         assertEquals(b, a.plus(b));
         assertEquals(v(44, 15, 214), b.plus(v(2, 3, -100)));
@@ -168,18 +171,33 @@ class VectorDTest {
                         v(43, 12, 5)),
                 a.neighborsAndSelf().toList());
         assertEquals(6, a.neighbors().count());
+        assertEquals(6, a.neighbors().distinct().count());
         assertEquals(7, a.neighborsAndSelf().count());
+        assertEquals(7, a.neighborsAndSelf().distinct().count());
         assertTrue(a.neighbors().allMatch(v -> v.dist1(a) == 1));
         assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) <= 1));
         assertTrue(a.neighborsAndSelf().allMatch(v -> v.dist1(a) == 1 || v == a));
+        assertTrue(a.neighbors().allMatch(a::isNeighbor));
+        assertTrue(a.neighbors().allMatch(a::isExtendedNeighbor));
+        assertEquals(6, a.neighborsAndSelf().filter(a::isNeighbor).count());
+        assertEquals(6, a.neighborsAndSelf().filter(a::isExtendedNeighbor).count());
+        assertTrue(a.neighborsAndSelf().allMatch(v -> v == a || v.isExtendedNeighbor(a)));
         assertEquals(a.neighbors().sorted().toList(), a.neighbors().toList());
         assertEquals(a.neighborsAndSelf().sorted().toList(), a.neighborsAndSelf().toList());
 
         assertEquals(26, a.extendedNeighbors().count());
+        assertEquals(26, a.extendedNeighbors().distinct().count());
         assertEquals(27, a.extendedNeighborsAndSelf().count());
+        assertEquals(27, a.extendedNeighborsAndSelf().distinct().count());
         assertTrue(a.extendedNeighbors().allMatch(v -> v.distMax(a) == 1));
         assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) <= 1));
         assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v.distMax(a) == 1 || v == a));
+        assertEquals(6, a.extendedNeighbors().filter(a::isNeighbor).count());
+        assertEquals(26, a.extendedNeighbors().filter(a::isExtendedNeighbor).count());
+        assertTrue(a.extendedNeighbors().allMatch(a::isExtendedNeighbor));
+        assertEquals(6, a.extendedNeighborsAndSelf().filter(a::isNeighbor).count());
+        assertEquals(26, a.extendedNeighborsAndSelf().filter(a::isExtendedNeighbor).count());
+        assertTrue(a.extendedNeighborsAndSelf().allMatch(v -> v == a || v.isExtendedNeighbor(a)));
         assertEquals(a.extendedNeighbors().sorted().toList(), a.extendedNeighbors().toList());
         assertEquals(a.extendedNeighborsAndSelf().sorted().toList(), a.extendedNeighborsAndSelf().toList());
     }
@@ -231,7 +249,8 @@ class VectorDTest {
                 new VectorD(5, 8, 1, 0),
                 new VectorD(5, 8, 1, -1),
                 new VectorD(5, 8, 1, 1),
-                new VectorD(5, 8, 0, 0));
+                new VectorD(5, 8, 0, 0)
+        );
         var sortedList = List.of(
                 v(41, 12),
                 v(42, 11),
@@ -244,7 +263,8 @@ class VectorDTest {
                 new VectorD(5, 8, 0, 0),
                 new VectorD(5, 8, 1, -1),
                 new VectorD(5, 8, 1, 0),
-                new VectorD(5, 8, 1, 1));
+                new VectorD(5, 8, 1, 1)
+        );
 
         assertEquals(sortedList, list.stream().sorted().toList());
     }

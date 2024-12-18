@@ -74,21 +74,21 @@ public record Box(Vector min, Vector max) {
     }
 
     /**
-     * Returns true if this box contains the given box.
+     * Returns true if this box contains the given other box.
      */
     public boolean containsAll(Box other) {
         return intersection(other).equals(other);
     }
 
     /**
-     * Returns true if this box overlaps with the given box.
+     * Returns true if this box overlaps with the given other box.
      */
     public boolean overlaps(Box other) {
         return !intersection(other).isEmpty();
     }
 
     /**
-     * Returns the intersection of this box and the given box.
+     * Returns the intersection of this box and the given other box.
      */
     public Box intersection(Box other) {
         if (other.dim() != dim()) {

@@ -166,21 +166,21 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Creates a new vector by adding the given vector to this one.
+     * Creates a new vector by adding the given other vector to this one.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public Vector plus(Vector v) {
-        return newInstance(checkDimensions(this, v), i -> coords[i] + v.coords[i]);
+    public Vector plus(Vector other) {
+        return newInstance(checkDimensions(this, other), i -> coords[i] + other.coords[i]);
     }
 
     /**
-     * Creates a new vector by subtracting the given vector from this one.
+     * Creates a new vector by subtracting the given other vector from this one.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public Vector minus(Vector v) {
-        return newInstance(checkDimensions(this, v), i -> coords[i] - v.coords[i]);
+    public Vector minus(Vector other) {
+        return newInstance(checkDimensions(this, other), i -> coords[i] - other.coords[i]);
     }
 
     /**
@@ -191,7 +191,7 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Creates a new vector by multiplying this vector by the given scalar factor.
+     * Creates a new vector by multiplying each coordinate of this vector by the given scalar factor.
      */
     public Vector multiply(long factor) {
         return newInstance(dim(), i -> factor * coords[i]);
@@ -222,12 +222,12 @@ public final class Vector implements Comparable<Vector> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
-     * (aka. L1 distance or Manhattan distance) between this vector and the given vector.
+     * (aka. L1 distance or Manhattan distance) between this vector and the given other vector.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public long dist1(Vector v) {
-        return v.minus(this).dist1();
+    public long dist1(Vector other) {
+        return other.minus(this).dist1();
     }
 
     /**
@@ -240,12 +240,12 @@ public final class Vector implements Comparable<Vector> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Chebyshev_distance">"maximum" distance</a>
-     * (aka. L∞ distance or Chebyshev distance) between this vector and the given vector.
+     * (aka. L∞ distance or Chebyshev distance) between this vector and the given other vector.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public long distMax(Vector v) {
-        return v.minus(this).distMax();
+    public long distMax(Vector other) {
+        return other.minus(this).distMax();
     }
 
     /**
@@ -260,14 +260,14 @@ public final class Vector implements Comparable<Vector> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
-     * Eucledian distance</a> between this vector and the given vector.
+     * Eucledian distance</a> between this vector and the given other vector.
      * <p>
      * Warning: this distance metric does not satisfy the triangle inequality.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public long distSq(Vector v) {
-        return v.minus(this).distSq();
+    public long distSq(Vector other) {
+        return other.minus(this).distSq();
     }
 
     /**
@@ -280,12 +280,12 @@ public final class Vector implements Comparable<Vector> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Eucledian distance</a>
-     * (aka. L2 distance) between this vector and the given vector.
+     * (aka. L2 distance) between this vector and the given other vector.
      *
      * @throws IllegalArgumentException if the vectors have different dimensions
      */
-    public double dist2(Vector v) {
-        return v.minus(this).dist2();
+    public double dist2(Vector other) {
+        return other.minus(this).dist2();
     }
 
     @Override

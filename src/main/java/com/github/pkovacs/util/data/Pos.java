@@ -7,13 +7,11 @@ import java.util.stream.Stream;
 
 /**
  * Represents a position (point or position vector) in 2D coordinate space as an immutable pair of {@code int}
- * values: {@code (x,y)}. This class provides various useful methods and also supports lexicographical ordering
- * (first by x coordinate, then by y coordinate). It is not a record in order to provide easier access to the
- * x and y coordinates as public final fields.
- * <p>
- * {@link Vector} is the D-dimensional generalization of {@link Pos} with {@code long} coordinate values.
- * If long coordinates are required, you can use Vector instead of this class.
+ * values: {@code (x,y)}. Provides various useful methods and also supports lexicographical ordering (first by
+ * {@code x}, then by {@code y}).
  *
+ * @apiNote This class is not a record in order to provide easier access to {@link #x} and {@link #y} as public
+ *         final fields.
  * @see Vector
  */
 public final class Pos implements Comparable<Pos> {
@@ -43,8 +41,9 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns the x coordinate (or column index).
-     * You can also use the final field {@link #x} directly, because it is deliberately public.
-     * But this method is practical when a method reference is used: {@code Pos::x}.
+     *
+     * @apiNote You can also use the public final field {@link #x} directly, but this method is practical when
+     *         used as a method reference: {@code Pos::x}.
      */
     public int x() {
         return x;
@@ -52,22 +51,23 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns the y coordinate (or row index).
-     * You can also use the final field {@link #y} directly, because it is deliberately public.
-     * But this method is practical when a method reference is used: {@code Pos::y}.
+     *
+     * @apiNote You can also use the public final field {@link #y} directly, but this method is practical when
+     *         used as a method reference: {@code Pos::y}.
      */
     public int y() {
         return y;
     }
 
     /**
-     * Returns true if the given position is one of the 4 "regular" neighbors of this position.
+     * Returns true if the given other position is one of the 4 "regular" neighbors of this position.
      */
     public boolean isNeighbor(Pos other) {
         return dist1(other) == 1;
     }
 
     /**
-     * Returns true if the given position is one of the 8 "extended" neighbors of this position, also including
+     * Returns true if the given other position is one of the 8 "extended" neighbors of this position, also including
      * the diagonal ones.
      */
     public boolean isNeighbor8(Pos other) {
@@ -300,14 +300,14 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Creates a new position by adding the given position vector to this one.
+     * Creates a new position by adding the given other position vector to this one.
      */
     public Pos plus(Pos other) {
         return new Pos(x + other.x, y + other.y);
     }
 
     /**
-     * Creates a new position by subtracting the given position vector from this one.
+     * Creates a new position by subtracting the given other position vector from this one.
      */
     public Pos minus(Pos other) {
         return new Pos(x - other.x, y - other.y);
@@ -365,7 +365,7 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">"taxicab" distance</a>
-     * (aka. L1 distance or Manhattan distance) between this position and the given position.
+     * (aka. L1 distance or Manhattan distance) between this position and the given other position.
      */
     public long dist1(Pos other) {
         return Math.abs((long) other.x - x) + Math.abs((long) other.y - y);
@@ -381,7 +381,7 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Chebyshev_distance">"maximum" distance</a>
-     * (aka. L∞ distance or Chebyshev distance) between this position and the given position.
+     * (aka. L∞ distance or Chebyshev distance) between this position and the given other position.
      */
     public long distMax(Pos other) {
         return Math.max(Math.abs((long) other.x - x), Math.abs((long) other.y - y));
@@ -399,7 +399,7 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance">squared
-     * Eucledian distance</a> between this position and the given position.
+     * Eucledian distance</a> between this position and the given other position.
      * <p>
      * Warning: this distance metric does not satisfy the triangle inequality.
      */
@@ -419,7 +419,7 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns the <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Eucledian distance</a>
-     * (aka. L2 distance) between this position and the given position.
+     * (aka. L2 distance) between this position and the given other position.
      */
     public double dist2(Pos other) {
         return Math.sqrt(distSq(other));
@@ -432,7 +432,7 @@ public final class Pos implements Comparable<Pos> {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Pos p && x == p.x && y == p.y;
+        return o instanceof Pos p && p.x == x && p.y == y;
     }
 
     @Override

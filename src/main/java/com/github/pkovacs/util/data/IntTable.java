@@ -51,7 +51,7 @@ public final class IntTable extends AbstractTable<Integer> {
     }
 
     /**
-     * Creates a new table as a deep copy of the given table.
+     * Creates a new table as a deep copy of the given other table.
      */
     public IntTable(IntTable other) {
         this(other.data);

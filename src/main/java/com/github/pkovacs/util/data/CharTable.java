@@ -52,7 +52,7 @@ public final class CharTable extends AbstractTable<Character> {
     }
 
     /**
-     * Creates a new table as a deep copy of the given table.
+     * Creates a new table as a deep copy of the given other table.
      */
     public CharTable(CharTable other) {
         this(other.data);

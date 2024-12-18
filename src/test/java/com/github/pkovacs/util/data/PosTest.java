@@ -184,8 +184,8 @@ class PosTest {
         assertEquals(a.opposite(), a.mirrorVertically().mirrorHorizontally());
 
         assertEquals(a.opposite(), a.mirrorAcross(Pos.ORIGIN));
-        assertEquals(p(20, 2), a.mirrorAcross(p(30,6)));
-        assertEquals(p(6, 36), a.mirrorAcross(p(23,23)));
+        assertEquals(p(20, 2), a.mirrorAcross(p(30, 6)));
+        assertEquals(p(6, 36), a.mirrorAcross(p(23, 23)));
     }
 
     @Test

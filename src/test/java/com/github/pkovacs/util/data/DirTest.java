@@ -1,7 +1,6 @@
 package com.github.pkovacs.util.data;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;

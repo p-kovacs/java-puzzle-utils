@@ -9,8 +9,8 @@ import java.util.stream.LongStream;
 import com.github.pkovacs.util.Utils;
 
 /**
- * An immutable closed range of {@code long} integers {@code [min..max]}. Provides various useful methods and also
- * supports lexicographical ordering (first by {@code min}, then by {@code max}).
+ * An immutable closed range of {@code long} integers {@code [min..max]}. Provides various useful methods and supports
+ * lexicographical ordering (first by {@code min}, then by {@code max}).
  * <p>
  * If you need a more general tool, consider using Guava's {@code Range} or {@code RangeSet}.
  *
@@ -188,7 +188,6 @@ public final class Range implements Comparable<Range> {
      *
      * @throws IllegalArgumentException if any of the given numbers is not of type {@code Integer} or
      *         {@code Long}
-     * @throws java.util.NoSuchElementException if the collection is empty
      */
     public boolean containsAll(Collection<? extends Number> numbers) {
         if (numbers.stream().map(Object::getClass).anyMatch(c -> c != Integer.class && c != Long.class)) {
@@ -253,7 +252,7 @@ public final class Range implements Comparable<Range> {
 
     /**
      * Returns a new range by extending this range with the given delta value in both directions. Negative parameter
-     * means shrinking.
+     * value means shrinking.
      * <p>
      * For example, extending {@code [5..9]} with 2 results in {@code [3..11]}, while extending with -1 results in
      * {@code [6..8]}.

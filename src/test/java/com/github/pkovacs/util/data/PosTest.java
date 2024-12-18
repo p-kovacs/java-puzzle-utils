@@ -1,7 +1,6 @@
 package com.github.pkovacs.util.data;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
@@ -259,46 +258,6 @@ class PosTest {
 
         assertEquals(2 * (Integer.MAX_VALUE + 1L), c.dist1());
         assertEquals(Integer.MAX_VALUE + 1L, c.distMax());
-    }
-
-    @Test
-    void testRangeMethods() {
-        var list = List.of(p(20, 30), p(10, 50), p(15, 25));
-        assertEquals(new Range(10, 20), Pos.xRange(list));
-        assertEquals(new Range(25, 50), Pos.yRange(list));
-        assertThrows(NoSuchElementException.class, () -> Pos.xRange(List.of()));
-        assertThrows(NoSuchElementException.class, () -> Pos.yRange(List.of()));
-    }
-
-    @Test
-    void testBoxMethods() {
-        assertEquals(List.of(), Pos.box(0, 3).toList());
-        assertEquals(List.of(), Pos.box(1, -1).toList());
-        assertEquals(List.of(Pos.ORIGIN), Pos.box(1, 1).toList());
-        assertEquals(List.of(
-                        p(0, 0), p(0, 1), p(0, 2),
-                        p(1, 0), p(1, 1), p(1, 2)),
-                Pos.box(2, 3).toList());
-
-        var list1 = List.of(p(40, 20), p(41, 20), p(42, 20));
-        var list2 = List.of(
-                p(42, 10), p(42, 11),
-                p(43, 10), p(43, 11),
-                p(44, 10), p(44, 11));
-
-        assertEquals(List.of(),
-                Pos.box(new Range(40, 40), new Range(20, 19)).toList());
-        assertEquals(list1, Pos.box(new Range(40, 42), new Range(20, 20)).toList());
-        assertEquals(list2, Pos.box(new Range(42, 44), new Range(10, 11)).toList());
-
-        assertEquals(List.of(), Pos.box(p(40, 20), p(40, 19)).toList());
-        assertEquals(list1, Pos.box(p(40, 20), p(42, 20)).toList());
-        assertEquals(list2, Pos.box(p(42, 10), p(44, 11)).toList());
-
-        assertEquals(List.of(), Pos.box(p(42, 20), p(40, 20)).toList());
-        assertEquals(list1, Pos.boundingBox(p(42, 20), p(40, 20)).toList());
-        assertEquals(list2, Pos.boundingBox(List.of(p(44, 10), p(42, 11))).toList());
-        assertEquals(list2, Pos.boundingBox(p(44, 10), p(43, 11), p(42, 10)).toList());
     }
 
     private static Pos p(long x, long y) {

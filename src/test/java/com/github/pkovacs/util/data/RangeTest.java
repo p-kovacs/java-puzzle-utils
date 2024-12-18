@@ -69,6 +69,8 @@ class RangeTest {
         assertFalse(x.containsAll(y.stream().boxed().toList()));
         assertTrue(x.containsAll(new Range(12, 40).stream().toArray()));
         assertTrue(x.containsAll(new Range(12, 40).stream().boxed().toList()));
+        assertTrue(x.containsAll());
+        assertTrue(x.containsAll(List.of()));
 
         assertFalse(x.containsAll(y.stream().mapToInt(i -> (int) i).toArray()));
         assertFalse(x.containsAll(y.stream().mapToInt(i -> (int) i).boxed().toList()));

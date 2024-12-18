@@ -128,12 +128,11 @@ public final class CharTable extends AbstractTable<Character> {
     }
 
     private static CharTable wrap(Collection<Pos> positions, Function<Pos, Character> function, char fillValue) {
-        var xRange = Pos.xRange(positions);
-        var yRange = Pos.yRange(positions);
-        long minX = xRange.min();
-        long minY = yRange.min();
+        var box = Box.bound(positions);
+        long minX = box.x().min;
+        long minY = box.y().min;
 
-        var table = new CharTable((int) xRange.size(), (int) yRange.size(), fillValue);
+        var table = new CharTable((int) box.x().size(), (int) box.y().size(), fillValue);
         positions.forEach(p -> table.set((int) (p.x - minX), (int) (p.y - minY), function.apply(p)));
         return table;
     }

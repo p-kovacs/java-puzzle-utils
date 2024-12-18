@@ -1,15 +1,12 @@
 package com.github.pkovacs.util.data;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
  * Represents a position (point or position vector) in 2D coordinate space as an immutable pair of {@code long}
- * values: {@code (x,y)}. Provides various useful methods and also supports lexicographical ordering (first by
- * {@code x}, then by {@code y}).
+ * values: {@code (x,y)}. Provides various useful methods and supports lexicographical ordering (first by {@code x},
+ * then by {@code y}).
  *
  * @apiNote This class is not a record in order to provide easier access to {@link #x} and {@link #y} as public
  *         final fields.
@@ -90,11 +87,11 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the neighbor of this position in the given direction, assuming that axis y is directed <i>downward</i>
-     * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
-     * non-negative coordinates.
+     * Returns the neighbor of this position in the given direction, assuming that the y-axis is directed
+     * <i>downward</i> (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among
+     * the ones with non-negative coordinates.
      * <p>
-     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
+     * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
      */
     public Pos neighbor(Dir dir) {
         return switch (dir) {
@@ -107,10 +104,10 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns the "extended" neighbor of this position in the given direction (out of 8 directions), assuming
-     * that axis y is directed <i>downward</i> (to the south). That is, {@code (0,0)} represents the <i>top</i>
+     * that the y-axis is directed <i>downward</i> (to the south). That is, {@code (0,0)} represents the <i>top</i>
      * left position among the ones with non-negative coordinates.
      * <p>
-     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
+     * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
      */
     public Pos neighbor8(Dir8 dir) {
         return switch (dir) {
@@ -126,9 +123,9 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the neighbor of this position in the given direction, assuming that axis y is directed <i>downward</i>
-     * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
-     * non-negative coordinates.
+     * Returns the neighbor of this position in the given direction, assuming that the y-axis is directed
+     * <i>downward</i> (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among
+     * the ones with non-negative coordinates.
      *
      * @param dir the direction character. One of 'N' (north), 'E' (east), 'S' (south), 'W' (west),
      *         'U' (up), 'R' (right), 'D' (down), 'L' (left), and their lowercase variants.
@@ -194,11 +191,11 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the direction to the given other position, assuming that axis y is directed <i>downward</i>
+     * Returns the direction to the given other position, assuming that the y-axis is directed <i>downward</i>
      * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
      * non-negative coordinates.
      * <p>
-     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
+     * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
      *
      * @throws IllegalArgumentException if this position and the given position are equal or do not lay on a
      *         common horizontal or vertical line.
@@ -218,11 +215,11 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the direction to the given other position, assuming that axis y is directed <i>downward</i>
+     * Returns the direction to the given other position, assuming that the y-axis is directed <i>downward</i>
      * (to the south). That is, {@code (0,0)} represents the <i>top</i> left position among the ones with
      * non-negative coordinates.
      * <p>
-     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
+     * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
      *
      * @throws IllegalArgumentException if this position and the given position are equal or do not lay on a
      *         common horizontal, vertical, or diagonal line.
@@ -270,11 +267,11 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns an <i>infinite</i> ordered stream of positions that constitutes a "ray" moving away from this position
-     * in the given direction, assuming that axis y is directed <i>downward</i> (to the south). The first element of
-     * the stream is the corresponding neighbor of this position, the next element is the subsequent position in
+     * in the given direction, assuming that the y-axis is directed <i>downward</i> (to the south). The first element
+     * of the stream is the corresponding neighbor of this position, the next element is the subsequent position in
      * the same direction (applying the same changes to the x and y coordinates), and so on.
      * <p>
-     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
+     * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
      */
     public Stream<Pos> ray(Dir dir) {
         return ray(neighbor(dir));
@@ -282,11 +279,11 @@ public final class Pos implements Comparable<Pos> {
 
     /**
      * Returns an <i>infinite</i> ordered stream of positions that constitutes a "ray" moving away from this position
-     * in the given direction, assuming that axis y is directed <i>downward</i> (to the south). The first element of
-     * the stream is the corresponding neighbor of this position, the next element is the subsequent position in
+     * in the given direction, assuming that the y-axis is directed <i>downward</i> (to the south). The first element
+     * of the stream is the corresponding neighbor of this position, the next element is the subsequent position in
      * the same direction (applying the same changes to the x and y coordinates), and so on.
      * <p>
-     * If axis y is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
+     * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
      */
     public Stream<Pos> ray(Dir8 dir) {
         return ray(neighbor8(dir));
@@ -466,94 +463,6 @@ public final class Pos implements Comparable<Pos> {
     @Override
     public int compareTo(Pos other) {
         return x != other.x ? Long.compare(x, other.x) : Long.compare(y, other.y);
-    }
-
-    /**
-     * Returns the bounding {@link Range} of the x coordinates of the given positions.
-     *
-     * @throws java.util.NoSuchElementException if the collection is empty
-     */
-    public static Range xRange(Collection<Pos> positions) {
-        return Range.bound(positions.stream().mapToLong(Pos::x));
-    }
-
-    /**
-     * Returns the bounding {@link Range} of the y coordinates of the given positions.
-     *
-     * @throws java.util.NoSuchElementException if the collection is empty
-     */
-    public static Range yRange(Collection<Pos> positions) {
-        return Range.bound(positions.stream().mapToLong(Pos::y));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within a box of the given width and height.
-     * If both arguments are positive, then the first element of the stream is {@code (0,0)}, and the last element is
-     * {@code (width-1,height-1)}. Otherwise, an empty stream is returned.
-     */
-    public static Stream<Pos> box(int width, int height) {
-        return box(ORIGIN, new Pos(width - 1, height - 1));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within the closed box defined by the given
-     * ranges of x and y coordinates. If both ranges are non-empty, then the first element of the stream is
-     * {@code (xRange.min,yRange.min)}, and the last element is {@code (xRange.max,yRange.max)}.
-     * Otherwise, an empty stream is returned.
-     */
-    public static Stream<Pos> box(Range xRange, Range yRange) {
-        if (xRange.isEmpty() || yRange.isEmpty()) {
-            return Stream.empty();
-        }
-        if (xRange.min() < Integer.MIN_VALUE || xRange.max() > Integer.MAX_VALUE
-                || yRange.min() < Integer.MIN_VALUE || yRange.max() > Integer.MAX_VALUE
-                || xRange.size() > Integer.MAX_VALUE || yRange.size() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("The ranges are too large.");
-        }
-
-        int xMin = (int) xRange.min();
-        int yMin = (int) yRange.min();
-        int width = (int) xRange.size();
-        int height = (int) yRange.size();
-
-        return IntStream.range(0, width * height)
-                .mapToObj(i -> new Pos(xMin + i / height, yMin + i % height));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within the closed box {@code [min..max]}.
-     * If {@code min.x <= max.x} and {@code min.y <= max.y}, then the first element of the stream is {@code min},
-     * and the last element is {@code max}. Otherwise, an empty stream is returned.
-     */
-    public static Stream<Pos> box(Pos min, Pos max) {
-        long width = max.x - min.x + 1;
-        long height = max.y - min.y + 1;
-        if (width <= 0 || height <= 0) {
-            return Stream.empty();
-        }
-
-        return LongStream.range(0, width * height)
-                .mapToObj(i -> new Pos(min.x + i / height, min.y + i % height));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within the
-     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions.
-     * If the given array is empty, then an empty stream is returned.
-     */
-    public static Stream<Pos> boundingBox(Pos... positions) {
-        return boundingBox(Arrays.asList(positions));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of positions within the
-     * <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a> of the given positions.
-     * If the given collection is empty, then an empty stream is returned.
-     */
-    public static Stream<Pos> boundingBox(Collection<Pos> positions) {
-        return positions.isEmpty()
-                ? Stream.empty()
-                : box(xRange(positions), yRange(positions));
     }
 
 }

@@ -122,12 +122,11 @@ public final class IntTable extends AbstractTable<Integer> {
     }
 
     private static IntTable wrap(Collection<Pos> positions, Function<Pos, Integer> function, int fillValue) {
-        var xRange = Pos.xRange(positions);
-        var yRange = Pos.yRange(positions);
-        long minX = xRange.min();
-        long minY = yRange.min();
+        var box = Box.bound(positions);
+        long minX = box.x().min;
+        long minY = box.y().min;
 
-        var table = new IntTable((int) xRange.size(), (int) yRange.size(), fillValue);
+        var table = new IntTable((int) box.x().size(), (int) box.y().size(), fillValue);
         positions.forEach(p -> table.set((int) (p.x - minX), (int) (p.y - minY), function.apply(p)));
         return table;
     }

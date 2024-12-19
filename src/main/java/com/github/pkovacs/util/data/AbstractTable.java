@@ -64,6 +64,13 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
     }
 
     /**
+     * Returns true if this table contains the given cell.
+     */
+    public final boolean containsCell(long x, long y) {
+        return x >= 0 && x < width() && y >= 0 && y < height();
+    }
+
+    /**
      * Returns an ordered stream of all cells in this table. The stream is ordered row by row (not lexicographically)
      * to provide faster access to the associated values for large tables.
      */
@@ -290,6 +297,28 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      */
     public AbstractTable<V> transpose() {
         return newInstance(height(), width(), (x, y) -> get0(y, x));
+    }
+
+    /**
+     * Returns a new table by extending this one with the given amount uniformly in all directions.
+     * Negative amount means shrinking. Newly added cells will be assigned with the given fill value.
+     */
+    public AbstractTable<V> extend(int delta, V fillValue) {
+        return extend(delta, delta, fillValue);
+    }
+
+    /**
+     * Returns a new table by extending this one with the given amounts along the corresponding axes (in both
+     * directions). Negative amount means shrinking. Newly added cells will be assigned with the given fill value.
+     */
+    public AbstractTable<V> extend(int dx, int dy, V fillValue) {
+        int w = width() + 2 * dx;
+        int h = height() + 2 * dy;
+        if (w < 0 || h < 0) {
+            throw new IllegalArgumentException("Negative table size.");
+        }
+
+        return newInstance(w, h, (x, y) -> containsCell(x - dx, y - dy) ? get0(x - dx, y - dy) : fillValue);
     }
 
 }

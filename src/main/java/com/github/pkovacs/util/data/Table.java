@@ -128,6 +128,13 @@ public final class Table<V> extends AbstractTable<V> {
     }
 
     /**
+     * Returns the value associated with the specified cell.
+     */
+    public V get(long x, long y) {
+        return get((int) x, (int) y);
+    }
+
+    /**
      * Sets the value associated with the specified cell.
      */
     public void set(Pos pos, V value) {
@@ -139,6 +146,13 @@ public final class Table<V> extends AbstractTable<V> {
      */
     public void set(int x, int y, V value) {
         data[y][x] = value;
+    }
+
+    /**
+     * Sets the value associated with the specified cell.
+     */
+    public void set(long x, long y, V value) {
+        set((int) x, (int) y, value);
     }
 
     /**

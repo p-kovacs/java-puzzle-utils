@@ -133,7 +133,7 @@ public final class CharTable extends AbstractTable<Character> {
         long minY = box.y().min;
 
         var table = new CharTable((int) box.x().size(), (int) box.y().size(), fillValue);
-        positions.forEach(p -> table.set((int) (p.x - minX), (int) (p.y - minY), function.apply(p)));
+        positions.forEach(p -> table.set(p.x - minX, p.y - minY, function.apply(p)));
         return table;
     }
 
@@ -185,6 +185,13 @@ public final class CharTable extends AbstractTable<Character> {
     }
 
     /**
+     * Returns the value associated with the specified cell.
+     */
+    public char get(long x, long y) {
+        return get((int) x, (int) y);
+    }
+
+    /**
      * Sets the value associated with the specified cell.
      */
     public void set(Pos pos, char value) {
@@ -196,6 +203,13 @@ public final class CharTable extends AbstractTable<Character> {
      */
     public void set(int x, int y, char value) {
         data[y][x] = value;
+    }
+
+    /**
+     * Sets the value associated with the specified cell.
+     */
+    public void set(long x, long y, char value) {
+        set((int) x, (int) y, value);
     }
 
     /**
@@ -256,6 +270,16 @@ public final class CharTable extends AbstractTable<Character> {
     @Override
     public CharTable transpose() {
         return (CharTable) super.transpose();
+    }
+
+    @Override
+    public CharTable extend(int delta, Character fillValue) {
+        return (CharTable) super.extend(delta, fillValue);
+    }
+
+    @Override
+    public CharTable extend(int dx, int dy, Character fillValue) {
+        return (CharTable) super.extend(dx, dy, fillValue);
     }
 
     @Override

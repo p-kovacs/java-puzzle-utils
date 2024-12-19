@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -148,6 +149,18 @@ abstract class AbstractTableTest<T> {
         assertEquals(transposed, left.mirrorVertically());
         assertEquals(transposed, table.mirrorVertically().rotateRight());
         assertEquals(transposed, table.mirrorHorizontally().rotateLeft());
+
+        var ext = table.extend(2, 1, table.get0(1, 1));
+        assertEquals(table.width() + 4, ext.width());
+        assertEquals(table.height() + 2, ext.height());
+        assertTrue(ext.border().allMatch(p -> ext.get0((int) p.x, (int) p.y).equals(table.get0(1, 1))));
+
+        var shr = table.extend(-1, null);
+        assertEquals(shr.width(), table.width() - 2);
+        assertEquals(shr.height(), table.height() - 2);
+        assertTrue(shr.cells().allMatch(p -> shr.get0((int) p.x, (int) p.y) == table.get0((int) p.x + 1, (int) p.y + 1)));
+
+        assertThrows(IllegalArgumentException.class, () -> table.extend(-2, null));
     }
 
     @Test

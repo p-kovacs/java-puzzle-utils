@@ -79,8 +79,8 @@ class IntTableTest extends AbstractTableTest<Integer> {
         assertContentEquals(new int[][] { { 42, 2, 4, 6 }, { 200, 202, 204, 206 }, { 400, 402, -1, 406 } }, table);
 
         table.update(0, 0, v -> v + 6);
-        assertEquals(49, table.inc(0, 0));
-        assertEquals(50, table.inc(p(0, 0)));
+        assertEquals(49, table.inc(p(0, 0)));
+        assertEquals(50, table.inc(table.topLeft()));
         assertEquals(-10, table.update(p(2, 2), v -> v * 10));
 
         assertContentEquals(new int[][] { { 50, 2, 4, 6 }, { 200, 202, 204, 206 }, { 400, 402, -10, 406 } }, table);
@@ -207,6 +207,23 @@ class IntTableTest extends AbstractTableTest<Integer> {
         assertEquals("200 100   0\n201 101   1\n202 102   2\n203 103   3\n", table1.rotateRight().toString());
         assertEquals("  3 103 203\n  2 102 202\n  1 101 201\n  0 100 200\n", table1.rotateLeft().toString());
         assertEquals("  0 100 200\n  1 101 201\n  2 102 202\n  3 103 203\n", table1.transpose().toString());
+    }
+
+    @Test
+    void testExtend() {
+        var table = new IntTable(4, 3, p -> (int) ((p.y + 1) * 10 + p.x));
+        var ext = table.extend(2, 1, -1);
+        var shr = table.extend(-1, 0);
+
+        assertContentEquals(new int[][] { { 10, 11, 12, 13 }, { 20, 21, 22, 23 }, { 30, 31, 32, 33 } }, table);
+        assertContentEquals(new int[][] {
+                { -1, -1, -1, -1, -1, -1, -1, -1 },
+                { -1, -1, 10, 11, 12, 13, -1, -1 },
+                { -1, -1, 20, 21, 22, 23, -1, -1 },
+                { -1, -1, 30, 31, 32, 33, -1, -1 },
+                { -1, -1, -1, -1, -1, -1, -1, -1 },
+        }, ext);
+        assertContentEquals(new int[][] { { 21, 22 } }, shr);
     }
 
     private static void assertContentEquals(int[][] expected, IntTable table) {

@@ -189,6 +189,18 @@ class CharTableTest extends AbstractTableTest<Character> {
         assertEquals("0aA\n1bB\n2cC\n3dD\n", table.transpose().toString());
     }
 
+    @Test
+    void testExtend() {
+        var matrix = new char[][] { { '0', '1', '2', '3' }, { 'a', 'b', 'c', 'd' }, { 'A', 'B', 'C', 'D' } };
+        var table = new CharTable(matrix);
+        var ext = table.extend(2, 1, '#');
+        var shr = table.extend(-1, '?');
+
+        assertContentEquals(List.of("0123", "abcd", "ABCD"), table);
+        assertContentEquals(List.of("########", "##0123##", "##abcd##", "##ABCD##", "########"), ext);
+        assertContentEquals(List.of("bc"), shr);
+    }
+
     private static void assertContentEquals(List<String> expected, CharTable table) {
         var array = new char[expected.size()][];
         for (int i = 0; i < array.length; i++) {

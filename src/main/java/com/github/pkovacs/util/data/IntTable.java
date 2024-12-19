@@ -127,7 +127,7 @@ public final class IntTable extends AbstractTable<Integer> {
         long minY = box.y().min;
 
         var table = new IntTable((int) box.x().size(), (int) box.y().size(), fillValue);
-        positions.forEach(p -> table.set((int) (p.x - minX), (int) (p.y - minY), function.apply(p)));
+        positions.forEach(p -> table.set(p.x - minX, p.y - minY, function.apply(p)));
         return table;
     }
 
@@ -179,6 +179,13 @@ public final class IntTable extends AbstractTable<Integer> {
     }
 
     /**
+     * Returns the value associated with the specified cell.
+     */
+    public int get(long x, long y) {
+        return get((int) x, (int) y);
+    }
+
+    /**
      * Sets the value associated with the specified cell.
      */
     public void set(Pos pos, int value) {
@@ -193,17 +200,17 @@ public final class IntTable extends AbstractTable<Integer> {
     }
 
     /**
-     * Increments the value associated with the specified cell and returns the new value.
+     * Sets the value associated with the specified cell.
      */
-    public int inc(Pos pos) {
-        return ++data[(int) pos.y][(int) pos.x];
+    public void set(long x, long y, int value) {
+        set((int) x, (int) y, value);
     }
 
     /**
      * Increments the value associated with the specified cell and returns the new value.
      */
-    public int inc(int x, int y) {
-        return ++data[y][x];
+    public int inc(Pos pos) {
+        return ++data[(int) pos.y][(int) pos.x];
     }
 
     /**
@@ -285,6 +292,16 @@ public final class IntTable extends AbstractTable<Integer> {
     @Override
     public IntTable transpose() {
         return (IntTable) super.transpose();
+    }
+
+    @Override
+    public IntTable extend(int delta, Integer fillValue) {
+        return (IntTable) super.extend(delta, fillValue);
+    }
+
+    @Override
+    public IntTable extend(int dx, int dy, Integer fillValue) {
+        return (IntTable) super.extend(dx, dy, fillValue);
     }
 
     @Override

@@ -158,7 +158,7 @@ public record Box(Range x, Range y) implements Comparable<Box> {
     }
 
     /**
-     * Returns a new box by extending this box with the given delta value along both axes (in all directions).
+     * Returns a new box by extending this box with the given amount uniformly in all directions.
      * Negative parameter value means shrinking.
      */
     public Box extend(long delta) {
@@ -166,8 +166,8 @@ public record Box(Range x, Range y) implements Comparable<Box> {
     }
 
     /**
-     * Returns a new box by extending this box with the given delta values along the corresponding axes (in both
-     * directions). Negative parameter value means shrinking.
+     * Returns a new box by extending this box with the given amount along the corresponding axes (in both directions).
+     * Negative parameter value means shrinking.
      */
     public Box extend(long dx, long dy) {
         return new Box(x.extend(dx), y.extend(dy));

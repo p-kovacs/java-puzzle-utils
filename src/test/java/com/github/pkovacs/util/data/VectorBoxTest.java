@@ -2,6 +2,7 @@ package com.github.pkovacs.util.data;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
@@ -14,144 +15,140 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class VectorBoxTest {
 
     @Test
-    void testTwoDim() {
-        var x = new VectorBox(new VectorD(5, 12), new VectorD(12, 42));
-        var y = new VectorBox(new VectorD(8, 24), new VectorD(20, 30));
+    void testBasicMethods() {
+        var a = new VectorBox(new Range(5, 10), new Range(12, 42), new Range(1, 100));
+        var b = new VectorBox(v(8, 24, -48), v(20, 40, 80));
 
-        assertFalse(x.isEmpty());
-        assertEquals(8 * 31, x.size());
+        assertEquals(a.x().min, a.min().x);
+        assertEquals(a.x().max, a.max().x);
+        assertEquals(a.y().min, a.min().y);
+        assertEquals(a.y().max, a.max().y);
+        assertEquals(a.z().min, a.min().z);
+        assertEquals(a.z().max, a.max().z);
+        assertEquals(new Range(5, 10), a.x());
+        assertEquals(new Range(12, 42), a.y());
+        assertEquals(new Range(1, 100), a.z());
+        assertEquals(new Vector(5, 12, 1), a.min());
+        assertEquals(new Vector(10, 42, 100), a.max());
 
-        assertFalse(x.contains(new VectorD(10, 50)));
-        assertFalse(x.contains(new VectorD(20, 40)));
-        assertTrue(x.contains(new VectorD(10, 40)));
-        assertTrue(x.contains(x.min()));
-        assertTrue(x.contains(x.max()));
-        assertTrue(x.contains(y.min()));
-        assertFalse(x.contains(y.max()));
+        assertFalse(a.isEmpty());
+        assertTrue(b.isNonEmpty());
+        assertEquals(6 * 31 * 100, a.size());
+        assertEquals(13 * 17 * 129, b.size());
 
-        assertFalse(x.containsAll(y));
-        assertTrue(x.containsAll(x));
-        assertTrue(x.overlaps(y));
-        assertTrue(x.overlaps(x));
+        assertFalse(a.contains(v(10, 50, 42)));
+        assertFalse(a.contains(v(20, 40, 42)));
+        assertFalse(a.contains(v(10, 40, 0)));
+        assertFalse(a.contains(v(10, 40, 101)));
+        assertTrue(a.contains(v(10, 40, 1)));
+        assertTrue(a.contains(v(10, 40, 50)));
+        assertTrue(a.contains(v(10, 40, 100)));
+        assertTrue(a.contains(a.min()));
+        assertTrue(a.contains(a.max()));
+        assertFalse(a.contains(b.min()));
+        assertFalse(a.contains(b.max()));
+        assertFalse(a.containsAll(b));
+        assertTrue(a.containsAll(a));
 
-        var z = new VectorBox(new VectorD(8, 24), new VectorD(12, 30));
-        assertEquals(z, x.intersection(y));
-        assertEquals(z, y.intersection(x));
-        assertTrue(x.contains(z.min()));
-        assertTrue(x.contains(z.max()));
-        assertTrue(y.contains(z.min()));
-        assertTrue(y.contains(z.max()));
-        assertTrue(x.containsAll(z));
-        assertTrue(y.containsAll(z));
-
-        assertEquals("[(5,12) .. (12,42)]", x.toString());
-
-        var list = new VectorBox(new VectorD(10, 20), new VectorD(14, 25)).stream().toList();
-        assertEquals(5 * 6, list.size());
-        assertTrue(IntStream.range(0, list.size() - 1).allMatch(i -> list.get(i).compareTo(list.get(i + 1)) <= 0));
+        assertEquals("([5..10],[12..42],[1..100])", a.toString());
+        assertEquals("([8..20],[24..40],[-48..80])", b.toString());
     }
 
     @Test
-    void testThreeDim() {
-        var x = new VectorBox(new VectorD(5, 12, 1), new VectorD(12, 42, 100));
-        var y = new VectorBox(new VectorD(8, 24, -48), new VectorD(20, 40, 80));
-
-        assertFalse(x.isEmpty());
-        assertEquals(8 * 31 * 100, x.size());
-
-        assertFalse(x.contains(new VectorD(10, 50, 42)));
-        assertFalse(x.contains(new VectorD(20, 40, 42)));
-        assertFalse(x.contains(new VectorD(10, 40, 0)));
-        assertFalse(x.contains(new VectorD(10, 40, 101)));
-        assertTrue(x.contains(new VectorD(10, 40, 1)));
-        assertTrue(x.contains(new VectorD(10, 40, 50)));
-        assertTrue(x.contains(new VectorD(10, 40, 100)));
-        assertTrue(x.contains(x.min()));
-        assertTrue(x.contains(x.max()));
-        assertFalse(x.contains(y.min()));
-        assertFalse(x.contains(y.max()));
-
-        assertFalse(x.containsAll(y));
-        assertTrue(x.containsAll(x));
-        assertTrue(x.overlaps(y));
-        assertTrue(x.overlaps(x));
-
-        var z = new VectorBox(new VectorD(8, 24, 1), new VectorD(12, 40, 80));
-        assertEquals(z, x.intersection(y));
-        assertEquals(z, y.intersection(x));
-        assertTrue(x.contains(z.min()));
-        assertTrue(x.contains(z.max()));
-        assertTrue(y.contains(z.min()));
-        assertTrue(y.contains(z.max()));
-        assertTrue(x.containsAll(z));
-        assertTrue(y.containsAll(z));
-
-        assertEquals("[(5,12,1) .. (12,42,100)]", x.toString());
-        assertEquals("[(8,24,-48) .. (20,40,80)]", y.toString());
-
-        var list = new VectorBox(new VectorD(10, 20, 30), new VectorD(14, 21, 32)).stream().toList();
+    void testIteration() {
+        var a = new VectorBox(v(10, 20, 30), v(14, 21, 32));
+        var list = a.toList();
+        assertEquals(5 * 2 * 3, a.size());
         assertEquals(5 * 2 * 3, list.size());
+        assertEquals(list, a.stream().distinct().toList());
+        assertTrue(list.stream().allMatch(a::contains));
+        assertTrue(a.containsAll(list));
         assertTrue(IntStream.range(0, list.size() - 1).allMatch(i -> list.get(i).compareTo(list.get(i + 1)) <= 0));
-    }
 
-    @Test
-    void testGeneral() {
-        var x = new VectorBox(new VectorD(5, 40, 1, 0, 1000), new VectorD(6, 42, 4, 0, 1005));
-        var y = new VectorBox(new VectorD(5, 40, 2, 0, 1001), new VectorD(6, 41, 4, 0, 1002));
-
-        assertFalse(x.isEmpty());
-        assertEquals(2 * 3 * 4 * 6, x.size());
-        assertEquals(2 * 2 * 3 * 2, y.size());
-
-        assertTrue(x.contains(x.min()));
-        assertTrue(x.contains(x.max()));
-        assertTrue(x.contains(y.min()));
-        assertTrue(x.contains(y.max()));
-
-        assertTrue(x.containsAll(y));
-        assertEquals(y, x.intersection(y));
-        assertEquals(y, y.intersection(x));
-
-        var list = x.stream().toList();
-        assertEquals(x.size(), list.size());
-        assertTrue(list.stream().allMatch(v -> v.compareTo(x.min()) >= 0));
-        assertTrue(list.stream().allMatch(v -> v.compareTo(x.max()) <= 0));
-        assertTrue(IntStream.range(0, list.size() - 1).allMatch(i -> list.get(i).compareTo(list.get(i + 1)) <= 0));
-    }
-
-    @Test
-    void testExceptions() {
-        assertThrows(IllegalArgumentException.class, () -> new VectorBox(new VectorD(5, 12), new VectorD(12, 42, 100)));
-
-        var x = new VectorBox(new VectorD(5, 12), new VectorD(12, 42));
-        var y = new VectorBox(new VectorD(5, 12, 1), new VectorD(12, 42, 100));
-        assertThrows(IllegalArgumentException.class, () -> x.contains(y.min()));
-        assertThrows(IllegalArgumentException.class, () -> y.contains(x.max()));
-        assertThrows(IllegalArgumentException.class, () -> x.containsAll(y));
+        assertEquals(List.of(),
+                new VectorBox(new Range(10, 10), new Range(20, 10), new Range(30, 40)).toList());
+        assertEquals(List.of(v(10, 20, 30)),
+                new VectorBox(new Range(10, 10), new Range(20, 20), new Range(30, 30)).toList());
+        assertEquals(List.of(v(10, 20, 30), v(11, 20, 30)),
+                new VectorBox(new Range(10, 11), new Range(20, 20), new Range(30, 30)).toList());
+        assertEquals(List.of(v(10, 20, 30), v(10, 21, 30)),
+                new VectorBox(new Range(10, 10), new Range(20, 21), new Range(30, 30)).toList());
+        assertEquals(List.of(v(10, 20, 30), v(10, 20, 31), v(10, 20, 32), v(10, 20, 33)),
+                new VectorBox(new Range(10, 10), new Range(20, 20), new Range(30, 33)).toList());
+        assertEquals(List.of(
+                        v(10, 20, 30), v(10, 20, 31), v(10, 20, 32),
+                        v(10, 21, 30), v(10, 21, 31), v(10, 21, 32),
+                        v(11, 20, 30), v(11, 20, 31), v(11, 20, 32),
+                        v(11, 21, 30), v(11, 21, 31), v(11, 21, 32),
+                        v(12, 20, 30), v(12, 20, 31), v(12, 20, 32),
+                        v(12, 21, 30), v(12, 21, 31), v(12, 21, 32),
+                        v(13, 20, 30), v(13, 20, 31), v(13, 20, 32),
+                        v(13, 21, 30), v(13, 21, 31), v(13, 21, 32)
+                ),
+                new VectorBox(new Range(10, 13), new Range(20, 21), new Range(30, 32)).toList());
     }
 
     @Test
     void testBoundingBox() {
-        var list2d = List.of(
-                new VectorD(5, -12),
-                new VectorD(12, 42),
-                new VectorD(8, -24),
-                new VectorD(20, 40));
-        var list3d = List.of(
-                new VectorD(5, -12, 1),
-                new VectorD(12, 42, 80),
-                new VectorD(8, -24, -48),
-                new VectorD(20, 40, 100));
+        var list = List.of(v(5, -12, 1), v(12, 42, 80), v(8, -24, -48), v(20, 40, 100));
 
-        assertEquals(new VectorBox(new VectorD(5, -24), new VectorD(20, 42)), VectorBox.bound(list2d));
-        assertEquals(new VectorBox(new VectorD(5, -24, -48), new VectorD(20, 42, 100)), VectorBox.bound(list3d));
-        assertEquals(new VectorBox(list2d.get(0), list2d.get(1)), VectorBox.bound(list2d.subList(0, 2)));
-        assertEquals(new VectorBox(list3d.get(0), list3d.get(0)), VectorBox.bound(list3d.subList(0, 1)));
+        assertEquals(new VectorBox(v(5, -24, -48), v(20, 42, 100)), VectorBox.bound(list));
+        assertEquals(new VectorBox(v(5, -24, -48), v(20, 42, 100)),
+                VectorBox.bound(List.of(v(5, 42, -48), v(20, -24, 100))));
+        assertEquals(new VectorBox(v(-5, -24, -48), v(20, 42, 100)),
+                VectorBox.bound(List.of(v(20, 0, 0), v(-5, 0, 100), v(0, -24, 0), v(0, 42, -48))));
 
-        assertTrue(new VectorBox(new VectorD(5, 10), new VectorD(10, 5)).isEmpty());
-        assertFalse(VectorBox.bound(List.of(new VectorD(5, 10), new VectorD(10, 5))).isEmpty());
+        assertEquals(0, new VectorBox(v(20, 40, 100), v(5, -12, 1)).toList().size());
+        assertEquals(84800, VectorBox.bound(List.of(v(20, 40, 100), v(5, -12, 1))).toList().size());
+
+        assertTrue(new VectorBox(v(5, 10, 0), v(10, 5, 0)).isEmpty());
+        assertFalse(VectorBox.bound(Set.of(v(5, 10, 0), v(10, 5, 0))).isEmpty());
 
         assertThrows(NoSuchElementException.class, () -> VectorBox.bound(List.of()));
+    }
+
+    @Test
+    void testOperations() {
+        var a = new VectorBox(new Range(5, 10), new Range(12, 42), new Range(1, 100));
+        var b = new VectorBox(v(8, 24, -48), v(20, 40, 80));
+        var c = new VectorBox(v(8, 24, 1), v(10, 40, 80));
+        var d = new VectorBox(new Range(5, 20), new Range(12, 42), new Range(-48, 100));
+
+        assertEquals(c, a.intersection(b));
+        assertEquals(c, b.intersection(a));
+        assertTrue(a.contains(c.min()));
+        assertTrue(a.contains(c.max()));
+        assertTrue(b.contains(c.min()));
+        assertTrue(b.contains(c.max()));
+        assertTrue(a.containsAll(c));
+        assertTrue(b.containsAll(c));
+        assertFalse(c.containsAll(a));
+        assertTrue(a.containsAll(c.toList()));
+        assertTrue(b.containsAll(c.toList()));
+        assertFalse(c.containsAll(a.toList()));
+
+        assertEquals(d, a.span(b));
+        assertEquals(d, b.span(a));
+        assertTrue(d.containsAll(a));
+        assertTrue(d.containsAll(b));
+        assertTrue(d.containsAll(c));
+        assertTrue(d.containsAll(c.shift(10, 2, -40)));
+        assertFalse(d.containsAll(c.shift(11, 0, 0)));
+        assertFalse(d.containsAll(c.shift(0, 3, 0)));
+        assertFalse(d.containsAll(c.shift(0, 0, -50)));
+
+        assertEquals(new VectorBox(new Range(105, 110), new Range(3012, 3042), new Range(50001, 50100)),
+                a.shift(new Vector(100, 3000, 50000)));
+        assertEquals(new VectorBox(new Range(-95, -90), new Range(3012, 3042), new Range(2, 101)),
+                a.shift(-100, 3000, 1));
+        assertEquals(new VectorBox(new Range(2, 13), new Range(9, 45), new Range(-2, 103)),
+                a.extend(3));
+        assertEquals(new VectorBox(new Range(7, 8), new Range(7, 47), new Range(-9, 110)),
+                a.extend(-2, 5, 10));
+    }
+
+    private static Vector v(long x, long y, long z) {
+        return new Vector(x, y, z);
     }
 
 }

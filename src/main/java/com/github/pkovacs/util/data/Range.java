@@ -22,14 +22,14 @@ public final class Range implements Comparable<Range> {
     /**
      * The minimum value of this range.
      *
-     * @apiNote This field is deliberately made public to similify the usage of this class.
+     * @apiNote This field is made public to similify the usage of this class.
      */
     public final long min;
 
     /**
      * The maximum value of this range.
      *
-     * @apiNote This field is deliberately made public to similify the usage of this class.
+     * @apiNote This field is made public to similify the usage of this class.
      */
     public final long max;
 
@@ -251,7 +251,7 @@ public final class Range implements Comparable<Range> {
     }
 
     /**
-     * Returns a new range by extending this range with the given delta value in both directions. Negative parameter
+     * Returns a new range by extending this range with the given amount in both directions. Negative parameter
      * value means shrinking.
      * <p>
      * For example, extending {@code [5..9]} with 2 results in {@code [3..11]}, while extending with -1 results in

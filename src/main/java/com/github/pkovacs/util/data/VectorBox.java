@@ -1,54 +1,87 @@
 package com.github.pkovacs.util.data;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.function.BinaryOperator;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
- * An immutable box (hyperrectangle) of D-dimensional {@link VectorD} objects (rectangle in 2D, right prism in 3D).
- * Its bounds are represented by two vectors {@code min} and {@code max}, and a vector {@code v} is contained in
- * the box if and only if for each dimension {@code k}, {@code min.get(k) <= v.get(k) <= max.get(k)}.
+ * An immutable box (hyperrectangle or right prism) of {@link Vector} objects in 3D coordinate space. It is
+ * represented as three {@link Range}s for x, y, and z coordinates, respecitvely. Provides various useful methods
+ * and supports ordering (first by {@link #x()}, then by {@link #y()}, finally by {@link #z()}).
  * <p>
- * This class is the D-dimensional generalization of {@link Range}.
+ * This class is the 3D counterpart of {@link Box}.
  *
- * @see VectorD
+ * @see Vector
  * @see Range
+ * @see Box
  */
-public record VectorBox(VectorD min, VectorD max) {
+public record VectorBox(Range x, Range y, Range z) implements Comparable<VectorBox> {
 
     /**
-     * Constructs a new vector box identified by the given two vectors {@code min} and {@code max}. It contains each
-     * vector {@code v} for which {@code min.get(k) <= v.get(k) <= max.get(k)} holds for every coordinate {@code k}.
-     *
-     * @throws IllegalArgumentException if the given vectors have different dimensions
+     * Constructs a new vector box with the given coordinate ranges {@code x}, {@code y}, and {@code z}. It contains
+     * each vector {@code v} for which {@code x.contains(v.x)}, {@code y.contains(v.y)}, and {@code z.contains(v.z)}
+     * all hold.
      */
     public VectorBox {
-        if (min.dim() != max.dim()) {
-            throw new IllegalArgumentException("The vectors have different dimensions.");
-        }
+    }
+
+    /**
+     * Constructs a new vector box between the given two vectors {@code min} and {@code max}. It contains each
+     * vector {@code v} for which {@code min.x <= v.x <= max.x}, {@code min.y <= v.y <= max.y}, and
+     * {@code min.z <= v.z <= max.z} all hold.
+     */
+    public VectorBox(Vector min, Vector max) {
+        this(new Range(min.x, max.x), new Range(min.y, max.y), new Range(min.z, max.z));
     }
 
     /**
      * Constructs the axis-aligned <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">minimum bounding box</a>
      * of the given vectors.
      *
-     * @throws IllegalArgumentException if the given vectors have different dimensions
-     * @throws NoSuchElementException if the collection is empty
+     * @throws java.util.NoSuchElementException if the collection is empty
      */
-    public static VectorBox bound(Collection<VectorD> vectors) {
-        return new VectorBox(bound(vectors, Math::min), bound(vectors, Math::max));
+    public static VectorBox bound(Collection<Vector> vectors) {
+        return new VectorBox(
+                Range.bound(vectors.stream().mapToLong(Vector::x)),
+                Range.bound(vectors.stream().mapToLong(Vector::y)),
+                Range.bound(vectors.stream().mapToLong(Vector::z))
+        );
     }
 
     /**
-     * Returns the dimension of this vector box.
+     * Returns the x coordinate range of this box.
      */
-    public int dim() {
-        return min.dim();
+    public Range x() {
+        return x;
+    }
+
+    /**
+     * Returns the y coordinate range of this box.
+     */
+    public Range y() {
+        return y;
+    }
+
+    /**
+     * Returns the z coordinate range of this box.
+     */
+    public Range z() {
+        return z;
+    }
+
+    /**
+     * Returns the minimum vector of this box: {@code (x.min,y.min,z.min)}.
+     */
+    public Vector min() {
+        return new Vector(x.min, y.min, z.min);
+    }
+
+    /**
+     * Returns the maximum vector of this box: {@code (x.max,y.max,z.max)}.
+     */
+    public Vector max() {
+        return new Vector(x.max, y.max, z.max);
     }
 
     /**
@@ -69,94 +102,122 @@ public record VectorBox(VectorD min, VectorD max) {
      * Returns the number of vectors within this vector box.
      */
     public long size() {
-        return IntStream.range(0, dim())
-                .mapToLong(k -> Math.max(max.get(k) - min.get(k) + 1, 0))
-                .reduce(1, (x, y) -> x * y);
+        return x.size() * y.size() * z.size();
     }
 
     /**
      * Returns true if this vector box contains the given vector.
      */
-    public boolean contains(VectorD v) {
-        if (v.dim() != dim()) {
-            throw new IllegalArgumentException("The box and the vector have different dimensions.");
-        }
-        return IntStream.range(0, dim()).allMatch(k -> v.get(k) >= min.get(k) && v.get(k) <= max.get(k));
+    public boolean contains(Vector v) {
+        return x.contains(v.x) && y.contains(v.y) && z.contains(v.z);
     }
 
     /**
-     * Returns true if this vector box contains the given other box.
+     * Returns true if this vector box contains all vectors of the given other vector box.
      */
     public boolean containsAll(VectorBox other) {
-        return intersection(other).equals(other);
+        return x.containsAll(other.x) && y.containsAll(other.y) && z.containsAll(other.z);
     }
 
     /**
-     * Returns true if this vector box contains all elements of the given collection of vectors.
+     * Returns true if this vector box contains all of the given vectors.
      */
-    public boolean containsAll(Collection<VectorD> vectors) {
+    public boolean containsAll(Collection<Vector> vectors) {
         return vectors.stream().allMatch(this::contains);
     }
 
     /**
-     * Returns true if this vector box overlaps with the given other box.
+     * Returns true if this vector box overlaps with the given other vector box (they have a non-empty intersection).
      */
     public boolean overlaps(VectorBox other) {
-        return !intersection(other).isEmpty();
+        return intersection(other).isNonEmpty();
     }
 
     /**
-     * Returns the intersection of this vector box and the given other box.
+     * Returns the intersection of this vector box and the given other vector box.
      */
     public VectorBox intersection(VectorBox other) {
-        if (other.dim() != dim()) {
-            throw new IllegalArgumentException("The boxes have different dimensions.");
-        }
-
-        long[] lower = IntStream.range(0, dim()).mapToLong(k -> Math.max(min.get(k), other.min.get(k))).toArray();
-        long[] upper = IntStream.range(0, dim()).mapToLong(k -> Math.min(max.get(k), other.max.get(k))).toArray();
-        return new VectorBox(new VectorD(lower), new VectorD(upper));
+        return new VectorBox(x.intersection(other.x), y.intersection(other.y), z.intersection(other.z));
     }
 
     /**
-     * Returns an ordered stream of the vectors within this vector box. If the box is not empty, then the first
-     * element is {@code min}, the last element is {@code max}, and the stream is lexicographically sorted.
-     * <p>
-     * Warning: this method eagerly constructs all elements of the stream, so be careful with large boxes.
+     * Returns the minimal vector box that contains all elements of both this vector box and the given other
+     * vector box.
      */
-    public Stream<VectorD> stream() {
-        if (IntStream.range(0, min.dim()).anyMatch(k -> min.get(k) > max.get(k))) {
+    public VectorBox span(VectorBox other) {
+        return new VectorBox(x.span(other.x), y.span(other.y), z.span(other.z));
+    }
+
+    /**
+     * Returns a new vector box by shifting this one with the given vector.
+     */
+    public VectorBox shift(Vector delta) {
+        return shift(delta.x, delta.y, delta.z);
+    }
+
+    /**
+     * Returns a new vector box by shifting this one with the given delta values along the corresponding axes.
+     */
+    public VectorBox shift(long dx, long dy, long dz) {
+        return new VectorBox(x.shift(dx), y.shift(dy), z.shift(dz));
+    }
+
+    /**
+     * Returns a new vector box by extending this one with the given amount uniformly in all directions.
+     * Negative parameter value means shrinking.
+     */
+    public VectorBox extend(long delta) {
+        return extend(delta, delta, delta);
+    }
+
+    /**
+     * Returns a new vector box by extending this one with the given amount along the corresponding axes
+     * (in both directions). Negative parameter value means shrinking.
+     */
+    public VectorBox extend(long dx, long dy, long dz) {
+        return new VectorBox(x.extend(dx), y.extend(dy), z.extend(dz));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the vectors within this vector box. If the box is non-empty, then
+     * the first element of the stream is {@link #min()}, and the last element is {@link #max()}. Otherwise, an empty
+     * stream is returned. The elements are generated on-the-fly as the stream is processed.
+     */
+    public Stream<Vector> stream() {
+        if (isEmpty()) {
             return Stream.empty();
         }
 
-        var list = List.of(min);
-        for (int i = 0; i < min.dim(); i++) {
-            int k = i;
-            list = list.stream()
-                    .flatMap(v -> LongStream.rangeClosed(min.get(k), max.get(k)).mapToObj(c -> v.with(k, c)))
-                    .toList();
-        }
-        return list.stream();
+        long size = size();
+        long ys = y.size();
+        long zs = z.size();
+        return LongStream.range(0, size)
+                .mapToObj(i -> new Vector(x.min + (i / zs) / ys, y.min + (i / zs) % ys, z.min + i % zs));
+    }
+
+    /**
+     * Returns a lexicographically sorted list of the vectors within this vector box. If the box is non-empty, then
+     * the first element of the list is {@link #min()}, and the last element is {@link #max()}. Otherwise, an empty
+     * list is returned.
+     */
+    public List<Vector> toList() {
+        return stream().toList();
     }
 
     @Override
     public String toString() {
-        return "[" + min + " .. " + max + "]";
+        return "(" + x + "," + y + "," + z + ")";
     }
 
-    private static VectorD bound(Collection<VectorD> vectors, BinaryOperator<Long> op) {
-        var first = vectors.iterator().next();
-        if (vectors.stream().anyMatch(v -> v.dim() != first.dim())) {
-            throw new IllegalArgumentException("The vectors have different dimensions.");
+    @Override
+    public int compareTo(VectorBox other) {
+        int cx = x.compareTo(other.x);
+        if (cx != 0) {
+            return cx;
         }
 
-        long[] coords = IntStream.range(0, first.dim()).mapToLong(first::get).toArray();
-        for (var v : vectors) {
-            for (int k = 0; k < first.dim(); k++) {
-                coords[k] = op.apply(coords[k], v.get(k));
-            }
-        }
-        return new VectorD(coords);
+        int cy = y.compareTo(other.y);
+        return cy != 0 ? cy : z.compareTo(other.z);
     }
 
 }

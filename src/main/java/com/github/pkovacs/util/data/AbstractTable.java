@@ -76,20 +76,6 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
     }
 
     /**
-     * Returns a lexicographically sorted stream of the cells in the specified column of this table.
-     */
-    public final Stream<Pos> col(int x) {
-        return IntStream.range(0, height()).mapToObj(y -> new Pos(x, y));
-    }
-
-    /**
-     * Returns a lexicographically sorted stream of the cells in the specified row of this table.
-     */
-    public final Stream<Pos> row(int y) {
-        return IntStream.range(0, width()).mapToObj(x -> new Pos(x, y));
-    }
-
-    /**
      * Returns the top left cell of this table.
      */
     public final Pos topLeft() {
@@ -115,6 +101,64 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      */
     public final Pos bottomRight() {
         return new Pos(width() - 1, height() - 1);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the cells in the specified column of this table.
+     */
+    public final Stream<Pos> col(int x) {
+        return IntStream.range(0, height()).mapToObj(y -> new Pos(x, y));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the cells in the first column of this table.
+     */
+    public Stream<Pos> firstCol() {
+        return col(0);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the cells in the last column of this table.
+     */
+    public Stream<Pos> lastCol() {
+        return col(width() - 1);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the cells in the specified row of this table.
+     */
+    public final Stream<Pos> row(int y) {
+        return IntStream.range(0, width()).mapToObj(x -> new Pos(x, y));
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the cells in the first row of this table.
+     */
+    public Stream<Pos> firstRow() {
+        return row(0);
+    }
+
+    /**
+     * Returns a lexicographically sorted stream of the cells in the last row of this table.
+     */
+    public Stream<Pos> lastRow() {
+        return row(height() - 1);
+    }
+
+    /**
+     * Returns an ordered stream of the cells around the border of this table. That is, the first and lost rows,
+     * as well as the first and lost columns are included, but no cells are repeated. The encounter order of this
+     * stream is not specified.
+     */
+    public Stream<Pos> border() {
+        if (width() <= 2 || height() <= 2) {
+            return cells();
+        }
+
+        return Stream.concat(
+                Stream.concat(firstRow(), lastRow()),
+                Stream.concat(firstCol().skip(1).limit(height() - 2), lastCol().skip(1).limit(height() - 2))
+        );
     }
 
     /**

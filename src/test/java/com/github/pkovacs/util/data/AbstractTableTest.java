@@ -54,6 +54,24 @@ abstract class AbstractTableTest<T> {
                 Set.of(table.topRight()));
         assertEquals(Utils.intersectionOf(table.row(2), table.col(3)),
                 Set.of(table.bottomRight()));
+
+        assertEquals(table.row(0).toList(), table.firstRow().toList());
+        assertEquals(table.row(2).toList(), table.lastRow().toList());
+        assertEquals(table.col(0).toList(), table.firstCol().toList());
+        assertEquals(table.col(3).toList(), table.lastCol().toList());
+        assertEquals(10, table.border().count());
+        assertEquals(10, table.border().distinct().count());
+        assertTrue(table.border().toList().containsAll(table.firstRow().toList()));
+        assertTrue(table.border().toList().containsAll(table.lastRow().toList()));
+        assertTrue(table.border().toList().containsAll(table.firstCol().toList()));
+        assertTrue(table.border().toList().containsAll(table.lastCol().toList()));
+
+        for (int w = 0; w < 4; w++) {
+            for (int h = 0; h < 3; h++) {
+                table = createTestTable(w, h);
+                assertEquals(table.cells().toList(), table.border().toList());
+            }
+        }
     }
 
     @Test

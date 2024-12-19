@@ -1,5 +1,6 @@
 package com.github.pkovacs.util.data;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -15,6 +16,8 @@ import java.util.stream.Stream;
  * @see Table
  */
 public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table {
+
+    private List<Pos> cells;
 
     /**
      * Returns the width of this table (the number of columns).
@@ -61,12 +64,15 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
     }
 
     /**
-     * Returns an ordered stream of all cells in this table.
-     * The stream is ordered row by row (not lexicographically) to provide faster access to the associated values.
+     * Returns an ordered stream of all cells in this table. The stream is ordered row by row (not lexicographically)
+     * to provide faster access to the associated values for large tables.
      */
     public final Stream<Pos> cells() {
-        int width = width();
-        return IntStream.range(0, size()).mapToObj(i -> new Pos(i % width, i / width));
+        if (cells == null) {
+            int width = width();
+            cells = IntStream.range(0, size()).mapToObj(i -> new Pos(i % width, i / width)).toList();
+        }
+        return cells.stream();
     }
 
     /**

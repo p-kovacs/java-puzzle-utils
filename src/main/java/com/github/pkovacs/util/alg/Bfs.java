@@ -38,10 +38,10 @@ public final class Bfs {
      *
      * @throws java.util.NoSuchElementException if no target nodes are reachable from the source node.
      */
-    public static <T> int dist(T source,
+    public static <T> long dist(T source,
             Function<? super T, ? extends Iterable<T>> edgeProvider,
             Predicate<? super T> targetPredicate) {
-        return (int) findPath(source, edgeProvider, targetPredicate).orElseThrow().dist();
+        return findPath(source, edgeProvider, targetPredicate).orElseThrow().dist();
     }
 
     /**
@@ -94,19 +94,19 @@ public final class Bfs {
      */
     public static <T> Map<T, Path<T>> run(T source,
             Function<? super T, ? extends Iterable<T>> edgeProvider) {
-        return runFromAll(List.of(source), edgeProvider);
+        return runFromAny(List.of(source), edgeProvider);
     }
 
     /**
-     * Runs the algorithm to find shortest paths (in terms of the number of edges) to all nodes reachable from the
-     * given source nodes.
+     * Runs the algorithm to find shortest paths (in terms of the number of edges) to all nodes reachable from
+     * any of the given source nodes.
      *
      * @param sources the source nodes.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the end nodes
      *         of the outgoing edges of {@code u}. This function is called at most once per node.
-     * @return a map that associates a {@link Path} with each node reachable from the source nodes.
+     * @return a map that associates a {@link Path} with each node reachable from any of the source nodes.
      */
-    public static <T> Map<T, Path<T>> runFromAll(Iterable<T> sources,
+    public static <T> Map<T, Path<T>> runFromAny(Iterable<T> sources,
             Function<? super T, ? extends Iterable<T>> edgeProvider) {
         var results = new HashMap<T, Path<T>>();
         runBfs(sources, edgeProvider, n -> false, results);

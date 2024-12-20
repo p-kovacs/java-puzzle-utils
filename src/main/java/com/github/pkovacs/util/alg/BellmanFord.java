@@ -43,21 +43,20 @@ public final class BellmanFord {
      */
     public static <T> Map<T, Path<T>> run(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
-        return runFromAll(List.of(source), edgeProvider);
+        return runFromAny(List.of(source), edgeProvider);
     }
 
     /**
-     * Runs the algorithm to find shortest paths to all nodes reachable from the given source nodes.
+     * Runs the algorithm to find shortest paths to all nodes reachable from any of the given source nodes.
      *
      * @param sources the source nodes.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
      *         weighted edges of {@code u} as {@link Edge} objects. This function might be called multiple times
      *         per node as necessary.
-     * @return a map that associates a {@link Path} with each node reachable from the source nodes.
+     * @return a map that associates a {@link Path} with each node reachable from any of the source nodes.
      */
-    public static <T> Map<T, Path<T>> runFromAll(Iterable<T> sources,
+    public static <T> Map<T, Path<T>> runFromAny(Iterable<T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
-
         var results = new HashMap<T, Path<T>>();
 
         var queue = new ArrayDeque<Path<T>>();

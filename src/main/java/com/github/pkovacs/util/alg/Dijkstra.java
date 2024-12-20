@@ -102,18 +102,18 @@ public final class Dijkstra {
      */
     public static <T> Map<T, Path<T>> run(T source,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
-        return runFromAll(List.of(source), edgeProvider);
+        return runFromAny(List.of(source), edgeProvider);
     }
 
     /**
-     * Runs the algorithm to find shortest paths to all nodes reachable from the given source nodes.
+     * Runs the algorithm to find shortest paths to all nodes reachable from any of the given source nodes.
      *
      * @param sources the source nodes.
      * @param edgeProvider the edge provider function. For each node {@code u}, it has to provide the outgoing
      *         weighted edges of {@code u} as {@link Edge} objects. This function is called at most once per node.
-     * @return a map that associates a {@link Path} with each node reachable from the source nodes.
+     * @return a map that associates a {@link Path} with each node reachable from any of the source nodes.
      */
-    public static <T> Map<T, Path<T>> runFromAll(Iterable<T> sources,
+    public static <T> Map<T, Path<T>> runFromAny(Iterable<T> sources,
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider) {
         var results = new HashMap<T, Path<T>>();
         runDijkstra(sources, edgeProvider, n -> false, results);
@@ -124,7 +124,6 @@ public final class Dijkstra {
             Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
             Predicate<? super T> targetPredicate,
             HashMap<T, Path<T>> results) {
-
         var queue = new PriorityQueue<Path<T>>(Comparator.comparing(Path::dist));
         for (var source : sources) {
             var path = new Path<>(source, 0, null);

@@ -50,7 +50,7 @@ class BellmanFordTest extends AbstractShortestPathTest {
 
     @Test
     void testWithMultipleSources() {
-        var resultMap = BellmanFord.runFromAll(IntStream.range(82, 100).boxed().toList(),
+        var resultMap = BellmanFord.runFromAny(IntStream.range(82, 100).boxed().toList(),
                 i -> i >= 0 ? List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)) : List.of());
 
         assertTrue(resultMap.containsKey(42));

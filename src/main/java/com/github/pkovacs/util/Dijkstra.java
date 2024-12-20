@@ -135,14 +135,14 @@ public final class Dijkstra {
         var processed = new HashSet<T>();
         while (!queue.isEmpty()) {
             var path = queue.poll();
-            if (targetPredicate.test(path.endNode())) {
+            if (targetPredicate.test(path.end())) {
                 return Optional.of(path);
             }
-            if (!processed.add(path.endNode())) {
+            if (!processed.add(path.end())) {
                 continue;
             }
 
-            for (var edge : edgeProvider.apply(path.endNode())) {
+            for (var edge : edgeProvider.apply(path.end())) {
                 var node = edge.endNode();
                 var dist = path.dist() + edge.weight();
                 var current = results.get(node);

@@ -147,7 +147,7 @@ abstract class AbstractShortestPathTest {
 
         assertTrue(path.isPresent());
         assertEquals(41, path.get().dist());
-        assertEquals(target, path.get().endNode());
+        assertEquals(target, path.get().end());
     }
 
     private static Stream<Integer> concat(Collection<Integer> collection, int i) {

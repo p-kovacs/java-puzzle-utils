@@ -45,7 +45,7 @@ class BfsTest {
         var result1 = Bfs.findPath("A", graph::get, "G"::equals);
 
         assertTrue(result1.isPresent());
-        assertEquals("G", result1.get().endNode());
+        assertEquals("G", result1.get().end());
         assertEquals(2, result1.get().dist());
         assertEquals(List.of("A", "D", "G"), result1.get().nodes());
 
@@ -53,7 +53,7 @@ class BfsTest {
         var result2 = Bfs.findPath("A", graph::get, "G"::equals);
 
         assertTrue(result2.isPresent());
-        assertEquals("G", result2.get().endNode());
+        assertEquals("G", result2.get().end());
         assertEquals(1, result2.get().dist());
         assertEquals(List.of("A", "G"), result2.get().nodes());
 
@@ -81,7 +81,7 @@ class BfsTest {
                 end::equals);
 
         assertTrue(result.isPresent());
-        assertEquals(end, result.get().endNode());
+        assertEquals(end, result.get().end());
         assertEquals(50, result.get().dist());
 
         var path = result.get().nodes();
@@ -190,7 +190,7 @@ class BfsTest {
 
         assertTrue(path.isPresent());
         assertEquals(5, path.get().dist());
-        assertEquals(target, path.get().endNode());
+        assertEquals(target, path.get().end());
     }
 
     private static Stream<Integer> concat(Collection<Integer> collection, int i) {

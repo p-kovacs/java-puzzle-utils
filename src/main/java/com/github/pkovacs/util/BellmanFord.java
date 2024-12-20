@@ -69,7 +69,7 @@ public final class BellmanFord {
 
         while (!queue.isEmpty()) {
             var path = queue.poll();
-            for (var edge : edgeProvider.apply(path.endNode())) {
+            for (var edge : edgeProvider.apply(path.end())) {
                 var node = edge.endNode();
                 var dist = path.dist() + edge.weight();
                 var current = results.get(node);

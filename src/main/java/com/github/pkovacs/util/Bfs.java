@@ -126,11 +126,11 @@ public final class Bfs {
 
         while (!queue.isEmpty()) {
             var path = queue.poll();
-            if (targetPredicate.test(path.endNode())) {
+            if (targetPredicate.test(path.end())) {
                 return Optional.of(path);
             }
 
-            for (T node : edgeProvider.apply(path.endNode())) {
+            for (T node : edgeProvider.apply(path.end())) {
                 if (!results.containsKey(node)) {
                     var p = new Path<>(node, path.dist() + 1, path);
                     results.put(node, p);

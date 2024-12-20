@@ -171,7 +171,7 @@ public class Utils {
 
     /**
      * Parses all integers from the given string and returns them as an {@code int} array.
-     * All other characters are ignored. A "-" character is considered as an unary minus sign if and only if it is
+     * All other characters are ignored. A "-" character is considered as a unary minus sign if and only if it is
      * not directly preceded by a letter or digit (otherwise, it is considered as a separator instead).
      * <p>
      * Examples:
@@ -192,7 +192,7 @@ public class Utils {
 
     /**
      * Parses all integers from the given string and returns them as a {@code long} array.
-     * All other characters are ignored. A "-" character is considered as an unary minus sign if and only if it is
+     * All other characters are ignored. A "-" character is considered as a unary minus sign if and only if it is
      * not directly preceded by a letter or digit (otherwise, it is considered as a separator instead).
      * <p>
      * Examples:
@@ -220,7 +220,7 @@ public class Utils {
     }
 
     /**
-     * Parses the given characteras a signed integer in the given radix.
+     * Parses the given character as a signed integer in the given radix.
      * This is just a shorthand for {@link Integer#parseInt(String, int)}.
      */
     public static int parseInt(char c, int radix) {
@@ -686,7 +686,7 @@ public class Utils {
     }
 
     /**
-     * Returns the minimum of the the given comparable values.
+     * Returns the minimum of the given comparable values.
      *
      * @throws java.util.NoSuchElementException if no values are given
      */
@@ -722,7 +722,7 @@ public class Utils {
     }
 
     /**
-     * Returns the maximum of the the given comparable values.
+     * Returns the maximum of the given comparable values.
      *
      * @throws java.util.NoSuchElementException if no values are given
      */

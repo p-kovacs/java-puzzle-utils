@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * is identified by a {@link Pos} object or two integer indices, and it has an associated value.
  * Most methods of this class are defined in {@link AbstractTable}.
  * <p>
- * WARNING: in accordance with {@link Pos}, the cells are accesed by {@code (x,y)} indices, that is, in (column,row)
+ * WARNING: in accordance with {@link Pos}, the cells are accessed by {@code (x,y)} indices, that is, in (column,row)
  * order, like the pixels of an image or screen. This is in contrast with the usual (row,column) indexing of matrices.
  * That is, if you create a table from a matrix {@code V[][] m}, then {@code get(x, y)} will return the element
  * {@code m[y][x]}. You should be aware of this when working with tables.

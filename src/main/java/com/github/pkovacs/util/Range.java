@@ -20,14 +20,14 @@ public final class Range implements Comparable<Range> {
     /**
      * The minimum value of this range.
      *
-     * @apiNote This field is made public to similify the usage of this class.
+     * @apiNote This field is made public to simplify the usage of this class.
      */
     public final long min;
 
     /**
      * The maximum value of this range.
      *
-     * @apiNote This field is made public to similify the usage of this class.
+     * @apiNote This field is made public to simplify the usage of this class.
      */
     public final long max;
 

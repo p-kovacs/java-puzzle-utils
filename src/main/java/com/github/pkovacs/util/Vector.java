@@ -23,21 +23,21 @@ public final class Vector implements Comparable<Vector> {
     /**
      * The x coordinate.
      *
-     * @apiNote This field is made public to similify the usage of this class.
+     * @apiNote This field is made public to simplify the usage of this class.
      */
     public final long x;
 
     /**
      * The y coordinate.
      *
-     * @apiNote This field is made public to similify the usage of this class.
+     * @apiNote This field is made public to simplify the usage of this class.
      */
     public final long y;
 
     /**
      * The z coordinate.
      *
-     * @apiNote This field is made public to similify the usage of this class.
+     * @apiNote This field is made public to simplify the usage of this class.
      */
     public final long z;
 

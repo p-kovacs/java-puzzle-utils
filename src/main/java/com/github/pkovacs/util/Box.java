@@ -116,7 +116,7 @@ public record Box(Range x, Range y) implements Comparable<Box> {
     }
 
     /**
-     * Returns true if this box contains all of the given positions.
+     * Returns true if this box contains all the given positions.
      */
     public boolean containsAll(Collection<Pos> positions) {
         return positions.stream().allMatch(this::contains);

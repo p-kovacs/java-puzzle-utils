@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 /**
  * An immutable box (hyperrectangle or right prism) of {@link Vector} objects in 3D coordinate space. It is
- * represented as three {@link Range}s for x, y, and z coordinates, respecitvely. Provides various useful methods
+ * represented as three {@link Range}s for x, y, and z coordinates, respectively. Provides various useful methods
  * and supports ordering (first by {@link #x()}, then by {@link #y()}, finally by {@link #z()}).
  * <p>
  * This class is the 3D counterpart of {@link Box}.
@@ -120,7 +120,7 @@ public record VectorBox(Range x, Range y, Range z) implements Comparable<VectorB
     }
 
     /**
-     * Returns true if this vector box contains all of the given vectors.
+     * Returns true if this vector box contains all the given vectors.
      */
     public boolean containsAll(Collection<Vector> vectors) {
         return vectors.stream().allMatch(this::contains);

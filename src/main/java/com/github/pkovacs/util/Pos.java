@@ -21,14 +21,14 @@ public final class Pos implements Comparable<Pos> {
     /**
      * The x coordinate (or column index).
      *
-     * @apiNote This field is made public to similify the usage of this class.
+     * @apiNote This field is made public to simplify the usage of this class.
      */
     public final long x;
 
     /**
      * The y coordinate (or row index).
      *
-     * @apiNote This field is made public to similify the usage of this class.
+     * @apiNote This field is made public to simplify the usage of this class.
      */
     public final long y;
 
@@ -375,7 +375,7 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Creates a new position by mirroring this position vector with respect to the given refelection center.
+     * Creates a new position by mirroring this position vector with respect to the given reflection center.
      */
     public Pos mirrorAcross(Pos center) {
         return center.plus(center.minus(this));

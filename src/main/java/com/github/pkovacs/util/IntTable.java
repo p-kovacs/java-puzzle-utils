@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
  * This class is the primitive type specialization of {@link Table} for {@code int}. Most methods are defined in
  * {@link AbstractTable}.
  * <p>
- * WARNING: in accordance with {@link Pos}, the cells are accesed by {@code (x,y)} indices, that is, in (column,row)
+ * WARNING: in accordance with {@link Pos}, the cells are accessed by {@code (x,y)} indices, that is, in (column,row)
  * order, like the pixels of an image or screen. This is in contrast with the usual (row,column) indexing of matrices.
  * That is, if you create a table from a matrix {@code int[][] m}, then {@code get(x, y)} will return the element
  * {@code m[y][x]}. You should be aware of this when working with tables.

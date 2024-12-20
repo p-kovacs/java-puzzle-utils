@@ -75,7 +75,7 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns true if the given other position is one of the 4 "regular" neighbors of this position.
+     * Returns true if the given other position is one of the 4 main neighbors of this position.
      */
     public boolean isNeighbor(Pos other) {
         return dist1(other) == 1;
@@ -138,7 +138,7 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns a lexicographically sorted stream of the 4 "regular" neighbors of this position.
+     * Returns a lexicographically sorted stream of the 4 main neighbors of this position.
      */
     public Stream<Pos> neighbors() {
         return Stream.of(
@@ -150,7 +150,7 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns a lexicographically sorted stream of this position and its 4 "regular" neighbors.
+     * Returns a lexicographically sorted stream of this position and its 4 main neighbors.
      */
     public Stream<Pos> neighborsAndSelf() {
         return Stream.of(

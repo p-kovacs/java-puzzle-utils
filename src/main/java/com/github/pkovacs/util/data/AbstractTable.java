@@ -76,6 +76,7 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      */
     public final Stream<Pos> cells() {
         if (cells == null) {
+            // Lazy load: generate and store cells
             int width = width();
             cells = IntStream.range(0, size()).mapToObj(i -> new Pos(i % width, i / width)).toList();
         }
@@ -169,7 +170,7 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
     }
 
     /**
-     * Returns a lexicographically sorted stream of the "regular" (side-adjacent) neighbors of the given cell
+     * Returns a lexicographically sorted stream of the main (side-adjacent) neighbors of the given cell
      * within this table. Only those cells are included that are contained in this table (at most 4 positions).
      */
     public final Stream<Pos> neighbors(Pos pos) {
@@ -177,7 +178,7 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
     }
 
     /**
-     * Returns a lexicographically sorted stream of the given cell and its "regular" (side-adjacent) neighbors
+     * Returns a lexicographically sorted stream of the given cell and its main (side-adjacent) neighbors
      * within this table. Only those cells are included that are contained in this table (at most 5 positions).
      */
     public final Stream<Pos> neighborsAndSelf(Pos pos) {

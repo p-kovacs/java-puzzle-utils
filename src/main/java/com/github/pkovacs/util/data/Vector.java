@@ -104,7 +104,7 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns true if the given other vector is one of the 6 "regular" neighbors of this vector
+     * Returns true if the given other vector is one of the 6 main neighbors of this vector
      * (that is, {@code this.dist1(other) == 1}).
      */
     public boolean isNeighbor(Vector other) {
@@ -120,7 +120,7 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns a lexicographically sorted stream of the 6 "regular" neighbors of this vector.
+     * Returns a lexicographically sorted stream of the 6 main neighbors of this vector.
      * For each returned vector {@code v}, {@code this.dist1(v) == 1}.
      */
     public Stream<Vector> neighbors() {
@@ -135,7 +135,7 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Returns a lexicographically sorted stream of this vector and its 6 "regular" neighbors.
+     * Returns a lexicographically sorted stream of this vector and its 6 main neighbors.
      * For each returned vector {@code v}, {@code this.dist1(v) == 1}.
      */
     public Stream<Vector> neighborsAndSelf() {

@@ -82,7 +82,7 @@ public final class VectorD implements Comparable<VectorD> {
     }
 
     /**
-     * Returns true if the given other vector is one of the "regular" neighbors of this vector
+     * Returns true if the given other vector is one of the main neighbors of this vector
      * (that is, {@code this.dist1(other) == 1}).
      */
     public boolean isNeighbor(VectorD other) {
@@ -98,7 +98,7 @@ public final class VectorD implements Comparable<VectorD> {
     }
 
     /**
-     * Returns a lexicographically sorted stream of the "regular" neighbors of this vector.
+     * Returns a lexicographically sorted stream of the main neighbors of this vector.
      * The stream contains {@code 2 * dim()} vectors, and for each returned vector {@code v},
      * {@code this.dist1(v) == 1}.
      */
@@ -107,7 +107,7 @@ public final class VectorD implements Comparable<VectorD> {
     }
 
     /**
-     * Returns a lexicographically sorted stream of this vector and its "regular" neighbors.
+     * Returns a lexicographically sorted stream of this vector and its main neighbors.
      * The stream contains {@code 2 * dim() + 1} vectors, and for each returned vector {@code v},
      * {@code this.dist1(v) <= 1}.
      */

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implements a general backtracking algorithm. We assume that the search tree consists of a fixed number of levels,
- * and each level can be represented by an integer range of the same size. Typical examples include the eight queens
- * puzzle and finding permutations of a collection.
+ * A simple but efficient array-based backtracking algorithm. We assume that the search tree consists of a fixed
+ * number of levels, and each level can be represented by an integer range of the same size. Typical examples
+ * include the eight queens puzzle and finding permutations of a collection.
  */
 public final class Backtracking {
 
@@ -106,9 +106,6 @@ public final class Backtracking {
         Arrays.fill(solution, -1);
         for (int k = 0; k >= 0; ) {
             // Find next valid value for the k-th position
-            if (distinct && solution[k] >= 0) {
-                available.set(solution[k], true);
-            }
             do {
                 solution[k] = distinct ? available.nextSetBit(solution[k] + 1) : solution[k] + 1;
             } while (solution[k] < m && !predicate.accept(solution, k));
@@ -132,6 +129,9 @@ public final class Backtracking {
                 // Step back to the previous level
                 solution[k] = -1;
                 k--;
+                if (distinct && k >= 0) {
+                    available.set(solution[k], true);
+                }
             }
         }
 

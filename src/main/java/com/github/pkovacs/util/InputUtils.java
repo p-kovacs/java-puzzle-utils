@@ -46,7 +46,7 @@ public class InputUtils {
      */
     public static List<String> readLines(Path path) {
         try {
-            return Files.readAllLines(path, StandardCharsets.UTF_8);
+            return Files.readAllLines(path);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -66,7 +66,7 @@ public class InputUtils {
      */
     public static String readString(Path path) {
         try {
-            return convertLineSeparators(Files.readString(path, StandardCharsets.UTF_8));
+            return convertLineSeparators(Files.readString(path));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -139,8 +139,8 @@ public class InputUtils {
 
     /**
      * Parses all integers from the given string and returns them as an {@code int} array.
-     * All other characters are ignored. A "-" character is considered as a minus sign if and only if
-     * it is not directly preceded by a letter or digit.
+     * All other characters are ignored. A "-" character is considered as an unary minus sign if and only if it is
+     * not directly preceded by a letter or digit (otherwise, it is considered as a separator instead).
      * <p>
      * Examples:
      * <pre>
@@ -160,8 +160,8 @@ public class InputUtils {
 
     /**
      * Parses all integers from the given string and returns them as a {@code long} array.
-     * All other characters are ignored. A "-" character is considered as a minus sign if and only if
-     * it is not directly preceded by a letter or digit.
+     * All other characters are ignored. A "-" character is considered as an unary minus sign if and only if it is
+     * not directly preceded by a letter or digit (otherwise, it is considered as a separator instead).
      * <p>
      * Examples:
      * <pre>

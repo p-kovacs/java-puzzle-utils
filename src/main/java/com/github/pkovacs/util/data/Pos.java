@@ -3,6 +3,8 @@ package com.github.pkovacs.util.data;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import com.github.pkovacs.util.Utils;
+
 /**
  * Represents an immutable position (point or position vector) in 2D coordinate space as a pair of {@code long}
  * values: {@code (x,y)}. Provides various useful methods and supports lexicographical ordering (first by {@code x},
@@ -261,8 +263,8 @@ public final class Pos implements Comparable<Pos> {
         Pos delta = other.minus(this);
         if (delta.x == 0 && delta.y == 0) {
             return Stream.of(this);
-        } else if (delta.x == 0 || delta.y == 0 || Math.abs(delta.x) == Math.abs(delta.y)) {
-            long dist = Math.max(Math.abs(delta.x), Math.abs(delta.y));
+        } else if (delta.x == 0 || delta.y == 0 || Utils.abs(delta.x) == Utils.abs(delta.y)) {
+            long dist = Utils.max(Utils.abs(delta.x), Utils.abs(delta.y));
             long dx = delta.x / dist;
             long dy = delta.y / dist;
             return LongStream.rangeClosed(0, dist).mapToObj(i -> new Pos(x + i * dx, y + i * dy));
@@ -386,7 +388,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L1 distance or Manhattan distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
     public long dist1() {
-        return Math.abs(x) + Math.abs(y);
+        return Utils.abs(x) + Utils.abs(y);
     }
 
     /**
@@ -402,7 +404,7 @@ public final class Pos implements Comparable<Pos> {
      * (aka. L∞ distance or Chebyshev distance) between this position and the {@link #ORIGIN} {@code (0,0)}.
      */
     public long distMax() {
-        return Math.max(Math.abs(x), Math.abs(y));
+        return Utils.max(Utils.abs(x), Utils.abs(y));
     }
 
     /**

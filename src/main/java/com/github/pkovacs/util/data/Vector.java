@@ -216,7 +216,7 @@ public final class Vector implements Comparable<Vector> {
      * (aka. L1 distance or Manhattan distance) between this vector and the {@link #ORIGIN} {@code (0,0,0)}.
      */
     public long dist1() {
-        return Math.abs(x) + Math.abs(y) + Math.abs(z);
+        return Utils.abs(x) + Utils.abs(y) + Utils.abs(z);
     }
 
     /**
@@ -232,7 +232,7 @@ public final class Vector implements Comparable<Vector> {
      * (aka. L∞ distance or Chebyshev distance) between this vector and the {@link #ORIGIN} {@code (0,0,0)}.
      */
     public long distMax() {
-        return Utils.max(Math.abs(x), Math.abs(y), Math.abs(z));
+        return Utils.max(Utils.abs(x), Utils.abs(y), Utils.abs(z));
     }
 
     /**

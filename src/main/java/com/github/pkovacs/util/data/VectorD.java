@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.github.pkovacs.util.Utils;
+
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -200,7 +202,7 @@ public final class VectorD implements Comparable<VectorD> {
      * (aka. L1 distance or Manhattan distance) between this vector and the {@link #origin(int) origin}.
      */
     public long dist1() {
-        return Arrays.stream(coords).map(Math::abs).sum();
+        return Arrays.stream(coords).map(Utils::abs).sum();
     }
 
     /**
@@ -218,7 +220,7 @@ public final class VectorD implements Comparable<VectorD> {
      * (aka. L∞ distance or Chebyshev distance) between this vector and the {@link #origin(int) origin}.
      */
     public long distMax() {
-        return Arrays.stream(coords).map(Math::abs).max().orElseThrow();
+        return Arrays.stream(coords).map(Utils::abs).max().orElseThrow();
     }
 
     /**

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Result object for path search algorithms.
+ * Represents the result of path search algorithms in a directed or undirected graph.
  *
  * @see Bfs
  * @see Dijkstra

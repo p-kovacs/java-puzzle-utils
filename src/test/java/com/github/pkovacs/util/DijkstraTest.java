@@ -3,11 +3,11 @@ package com.github.pkovacs.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-import com.github.pkovacs.util.Dijkstra.Edge;
+import com.github.pkovacs.util.WeightedGraph.Edge;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,10 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DijkstraTest extends AbstractShortestPathTest {
 
     @Override
-    <T> Optional<Path<T>> findPath(T source,
-            Function<? super T, ? extends Iterable<Edge<T>>> edgeProvider,
-            Predicate<? super T> targetPredicate) {
-        return Dijkstra.findPath(source, edgeProvider, targetPredicate);
+    <T> Optional<Path<T>> findPath(WeightedGraph<T> graph, T source, Predicate<? super T> targetPredicate) {
+        return Dijkstra.findPath(graph, source, targetPredicate);
     }
 
     @Test
@@ -33,26 +31,26 @@ class DijkstraTest extends AbstractShortestPathTest {
         graph.put("F", List.of(new Edge<>("B", 6), new Edge<>("G", 6)));
         graph.put("G", List.of());
 
-        assertEquals(0, Dijkstra.dist("A", graph::get, "A"::equals));
-        assertEquals(1, Dijkstra.dist("A", graph::get, "B"::equals));
-        assertEquals(3, Dijkstra.dist("A", graph::get, "E"::equals));
-        assertEquals(8, Dijkstra.dist("A", graph::get, "F"::equals));
-        assertEquals(5, Dijkstra.dist("A", graph::get, "G"::equals));
+        assertEquals(0, Dijkstra.dist(u -> graph.get(u).stream(), "A", "A"::equals));
+        assertEquals(1, Dijkstra.dist(u -> graph.get(u).stream(), "A", "B"::equals));
+        assertEquals(3, Dijkstra.dist(u -> graph.get(u).stream(), "A", "E"::equals));
+        assertEquals(8, Dijkstra.dist(u -> graph.get(u).stream(), "A", "F"::equals));
+        assertEquals(5, Dijkstra.dist(u -> graph.get(u).stream(), "A", "G"::equals));
 
-        var result = Dijkstra.run("A", graph::get);
+        var paths = Dijkstra.findPaths(WeightedGraph.of(graph), "A");
 
-        assertEquals(0, result.get("A").dist());
-        assertEquals(1, result.get("B").dist());
-        assertEquals(3, result.get("E").dist());
-        assertEquals(8, result.get("F").dist());
-        assertEquals(5, result.get("G").dist());
+        assertEquals(0, paths.get("A").dist());
+        assertEquals(1, paths.get("B").dist());
+        assertEquals(3, paths.get("E").dist());
+        assertEquals(8, paths.get("F").dist());
+        assertEquals(5, paths.get("G").dist());
     }
 
     @Test
     void testWithMultipleSources() {
-        var result = Dijkstra.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
-                i -> List.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)),
-                i -> i == 42);
+        var result = Dijkstra.findPathFromAny(
+                i -> Stream.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)),
+                IntStream.range(82, 100).boxed(),i -> i == 42);
 
         assertTrue(result.isPresent());
         assertEquals(12, result.get().dist());

@@ -29,20 +29,20 @@ class BfsTest {
         graph.put("F", List.of("B", "G"));
         graph.put("G", List.of());
 
-        assertEquals(0, Bfs.dist("A", graph::get, "A"::equals));
-        assertEquals(1, Bfs.dist("A", graph::get, "B"::equals));
-        assertEquals(3, Bfs.dist("A", graph::get, "F"::equals));
-        assertEquals(2, Bfs.dist("A", graph::get, "G"::equals));
+        assertEquals(0, Bfs.dist(u -> graph.get(u).stream(), "A", "A"::equals));
+        assertEquals(1, Bfs.dist(u -> graph.get(u).stream(), "A", "B"::equals));
+        assertEquals(3, Bfs.dist(u -> graph.get(u).stream(), "A", "F"::equals));
+        assertEquals(2, Bfs.dist(u -> graph.get(u).stream(), "A", "G"::equals));
 
-        var map = Bfs.run("A", graph::get);
+        var paths = Bfs.findPaths(Graph.of(graph), "A");
 
-        assertEquals(7, map.size());
-        assertEquals(0, map.get("A").dist());
-        assertEquals(1, map.get("B").dist());
-        assertEquals(1, map.get("C").dist());
-        assertEquals(2, map.get("G").dist());
+        assertEquals(7, paths.size());
+        assertEquals(0, paths.get("A").dist());
+        assertEquals(1, paths.get("B").dist());
+        assertEquals(1, paths.get("C").dist());
+        assertEquals(2, paths.get("G").dist());
 
-        var result1 = Bfs.findPath("A", graph::get, "G"::equals);
+        var result1 = Bfs.findPath(u -> graph.get(u).stream(), "A", "G"::equals);
 
         assertTrue(result1.isPresent());
         assertEquals("G", result1.get().end());
@@ -50,20 +50,20 @@ class BfsTest {
         assertEquals(List.of("A", "D", "G"), result1.get().nodes());
 
         graph.put("A", List.of("B", "C", "D", "G"));
-        var result2 = Bfs.findPath("A", graph::get, "G"::equals);
+        var result2 = Bfs.findPath(Graph.of(graph), "A", "G"::equals);
 
         assertTrue(result2.isPresent());
         assertEquals("G", result2.get().end());
         assertEquals(1, result2.get().dist());
         assertEquals(List.of("A", "G"), result2.get().nodes());
 
-        var result3 = Bfs.findPath("A", graph::get, "A"::equals);
+        var result3 = Bfs.findPath(u -> graph.get(u).stream(), "A", "A"::equals);
 
         assertTrue(result3.isPresent());
         assertEquals(0, result3.get().dist());
         assertEquals(List.of("A"), result3.get().nodes());
 
-        var result4 = Bfs.findPath("B", graph::get, "C"::equals);
+        var result4 = Bfs.findPath(Graph.of(graph), "B", "C"::equals);
 
         assertTrue(result4.isEmpty());
     }
@@ -76,9 +76,8 @@ class BfsTest {
         var start = maze.topLeft();
         var end = maze.bottomRight();
 
-        var result = Bfs.findPath(start,
-                p -> maze.neighbors(p).filter(n -> maze.get(n) == '.').toList(),
-                end::equals);
+        var result = Bfs.findPath(Graph.of(maze::neighbors).filterNodes(p -> maze.get(p) == '.'),
+                start, end::equals);
 
         assertTrue(result.isPresent());
         assertEquals(end, result.get().end());
@@ -100,7 +99,7 @@ class BfsTest {
 
         record State(int a, int b) {}
 
-        var result = Bfs.findPath(new State(0, 0), state -> {
+        var result = Bfs.findPath(state -> {
             var list = new ArrayList<State>();
             list.add(new State(3, state.b())); // 3-liter jug <-- fountain
             list.add(new State(state.a(), 5)); // 5-liter jug <-- fountain
@@ -110,8 +109,8 @@ class BfsTest {
             list.add(new State(state.a() + d1, state.b() - d1)); // 3-liter jug <-- 5-liter jug
             int d2 = Math.min(5 - state.b(), state.a());
             list.add(new State(state.a() - d2, state.b() + d2)); // 3-liter jug --> 5-liter jug
-            return list;
-        }, pair -> pair.b() == 4);
+            return list.stream();
+        }, new State(0, 0), pair -> pair.b() == 4);
 
         assertTrue(result.isPresent());
         assertEquals(6, result.get().dist());
@@ -127,11 +126,11 @@ class BfsTest {
     }
 
     @Test
-    void testWithInfiniteGraph() {
-        var result1 = Bfs.findPath(0, i -> List.of(i + 1, 2 * i), i -> i == 128);
-        var result2 = Bfs.findPath(0, i -> List.of(i + 1, 2 * i), i -> i == 127);
-        var result3 = Bfs.findPath(0, i -> List.of(i + 1, 2 * i), i -> i == 42);
-        var result4 = Bfs.findPath(0, i -> List.of(i + 1, 2 * i), i -> i == 137);
+    void testWithTheoreticallyInfiniteGraph() {
+        var result1 = Bfs.findPath(i -> Stream.of(i + 1, 2 * i), 0, i -> i == 128);
+        var result2 = Bfs.findPath(i -> Stream.of(i + 1, 2 * i), 0, i -> i == 127);
+        var result3 = Bfs.findPath(i -> Stream.of(i + 1, 2 * i), 0, i -> i == 42);
+        var result4 = Bfs.findPath(i -> Stream.of(i + 1, 2 * i), 0, i -> i == 137);
 
         assertTrue(result1.isPresent());
         assertTrue(result2.isPresent());
@@ -148,9 +147,9 @@ class BfsTest {
         var nodes = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
         Collections.shuffle(nodes, new Random(123456789));
 
-        var result = Bfs.findPath(nodes.get(0),
-                i -> IntStream.rangeClosed(nodes.indexOf(i), nodes.indexOf(i) + 7).mapToObj(nodes::get).toList(),
-                i -> nodes.indexOf(i) >= 42);
+        var result = Bfs.findPath(
+                i -> IntStream.rangeClosed(nodes.indexOf(i), nodes.indexOf(i) + 7).mapToObj(nodes::get),
+                nodes.get(0), i -> nodes.indexOf(i) >= 42);
 
         assertTrue(result.isPresent());
         assertEquals(6, result.get().dist());
@@ -158,9 +157,8 @@ class BfsTest {
 
     @Test
     void testMultipleSources() {
-        var result = Bfs.findPathFromAny(IntStream.range(82, 100).boxed().toList(),
-                i -> List.of(i - 3, i - 7),
-                i -> i == 42);
+        var result = Bfs.findPathFromAny(i -> Stream.of(i - 3, i - 7),
+                IntStream.range(82, 100).boxed(), i -> i == 42);
 
         assertTrue(result.isPresent());
         assertEquals(6, result.get().dist());
@@ -169,8 +167,8 @@ class BfsTest {
 
     @Test
     void testWithDirections() {
-        var result = Bfs.findPathFromAny(List.of(Dir8.NW, Dir8.N),
-                dir -> List.of(dir.prev(), dir.next()), Dir8.SE::equals);
+        var result = Bfs.findPathFromAny(dir -> Stream.of(dir.prev(), dir.next()),
+                Stream.of(Dir8.NW, Dir8.N), Dir8.SE::equals);
 
         assertTrue(result.isPresent());
         assertEquals(3, result.get().dist());
@@ -179,18 +177,25 @@ class BfsTest {
 
     @Test
     void testGenericParameters() {
-        Function<Collection<Integer>, Collection<List<Integer>>> edgeProvider = c ->
-                IntStream.rangeClosed(0, 3).mapToObj(i -> concat(c, i).toList()).toList();
+        Function<Collection<Integer>, Stream<ArrayList<Integer>>> neighborProvider =
+                c -> IntStream.rangeClosed(0, 3).mapToObj(i -> new ArrayList<>(concat(c, i).toList()));
 
         var start = List.of(1, 0);
         var target = List.of(1, 0, 1, 0, 0, 1, 2);
         Predicate<List<Integer>> predicate = target::equals;
 
-        var path = Bfs.findPath(start, edgeProvider, predicate);
+        // Check different ways of defining the graph
+        var path = Bfs.findPath(neighborProvider::apply, start, predicate);
+        var path2 = Bfs.findPath(
+                c -> IntStream.rangeClosed(0, 3).mapToObj(i -> new ArrayList<>(concat(c, i).toList())),
+                start, predicate);
+        var path3 = Bfs.findPath(Graph.of(neighborProvider), start, predicate);
 
         assertTrue(path.isPresent());
         assertEquals(5, path.get().dist());
         assertEquals(target, path.get().end());
+        assertEquals(path.get().nodes(), path2.orElseThrow().nodes());
+        assertEquals(path.get().nodes(), path3.orElseThrow().nodes());
     }
 
     private static Stream<Integer> concat(Collection<Integer> collection, int i) {

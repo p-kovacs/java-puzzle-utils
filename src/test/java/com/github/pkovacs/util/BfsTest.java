@@ -76,8 +76,7 @@ class BfsTest {
         var start = maze.topLeft();
         var end = maze.bottomRight();
 
-        var result = Bfs.findPath(Graph.of(maze::neighbors).filterNodes(p -> maze.get(p) == '.'),
-                start, end::equals);
+        var result = Bfs.findPath(maze.graph(c -> c == '.'), start, end::equals);
 
         assertTrue(result.isPresent());
         assertEquals(end, result.get().end());
@@ -87,6 +86,22 @@ class BfsTest {
         assertEquals(51, path.size());
         assertEquals(start, path.get(0));
         assertEquals(end, path.get(path.size() - 1));
+    }
+
+    @Test
+    void testTableGraphs() {
+        var table = new CharTable(List.of(".......", "..#....", "..#...E", "S.#...."));
+        var start = table.find('S');
+        var end = table.find('E');
+
+        assertEquals(7, Bfs.dist(table.graph(), start, end::equals));
+        assertEquals(6, Bfs.dist(table.graph8(), start, end::equals));
+
+        assertEquals(11, Bfs.dist(table.graph(c -> c != '#'), start, end::equals));
+        assertEquals(7, Bfs.dist(table.graph8(c -> c != '#'), start, end::equals));
+
+        assertEquals(table.size() - table.count('#'), Bfs.findPaths(table.graph(c -> c != '#'), start).size());
+        assertEquals(table.size() - table.count('#'), Bfs.findPaths(table.graph8(c -> c != '#'), end).size());
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.github.pkovacs.util;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -75,12 +76,20 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      * to provide faster access to the associated values for large tables.
      */
     public final Stream<Pos> cells() {
+        return cellList().stream();
+    }
+
+    /**
+     * Returns a list of all cells in this table. The list is ordered row by row (not lexicographically) to provide
+     * faster access to the associated values for large tables.
+     */
+    public final List<Pos> cellList() {
         if (cells == null) {
             // Lazy load: generate and store cells
             int width = width();
             cells = IntStream.range(0, size()).mapToObj(i -> new Pos(i % width, i / width)).toList();
         }
-        return cells.stream();
+        return cells;
     }
 
     /**
@@ -225,6 +234,36 @@ public abstract sealed class AbstractTable<V> permits IntTable, CharTable, Table
      */
     public final Stream<Pos> ray(Pos pos, Pos other) {
         return pos.ray(other).takeWhile(this::containsCell);
+    }
+
+    /**
+     * Returns the {@linkplain #neighbors(Pos) neighbor} graph of the cells in this table.
+     */
+    public final Graph<Pos> graph() {
+        return Graph.of(this::neighbors);
+    }
+
+    /**
+     * Returns a subgraph of the {@linkplain #neighbors(Pos) neighbor} graph of the cells in this table.
+     * The cells are filtered by the given predicate applied to their associated values.
+     */
+    public final Graph<Pos> graph(Predicate<V> valueFilter) {
+        return Graph.of(this::neighbors).filterNodes(p -> valueFilter.test(get0((int) p.x, (int) p.y)));
+    }
+
+    /**
+     * Returns the {@linkplain #neighbors8(Pos) "extended" neighbor} graph of the cells in this table.
+     */
+    public final Graph<Pos> graph8() {
+        return Graph.of(this::neighbors8);
+    }
+
+    /**
+     * Returns a subgraph of the {@linkplain #neighbors8(Pos) "extended" neighbor} graph of the cells in this table.
+     * The cells are filtered by the given predicate applied to their associated values.
+     */
+    public final Graph<Pos> graph8(Predicate<V> valueFilter) {
+        return Graph.of(this::neighbors8).filterNodes(p -> valueFilter.test(get0((int) p.x, (int) p.y)));
     }
 
     /**

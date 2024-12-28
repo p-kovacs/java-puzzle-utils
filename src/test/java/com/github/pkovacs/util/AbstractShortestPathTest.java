@@ -88,8 +88,8 @@ abstract class AbstractShortestPathTest {
     }
 
     private Path<Pos> findPathInMaze(CharTable maze, Pos start, Pos end, long detonationTime) {
-        var result = findPath(p -> maze.neighbors(p).map(n -> new Edge<>(n, maze.get(n) == '.' ? 1 : detonationTime)),
-                start, end::equals);
+        var graph = maze.graph().weighted((p, q) -> maze.get(q) == '.' ? 1 : detonationTime);
+        var result = findPath(graph, start, end::equals);
 
         assertTrue(result.isPresent());
         return result.get();

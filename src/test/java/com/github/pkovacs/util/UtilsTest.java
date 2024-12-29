@@ -89,20 +89,12 @@ class UtilsTest extends Utils {
     }
 
     @Test
-    void testParse() {
-        var values = parse("Product PID_4242X is ordered.", ".*PID_%d%c is %s[.]");
+    void testFindGroups() {
+        var groups1 = findGroups("(\\d+) ([^ ]+)", "We have 12 apples and 5 bananas.");
+        var groups2 = findGroups(".*PID_(\\d*)(.) is (.*)[.]", "Product PID_4242X is ordered.");
 
-        assertEquals("[4242, X, ordered]", values.toString());
-
-        assertEquals(3, values.size());
-        assertTrue(values.get(0).isLong());
-        assertEquals(4242, values.get(0).toInt());
-        assertEquals(4242L, values.get(0).toLong());
-        assertTrue(values.get(1).isChar());
-        assertEquals('X', values.get(1).toChar());
-        assertTrue(values.get(2).isString());
-        assertEquals("ordered", values.get(2).get());
-        assertEquals("ordered", values.get(2).toString());
+        assertEquals(List.of("12", "apples"), groups1);
+        assertEquals(List.of("4242", "X", "ordered"), groups2);
     }
 
     @Test

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -270,43 +270,106 @@ public class Utils {
      * Returns true if the given regular expression matches the entire given input sequence.
      */
     public static boolean matches(String regex, CharSequence input) {
-        return Pattern.matches(regex, input);
+        return matches(Pattern.compile(regex), input);
+    }
+
+    /**
+     * Returns true if the given pattern matches the entire given input sequence.
+     */
+    public static boolean matches(Pattern pattern, CharSequence input) {
+        return pattern.matcher(input).matches();
+    }
+
+    /**
+     * Returns the input subsequences captured by the groups of the given regular expression with respect to its
+     * first match.
+     * <p>
+     * For example, {@code findGroups("(\\d+) ([^ ]+)", "We have 12 apples and 5 bananas.")} returns
+     * {@code ["12", "apples"]}.
+     *
+     * @throws NoSuchElementException if no matches found
+     */
+    public static List<String> findGroups(String regex, CharSequence input) {
+        return findGroups(Pattern.compile(regex), input);
+    }
+
+    /**
+     * Returns the input subsequences captured by the groups of the given pattern with respect to its first match.
+     * <p>
+     * For example, {@code findGroups(Pattern.compile("(\\d+) ([^ ]+)"), "We have 12 apples and 5 bananas.")} returns
+     * {@code ["12", "apples"]}.
+     *
+     * @throws NoSuchElementException if no matches found
+     */
+    public static List<String> findGroups(Pattern pattern, CharSequence input) {
+        var match = findFirstMatch(pattern, input);
+        return IntStream.rangeClosed(1, match.groupCount()).mapToObj(match::group).toList();
     }
 
     /**
      * Returns the first match of the given regular expression within the given input sequence as a string.
      *
-     * @return the first matching substring of the input
-     * @throws java.util.NoSuchElementException if no matches found
+     * @throws NoSuchElementException if no matches found
      */
     public static String findFirst(String regex, CharSequence input) {
-        return matcher(regex, input).results().map(MatchResult::group).findFirst().orElseThrow();
+        return findFirst(Pattern.compile(regex), input);
     }
 
     /**
-     * Returns the first match of the given regular expression within the given input sequence as a {@link MatchResult}
-     * object.
+     * Returns the first match of the given regular expression within the given input sequence as a string.
      *
-     * @return the first {@link MatchResult}
-     * @throws java.util.NoSuchElementException if no matches found
+     * @throws NoSuchElementException if no matches found
+     */
+    public static String findFirst(Pattern pattern, CharSequence input) {
+        return findFirstMatch(pattern, input).group();
+    }
+
+    /**
+     * Returns the first match of the given regular expression within the given input sequence as a {@link MatchResult}.
+     *
+     * @throws NoSuchElementException if no matches found
      */
     public static MatchResult findFirstMatch(String regex, CharSequence input) {
-        return matcher(regex, input).results().findFirst().orElseThrow();
+        return findFirstMatch(Pattern.compile(regex), input);
     }
 
     /**
-     * Returns all matches of the given regular expression within the given input sequence as strings.
+     * Returns the first match of the given pattern within the given input sequence as a {@link MatchResult}.
+     *
+     * @throws NoSuchElementException if no matches found
+     */
+    public static MatchResult findFirstMatch(Pattern pattern, CharSequence input) {
+        return pattern.matcher(input).results().findFirst().orElseThrow();
+    }
+
+    /**
+     * Returns all matches of the given regular expression within the given input sequence as a list of strings.
      */
     public static List<String> findAll(String regex, CharSequence input) {
-        return matcher(regex, input).results().map(MatchResult::group).toList();
+        return findAll(Pattern.compile(regex), input);
     }
 
     /**
-     * Returns all matches of the given regular expression within the given input sequence as {@link MatchResult}
-     * objects.
+     * Returns all matches of the given pattern within the given input sequence as a list of strings.
+     */
+    public static List<String> findAll(Pattern pattern, CharSequence input) {
+        return pattern.matcher(input).results().map(MatchResult::group).toList();
+    }
+
+    /**
+     * Returns all matches of the given regular expression within the given input sequence as a list of
+     * {@link MatchResult} objects.
      */
     public static List<MatchResult> findAllMatches(String regex, CharSequence input) {
-        return matcher(regex, input).results().toList();
+        return findAllMatches(Pattern.compile(regex), input);
+    }
+
+    /**
+     * Returns all matches of the given pattern within the given input sequence as a list of {@link MatchResult}
+     * objects.
+     */
+    public static List<MatchResult> findAllMatches(Pattern pattern, CharSequence input) {
+        return pattern.matcher(input).results().toList();
     }
 
     /**
@@ -314,106 +377,15 @@ public class Utils {
      * applying the given replacer function to the match result.
      */
     public static String replaceAll(String regex, CharSequence input, Function<MatchResult, String> replacer) {
-        return matcher(regex, input).replaceAll(replacer);
+        return replaceAll(Pattern.compile(regex), input, replacer);
     }
 
     /**
-     * Parses the given input string according to the given pattern (similarly to the {@code scanf} method in C)
-     * and returns the parsed values.
-     * <p>
-     * The given pattern may contain "%d", "%c", "%s". Otherwise, it is considered as a regular expression,
-     * so be aware of escaping special characters like '(', ')', '[', ']', '.', '*', '?' etc. Furthermore,
-     * it must not contain capturing groups (unescaped '(' and ')').
-     * <p>
-     * The returned list contains the parsed values in the order of their occurrence in the input.
-     *
-     * @param str input string
-     * @param pattern pattern string: a regular expression that may contain "%d", "%c", "%s", but must not
-     *         contain capturing groups (unescaped '(' and ')'). For example, "Product %s: .* %d out of %d".
-     * @return the list of {@link ParsedValue} objects, which can be obtained as int, long, char, or String
+     * Replaces each match of the given pattern within the given input sequence with the result of applying the
+     * given replacer function to the match result.
      */
-    public static List<ParsedValue> parse(String str, String pattern) {
-        var groupPatterns = findAll("%.", pattern);
-
-        var regex = pattern.replace("%d", "(\\d+)")
-                .replace("%c", "(.)")
-                .replace("%s", "(.*)");
-
-        var result = new ArrayList<ParsedValue>();
-        var matcher = Pattern.compile(regex).matcher(str);
-        if (matcher.matches()) {
-            if (matcher.groupCount() == groupPatterns.size()) {
-                for (int i = 0; i < groupPatterns.size(); i++) {
-                    var group = matcher.group(i + 1); // 0-th group is the entire match
-                    result.add(ParsedValue.parse(group, groupPatterns.get(i)));
-                }
-            } else {
-                throw new IllegalArgumentException(String.format(
-                        "Input string '%s' has %d groups instead of expected %d for regular expression '%s'"
-                                + " (created from pattern '%s').",
-                        str, matcher.groupCount(), groupPatterns.size(), regex, pattern));
-            }
-        } else {
-            throw new IllegalArgumentException(String.format(
-                    "Input string '%s' does not match the regular expression '%s' (created from pattern '%s').",
-                    str, regex, pattern));
-        }
-
-        return result;
-    }
-
-    /**
-     * Represents a value parsed by {@link #parse(String, String)}.
-     */
-    public static final class ParsedValue {
-
-        private final Object value;
-
-        private ParsedValue(Object value) {
-            this.value = value;
-        }
-
-        private static ParsedValue parse(String s, String pattern) {
-            return switch (pattern) {
-                case "%d" -> new ParsedValue(Long.parseLong(s));
-                case "%c" -> new ParsedValue(s.charAt(0));
-                default -> new ParsedValue(s);
-            };
-        }
-
-        public boolean isLong() {
-            return value.getClass().equals(Long.class);
-        }
-
-        public boolean isChar() {
-            return value.getClass().equals(Character.class);
-        }
-
-        public boolean isString() {
-            return value.getClass().equals(String.class);
-        }
-
-        public String get() {
-            return String.valueOf(value);
-        }
-
-        public int toInt() {
-            return (int) toLong();
-        }
-
-        public long toLong() {
-            return (long) value;
-        }
-
-        public char toChar() {
-            return (char) value;
-        }
-
-        @Override
-        public String toString() {
-            return String.valueOf(value);
-        }
-
+    public static String replaceAll(Pattern pattern, CharSequence input, Function<MatchResult, String> replacer) {
+        return pattern.matcher(input).replaceAll(replacer);
     }
 
     private static class PatternHolder {
@@ -661,7 +633,7 @@ public class Utils {
     /**
      * Returns the minimum of the given {@code int} values.
      *
-     * @throws java.util.NoSuchElementException if no numbers are given
+     * @throws NoSuchElementException if no numbers are given
      */
     public static int min(int... ints) {
         return streamOf(ints).min().orElseThrow();
@@ -670,7 +642,7 @@ public class Utils {
     /**
      * Returns the minimum of the given {@code long} values.
      *
-     * @throws java.util.NoSuchElementException if no numbers are given
+     * @throws NoSuchElementException if no numbers are given
      */
     public static long min(long... longs) {
         return streamOf(longs).min().orElseThrow();
@@ -679,7 +651,7 @@ public class Utils {
     /**
      * Returns the minimum of the given {@code char} values.
      *
-     * @throws java.util.NoSuchElementException if no characters are given
+     * @throws NoSuchElementException if no characters are given
      */
     public static char min(char... chars) {
         return streamOf(chars).min(Comparator.naturalOrder()).orElseThrow();
@@ -688,7 +660,7 @@ public class Utils {
     /**
      * Returns the minimum of the given comparable values.
      *
-     * @throws java.util.NoSuchElementException if no values are given
+     * @throws NoSuchElementException if no values are given
      */
     public static <T extends Comparable<T>> T min(Collection<T> values) {
         return values.stream().min(Comparator.naturalOrder()).orElseThrow();
@@ -697,7 +669,7 @@ public class Utils {
     /**
      * Returns the maximum of the given {@code int} values.
      *
-     * @throws java.util.NoSuchElementException if no numbers are given
+     * @throws NoSuchElementException if no numbers are given
      */
     public static int max(int... ints) {
         return streamOf(ints).max().orElseThrow();
@@ -706,7 +678,7 @@ public class Utils {
     /**
      * Returns the maximum of the given {@code long} values.
      *
-     * @throws java.util.NoSuchElementException if no numbers are given
+     * @throws NoSuchElementException if no numbers are given
      */
     public static long max(long... longs) {
         return streamOf(longs).max().orElseThrow();
@@ -715,7 +687,7 @@ public class Utils {
     /**
      * Returns the maximum of the given {@code char} values.
      *
-     * @throws java.util.NoSuchElementException if no characters are given
+     * @throws NoSuchElementException if no characters are given
      */
     public static char max(char... chars) {
         return streamOf(chars).max(Comparator.naturalOrder()).orElseThrow();
@@ -724,7 +696,7 @@ public class Utils {
     /**
      * Returns the maximum of the given comparable values.
      *
-     * @throws java.util.NoSuchElementException if no values are given
+     * @throws NoSuchElementException if no values are given
      */
     public static <T extends Comparable<T>> T max(Collection<T> values) {
         return values.stream().max(Comparator.naturalOrder()).orElseThrow();

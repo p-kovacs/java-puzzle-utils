@@ -372,6 +372,10 @@ class UtilsTest extends Utils {
         assertEquals(0, constrainIndex(-1, 5));
         assertEquals(0, constrainIndex(-42, 5));
 
+        assertEquals(6, constrainIndex(Long.MAX_VALUE, 7));
+        assertEquals(0, constrainIndex(Long.MIN_VALUE, 7));
+        assertEquals(Long.MAX_VALUE - 4, constrainIndex(Long.MAX_VALUE, Long.MAX_VALUE - 3));
+
         assertEquals(0, wrapIndex(0, 5));
         assertEquals(2, wrapIndex(2, 5));
         assertEquals(4, wrapIndex(4, 5));
@@ -380,17 +384,18 @@ class UtilsTest extends Utils {
         assertEquals(4, wrapIndex(-1, 5));
         assertEquals(3, wrapIndex(-42, 5));
 
+        assertEquals(7, wrapIndex(Long.MAX_VALUE, 31));
+        assertEquals(23, wrapIndex(Long.MIN_VALUE, 31));
+        assertEquals(Long.MAX_VALUE & 0b111, wrapIndex(Long.MAX_VALUE, (Long.MAX_VALUE >> 3)));
+
         assertEquals(3, constrainToRange(0, 3, 7));
         assertEquals(5, constrainToRange(5, 3, 7));
         assertEquals(7, constrainToRange(10, 3, 7));
         assertEquals(3, constrainToRange(-2, 3, 7));
         assertEquals(7, constrainToRange(42, 3, 7));
 
-        assertEquals(3L, constrainToRange(0L, 3L, 7L));
-        assertEquals(5L, constrainToRange(5L, 3L, 7L));
-        assertEquals(7L, constrainToRange(10L, 3L, 7L));
-        assertEquals(3L, constrainToRange(-2L, 3L, 7L));
-        assertEquals(7L, constrainToRange(42L, 3L, 7L));
+        assertEquals(Long.MIN_VALUE + 100, constrainToRange(Long.MIN_VALUE, Long.MIN_VALUE + 100, 0));
+        assertEquals(Long.MAX_VALUE - 100, constrainToRange(Long.MAX_VALUE, 0, Long.MAX_VALUE - 100));
 
         assertTrue(isInRange('k', 'a', 'z'));
         assertTrue(isInRange(5, 3, 8));

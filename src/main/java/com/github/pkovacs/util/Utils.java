@@ -36,9 +36,9 @@ import java.util.stream.Stream;
  * </li>
  * <li>
  *     <b>Collections and streams.</b> For example, {@link #listOf}, {@link #setOf}, {@link #streamOf} for converting
- *     arrays of primitive types to collections and streams; {@link #unionOf} and {@link #intersectionOf} for
- *     collections and streams; {@link #chunked(List, int)} and {@link #windowed(List, int)} to enumerate certain
- *     sublists of lists.
+ *     arrays of primitive types to collections and streams (unfortunately, {@link Arrays#asList(Object[])} cannot be
+ *     used for this); {@link #unionOf} and {@link #intersectionOf} for collections and streams;
+ *     {@link #chunked(List, int)} and {@link #windowed(List, int)} to enumerate certain sublists of lists.
  * </li>
  * <li>
  *     <b>Arrays and Matrices.</b> For example, {@link #deepCopy} for matrices of various primitive types.
@@ -82,14 +82,6 @@ public class Utils {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    /**
-     * Reads the first line from the given input file. This method can be practical if the input is a single line,
-     * and you would like to read it without line breaks (in contrast with {@link #readString(Path)}).
-     */
-    public static String readFirstLine(Path path) {
-        return readLines(path).getFirst();
     }
 
     /**
@@ -412,42 +404,42 @@ public class Utils {
      * Returns the given {@code int} values as an unmodifiable list.
      */
     public static List<Integer> listOf(int... ints) {
-        return IntStream.of(ints).boxed().toList();
+        return Arrays.stream(ints).boxed().toList();
     }
 
     /**
      * Returns the given {@code int} values as an unmodifiable set.
      */
     public static Set<Integer> setOf(int... ints) {
-        return IntStream.of(ints).boxed().collect(Collectors.toUnmodifiableSet());
+        return Arrays.stream(ints).boxed().collect(Collectors.toUnmodifiableSet());
     }
 
     /**
      * Returns the given {@code int} values as an {@link IntStream}.
      */
     public static IntStream streamOf(int... ints) {
-        return IntStream.of(ints);
+        return Arrays.stream(ints);
     }
 
     /**
      * Returns the given {@code long} values as an unmodifiable list.
      */
     public static List<Long> listOf(long... longs) {
-        return LongStream.of(longs).boxed().toList();
+        return Arrays.stream(longs).boxed().toList();
     }
 
     /**
      * Returns the given {@code long} values as an unmodifiable set.
      */
     public static Set<Long> setOf(long... longs) {
-        return LongStream.of(longs).boxed().collect(Collectors.toUnmodifiableSet());
+        return Arrays.stream(longs).boxed().collect(Collectors.toUnmodifiableSet());
     }
 
     /**
      * Returns the given {@code long} values as a {@link LongStream}.
      */
     public static LongStream streamOf(long... longs) {
-        return LongStream.of(longs);
+        return Arrays.stream(longs);
     }
 
     /**
@@ -849,16 +841,15 @@ public class Utils {
     /**
      * Constrains the given {@code index} to the closed range {@code [0..(size - 1)]}.
      */
-    public static int constrainIndex(int index, int size) {
+    public static int constrainIndex(long index, int size) {
         return constrainToRange(index, 0, size - 1);
     }
 
     /**
-     * Wraps the given {@code index} to the closed range {@code [0..(size - 1)]}.
+     * Constrains the given {@code index} to the closed range {@code [0..(size - 1)]}.
      */
-    public static int wrapIndex(int index, int size) {
-        checkRange(0, size - 1);
-        return Math.floorMod(index, size);
+    public static long constrainIndex(long index, long size) {
+        return constrainToRange(index, 0, size - 1);
     }
 
     /**
@@ -873,6 +864,22 @@ public class Utils {
      */
     public static long constrainToRange(long value, long min, long max) {
         return Math.clamp(value, min, max);
+    }
+
+    /**
+     * Wraps the given {@code index} to the closed range {@code [0..(size - 1)]}.
+     */
+    public static int wrapIndex(long index, int size) {
+        checkRange(0, size - 1);
+        return Math.floorMod(index, size);
+    }
+
+    /**
+     * Wraps the given {@code index} to the closed range {@code [0..(size - 1)]}.
+     */
+    public static long wrapIndex(long index, long size) {
+        checkRange(0L, size - 1);
+        return Math.floorMod(index, size);
     }
 
     /**

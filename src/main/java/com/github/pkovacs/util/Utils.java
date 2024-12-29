@@ -122,18 +122,18 @@ public class Utils {
     }
 
     /**
-     * Reads blocks of lines (separated by blank line(s)) from the given input file.
+     * Reads the sections from the given input file. Sections are groups of lines separated by one or more blank lines.
      */
-    public static List<List<String>> readLineBlocks(Path path) {
-        return toLineBlocks(readString(path));
+    public static List<List<String>> readSections(Path path) {
+        return findSections(readString(path));
     }
 
     /**
-     * Collects blocks of lines (separated by blank line(s)) from the given string.
+     * Finds the sections in the given string. Sections are groups of lines separated by one or more blank lines.
      */
-    public static List<List<String>> toLineBlocks(String input) {
-        return Arrays.stream(convertLineSeparators(input).split("\n(\n)+"))
-                .map(block -> List.of(block.split("\n")))
+    public static List<List<String>> findSections(String input) {
+        return Arrays.stream(convertLineSeparators(input).split("\n\n+"))
+                .map(section -> List.of(section.split("\n")))
                 .toList();
     }
 

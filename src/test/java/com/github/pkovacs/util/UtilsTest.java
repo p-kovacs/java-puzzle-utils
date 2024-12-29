@@ -13,6 +13,7 @@ import java.util.stream.LongStream;
 
 import org.junit.jupiter.api.Test;
 
+import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -25,21 +26,25 @@ class UtilsTest extends Utils {
     // **************************************** STRINGS AND TEXT FILES ****************************************
 
     @Test
-    void testToLineBlocks() {
+    void testSections() {
         String input = "a\nb c d\ne\n\n\n\nf g\nh\n\ni j k";
-        var blocks = toLineBlocks(input);
+        var sections = findSections(input);
 
-        assertEquals(3, blocks.size());
-        assertEquals(List.of("a", "b c d", "e"), blocks.get(0));
-        assertEquals(List.of("f g", "h"), blocks.get(1));
-        assertEquals(List.of("i j k"), blocks.get(2));
+        assertEquals(3, sections.size());
+        assertEquals(List.of("a", "b c d", "e"), sections.get(0));
+        assertEquals(List.of("f g", "h"), sections.get(1));
+        assertEquals(List.of("i j k"), sections.get(2));
 
-        assertEquals(3, toLineBlocks(input + "\n").size());
-        assertEquals(3, toLineBlocks(input + "\n\n\n\n").size());
+        assertEquals(3, findSections(input + "\n").size());
+        assertEquals(3, findSections(input + "\n\n\n\n").size());
 
         String inputWin = "a\r\nb c d\r\ne\r\n\r\nf g\r\nh\r\n\r\ni j k";
-        var blocks2 = toLineBlocks(inputWin);
-        assertEquals(blocks, blocks2);
+        assertEquals(sections, findSections(inputWin));
+
+        assertEquals(List.of(List.of("a", "b c d", "e", "f g", "h", "i j k")),
+                findSections(input.lines().filter(s -> !s.isEmpty()).collect(joining("\n"))));
+        assertEquals(List.of(List.of("a.b c d.e.f g.h.i j k")),
+                findSections(input.lines().filter(s -> !s.isEmpty()).collect(joining("."))));
     }
 
     @Test

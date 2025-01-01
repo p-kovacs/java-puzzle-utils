@@ -138,11 +138,11 @@ class PosTest {
         assertThrows(IllegalArgumentException.class, () -> a.dirTo(p(20, 0)));
 
         for (var dir : Dir.values()) {
-            assertEquals(dir, a.dirTo(a.neighbor(dir)));
-            assertEquals(a.neighbor(dir), a.neighbor8(dir.toDir8()));
+            assertEquals(dir, a.dirTo(a.neighbor(dir)), () -> "dirTo() for " + dir);
+            assertEquals(a.neighbor(dir), a.neighbor8(dir.toDir8()), () -> "neighbor8() and toDir8() for " + dir);
         }
         for (var dir : Dir8.values()) {
-            assertEquals(dir, a.dir8To(a.neighbor8(dir)));
+            assertEquals(dir, a.dir8To(a.neighbor8(dir)), () -> "dir8To() for " + dir);
         }
     }
 

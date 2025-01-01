@@ -21,7 +21,7 @@ class DirTest {
                 .forEach((str, dir) -> assertEquals(dir, Dir.fromString(str)));
 
         for (char ch : new char[] { 'N', 'E', 'S', 'W' }) {
-            assertEquals("" + ch, Dir.fromChar(ch).toString());
+            assertEquals("" + ch, Dir.fromChar(ch).toString(), "" + ch);
         }
 
         assertEquals(Dir.N, Dir.S.opposite());
@@ -36,9 +36,9 @@ class DirTest {
         for (int i = 0; i < 4; i++) {
             var dir1 = dirs[i];
             var dir2 = dirs[(i + 1) % 4];
-            assertEquals(dir2, dir1.rotateRight());
-            assertEquals(dir1, dir2.rotateLeft());
-            assertEquals(dir1.isHorizontal(), dir2.isVertical());
+            assertEquals(dir2, dir1.rotateRight(), () -> dir1 + "," + dir2);
+            assertEquals(dir1, dir2.rotateLeft(), () -> dir2 + "," + dir1);
+            assertEquals(dir1.isHorizontal(), dir2.isVertical(), () -> "horizontal/vertical for " + dir1 + "," + dir2);
         }
 
         Arrays.stream(dirs).forEach(dir -> {

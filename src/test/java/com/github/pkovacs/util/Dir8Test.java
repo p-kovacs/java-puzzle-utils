@@ -26,8 +26,8 @@ class Dir8Test {
         for (int i = 0; i < 8; i++) {
             var dir1 = dirs[i];
             var dir2 = dirs[(i + 1) % 8];
-            assertEquals(dir2, dir1.next());
-            assertEquals(dir1, dir2.prev());
+            assertEquals(dir2, dir1.next(), () -> dir1 + "," + dir2);
+            assertEquals(dir1, dir2.prev(), () -> dir2 + "," + dir1);
         }
 
         Arrays.stream(dirs).forEach(dir -> {

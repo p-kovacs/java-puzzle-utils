@@ -66,10 +66,14 @@ abstract class AbstractTableTest<T> {
         assertTrue(table.border().toList().containsAll(table.firstCol().toList()));
         assertTrue(table.border().toList().containsAll(table.lastCol().toList()));
 
-        for (int w = 0; w < 4; w++) {
-            for (int h = 0; h < 3; h++) {
+        for (int w : List.of(0, 1, 2, 3)) {
+            for (int h : List.of(0, 1, 2, 3)) {
                 table = createTestTable(w, h);
-                assertEquals(table.cells().toList(), table.border().toList());
+                if (w == 3 && h == 3) {
+                    assertEquals(table.size() - 1, table.border().count());
+                } else {
+                    assertEquals(table.cells().toList(), table.border().toList(), () -> "width=" + w + ", height=" + h);
+                }
             }
         }
     }

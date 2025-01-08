@@ -191,8 +191,8 @@ class BfsTest {
     }
 
     @Test
-    void testGenericParameters() {
-        Function<Collection<Integer>, Stream<ArrayList<Integer>>> neighborProvider =
+    void testGenericParameters1() {
+        Function<Collection<Integer>, Stream<List<Integer>>> neighborProvider =
                 c -> IntStream.rangeClosed(0, 3).mapToObj(i -> new ArrayList<>(concat(c, i).toList()));
 
         var start = List.of(1, 0);
@@ -211,6 +211,16 @@ class BfsTest {
         assertEquals(target, path.get().end());
         assertEquals(path.get().nodes(), path2.orElseThrow().nodes());
         assertEquals(path.get().nodes(), path3.orElseThrow().nodes());
+    }
+
+    @Test
+    void testGenericParameters2() {
+        assertEquals(1,
+                Bfs.findPaths(c -> Stream.of(List.of(42)), List.of(42)).size());
+        assertEquals(1,
+                Bfs.findPaths(c -> Stream.of(new ArrayList<>(List.of(42))), List.of(42)).size());
+        assertEquals(1,
+                Bfs.<List<Integer>>findPaths(c -> Stream.of(List.of(42)), new ArrayList<>(List.of(42))).size());
     }
 
     private static Stream<Integer> concat(Collection<Integer> collection, int i) {

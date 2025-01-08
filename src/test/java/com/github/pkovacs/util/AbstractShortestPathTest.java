@@ -126,10 +126,10 @@ abstract class AbstractShortestPathTest {
     }
 
     @Test
-    void testGenericParameters() {
-        BiFunction<Collection<Integer>, Integer, Edge<ArrayList<Integer>>> toEdge =
-                (c, i) -> new Edge<>(new ArrayList<>(concat(c, i).toList()), Math.max(i * 10, 1));
-        Function<Collection<Integer>, Stream<Edge<ArrayList<Integer>>>> edgeProvider =
+    void testGenericParameters1() {
+        BiFunction<Collection<Integer>, Integer, Edge<List<Integer>>> toEdge =
+                (c, i) -> new Edge<>(concat(c, i).toList(), Math.max(i * 10, 1));
+        Function<Collection<Integer>, Stream<Edge<List<Integer>>>> edgeProvider =
                 c -> IntStream.rangeClosed(0, 3).mapToObj(i -> toEdge.apply(c, i)).filter(e -> e.end().size() <= 6);
 
         var start = List.of(1, 0);

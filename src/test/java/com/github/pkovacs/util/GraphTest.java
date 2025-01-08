@@ -3,7 +3,6 @@ package com.github.pkovacs.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -53,29 +52,27 @@ class GraphTest {
 
     @Test
     void testGenericParameters() {
-        Function<Collection<Integer>, Stream<ArrayList<Integer>>> append = collection -> IntStream.range(0, 2)
-                .mapToObj(i -> new ArrayList<>(Stream.concat(collection.stream(), Stream.of(i)).toList()));
+        Function<Collection<Integer>, Stream<List<Integer>>> append = collection ->
+                IntStream.range(0, 2).mapToObj(i -> Stream.concat(collection.stream(), Stream.of(i)).toList());
 
-        var nodes = Stream.of(List.of(1), List.of(1, 2), List.of(1, 2, 3), List.of(1, 2, 3, 4))
-                .map(ArrayList::new).toList();
-        var map = new HashMap<Collection<Integer>, Set<LinkedList<Integer>>>();
+        var nodes = List.of(List.of(1), List.of(1, 2), List.of(1, 2, 3), List.of(1, 2, 3, 4));
+
+        var map1 = new HashMap<Collection<Integer>, Set<Collection<Integer>>>();
+        var map2 = new HashMap<Collection<Integer>, Set<ArrayList<Integer>>>();
         for (var node : nodes) {
-            map.put(node, append.apply(node).map(LinkedList::new).collect(Collectors.toSet()));
+            map1.put(node, append.apply(node).collect(Collectors.toSet()));
+            map2.put(node, append.apply(node).map(ArrayList::new).collect(Collectors.toSet()));
         }
 
-        Graph<Collection<Integer>> graph1a = Graph.of(append);
-        Graph<Collection<Integer>> graph1b = Graph.of(map);
+        Graph<Collection<Integer>> graph1a = Graph.of(u -> append.apply(u).map(c -> c));
+        Graph<Collection<Integer>> graph1b = Graph.of(map1);
         Graph<List<Integer>> graph2a = Graph.of(append);
-        Graph<List<Integer>> graph2b = Graph.of(map);
-        Graph<ArrayList<Integer>> graph3 = Graph.of(append);
-        Graph<LinkedList<Integer>> graph4 = Graph.of(map);
+        Graph<ArrayList<Integer>> graph2b = Graph.of(map2);
 
         assertEquals(8, nodes.stream().flatMap(graph1a::neighbors).count());
         assertEquals(8, nodes.stream().flatMap(graph1b::neighbors).count());
         assertEquals(8, nodes.stream().flatMap(graph2a::neighbors).count());
-        assertEquals(8, nodes.stream().flatMap(graph2b::neighbors).count());
-        assertEquals(8, nodes.stream().flatMap(graph3::neighbors).count());
-        assertEquals(8, nodes.stream().map(LinkedList::new).flatMap(graph4::neighbors).count());
+        assertEquals(8, nodes.stream().map(ArrayList::new).flatMap(graph2b::neighbors).count());
 
         Predicate<Collection<Integer>> nodeFilter1 = c -> c.size() <= 4;
         Predicate<List<Integer>> nodeFilter2 = c -> c.size() <= 3;
@@ -84,15 +81,11 @@ class GraphTest {
         var fn1b = graph1b.filterNodes(nodeFilter1);
         var fn2a = graph2a.filterNodes(nodeFilter1).filterNodes(nodeFilter2);
         var fn2b = graph2b.filterNodes(nodeFilter1).filterNodes(nodeFilter2);
-        var fn3 = graph3.filterNodes(nodeFilter1).filterNodes(nodeFilter2).filterNodes(nodeFilter3);
-        var fn4 = graph4.filterNodes(nodeFilter1).filterNodes(nodeFilter2);
 
         assertEquals(6, nodes.stream().flatMap(fn1a::neighbors).count());
         assertEquals(6, nodes.stream().flatMap(fn1b::neighbors).count());
         assertEquals(4, nodes.stream().flatMap(fn2a::neighbors).count());
-        assertEquals(4, nodes.stream().flatMap(fn2b::neighbors).count());
-        assertEquals(2, nodes.stream().flatMap(fn3::neighbors).count());
-        assertEquals(4, nodes.stream().map(LinkedList::new).flatMap(fn4::neighbors).count());
+        assertEquals(4, nodes.stream().map(ArrayList::new).flatMap(fn2b::neighbors).count());
 
         BiPredicate<Collection<Integer>, Collection<Integer>> edgeFilter1 = (a, b) -> b.size() <= 4;
         BiPredicate<Collection<Integer>, List<Integer>> edgeFilter2 = (a, b) -> a.size() == 1 || b.getLast() == 1;
@@ -101,15 +94,11 @@ class GraphTest {
         var fe1b = graph1b.filterEdges(edgeFilter1);
         var fe2a = graph2a.filterEdges(edgeFilter1).filterEdges(edgeFilter2);
         var fe2b = graph2b.filterEdges(edgeFilter1).filterEdges(edgeFilter2);
-        var fe3 = graph3.filterEdges(edgeFilter1).filterEdges(edgeFilter2).filterEdges(edgeFilter3);
-        var fe4 = graph4.filterEdges(edgeFilter1).filterEdges(edgeFilter2);
 
         assertEquals(6, nodes.stream().flatMap(fe1a::neighbors).count());
         assertEquals(6, nodes.stream().flatMap(fe1b::neighbors).count());
         assertEquals(4, nodes.stream().flatMap(fe2a::neighbors).count());
-        assertEquals(4, nodes.stream().flatMap(fe2b::neighbors).count());
-        assertEquals(3, nodes.stream().flatMap(fe3::neighbors).count());
-        assertEquals(4, nodes.stream().map(LinkedList::new).flatMap(fe4::neighbors).count());
+        assertEquals(4, nodes.stream().map(ArrayList::new).flatMap(fe2b::neighbors).count());
     }
 
 }

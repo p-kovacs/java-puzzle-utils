@@ -14,8 +14,8 @@ import java.util.stream.Stream;
  * node along with their weights. In the case of an undirected graph, this relation must be symmetric.
  * <p>
  * This is a simplistic approach that makes it as easy and flexible as possible to define graphs when solving coding
- * puzzles (e.g., with lambda expressions). On the other hand, the collection of all nodes is not available via this
- * interface, so the algorithms require one or more nodes to be specified explicitly.
+ * puzzles (e.g., with lambda expressions or method references). On the other hand, the collection of all nodes is
+ * not available via this interface, so the algorithms require one or more nodes to be specified explicitly.
  * <p>
  * The {@link #of WeightedGraph.of} static factory methods can be used to create weighted graphs.
  * {@link #filterNodes(Predicate)} and {@link #filterEdges(BiPredicate)} can be used to obtain subgraphs of a graph.
@@ -39,16 +39,18 @@ public interface WeightedGraph<T> {
      * In the case of an undirected graph, the adjacency relation must be symmetric. That is, if node {code v} is
      * among the neighbors of {@code u} with a certain weight, then {@code u} must be among the neighbors of {@code v}
      * with the same weight.
+     * <p>
+     * This is the only one abstract method, it represents the function contract of this interface.
      */
-    Stream<? extends Edge<? extends T>> edges(T node);
+    Stream<Edge<T>> edges(T node);
 
     /**
      * Wraps the given edge provider function as a weighted graph.
      * <p>
-     * In fact, the function itself can also be used as a weighted graph, but this method allows the usage of
+     * In fact, the function itself can also be used as a weighted graph, but this factory method allows the usage of
      * additional methods of this interface, e.g., to filter nodes or edges.
      */
-    static <T> WeightedGraph<T> of(Function<? super T, ? extends Stream<? extends Edge<? extends T>>> edgeProvider) {
+    static <T> WeightedGraph<T> of(Function<? super T, ? extends Stream<Edge<T>>> edgeProvider) {
         return edgeProvider::apply;
     }
 
@@ -63,7 +65,7 @@ public interface WeightedGraph<T> {
     /**
      * Wraps the given map as a weighted graph. Changes in the map are reflected in the returned weighted graph.
      */
-    static <T> WeightedGraph<T> of(Map<? super T, ? extends Collection<? extends Edge<? extends T>>> map) {
+    static <T> WeightedGraph<T> of(Map<? super T, ? extends Collection<Edge<T>>> map) {
         return u -> map.get(u).stream();
     }
 
@@ -71,7 +73,7 @@ public interface WeightedGraph<T> {
      * Wraps the given map and the given weight function as a weighted graph. Changes in the map are reflected in the
      * returned weighted graph.
      */
-    static <T> WeightedGraph<T> of(Map<? super T, ? extends Collection<? extends T>> map,
+    static <T> WeightedGraph<T> of(Map<? super T, ? extends Collection<T>> map,
             ToLongBiFunction<? super T, ? super T> weight) {
         return u -> map.get(u).stream().map(v -> new Edge<>(v, weight.applyAsLong(u, v)));
     }

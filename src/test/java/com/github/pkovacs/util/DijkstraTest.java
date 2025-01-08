@@ -1,5 +1,6 @@
 package com.github.pkovacs.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -50,11 +51,21 @@ class DijkstraTest extends AbstractShortestPathTest {
     void testWithMultipleSources() {
         var result = Dijkstra.findPathFromAny(
                 i -> Stream.of(new Edge<>(i - 3, 1), new Edge<>(i - 7, 2)),
-                IntStream.range(82, 100).boxed(),i -> i == 42);
+                IntStream.range(82, 100).boxed(), i -> i == 42);
 
         assertTrue(result.isPresent());
         assertEquals(12, result.get().dist());
         assertEquals(List.of(84, 77, 70, 63, 56, 49, 42), result.get().nodes());
+    }
+
+    @Test
+    void testGenericParameters2() {
+        assertEquals(1, Dijkstra.findPaths(c -> Stream.of(new Edge<>(List.of(42), 0)),
+                List.of(42)).size());
+        assertEquals(1, Dijkstra.findPaths(c -> Stream.of(new Edge<>(new ArrayList<>(List.of(42)), 0)),
+                List.of(42)).size());
+        assertEquals(1, Dijkstra.<List<Integer>>findPaths(c -> Stream.of(new Edge<>(List.of(42), 0)),
+                new ArrayList<>(List.of(42))).size());
     }
 
 }

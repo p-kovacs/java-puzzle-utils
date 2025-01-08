@@ -14,8 +14,8 @@ import java.util.stream.Stream;
  * this relation must be symmetric.
  * <p>
  * This is a simplistic approach that makes it as easy and flexible as possible to define graphs when solving coding
- * puzzles (e.g., with lambda expressions). On the other hand, the collection of all nodes is not available via this
- * interface, so the algorithms require one or more nodes to be specified explicitly.
+ * puzzles (e.g., with lambda expressions or method references). On the other hand, the collection of all nodes is
+ * not available via this interface, so the algorithms require one or more nodes to be specified explicitly.
  * <p>
  * The {@link #of Graph.of} static factory methods can be used to create graphs.
  * {@link #filterNodes(Predicate)} and {@link #filterEdges(BiPredicate)} can be used to obtain subgraphs of a graph.
@@ -31,23 +31,25 @@ public interface Graph<T> {
      * <p>
      * In the case of an undirected graph, the adjacency relation must be symmetric. That is, if node {code v} is
      * among the neighbors of {@code u}, then {@code u} must be among the neighbors of {@code v}.
+     * <p>
+     * This is the only one abstract method, it represents the function contract of this interface.
      */
-    Stream<? extends T> neighbors(T node);
+    Stream<T> neighbors(T node);
 
     /**
      * Wraps the given neighbor provider function as a graph.
      * <p>
-     * In fact, the function itself can also be used as a graph, but this method allows the usage of additional
-     * methods of this interface, e.g., to filter nodes or edges.
+     * In fact, the function itself can also be used as a graph, but this factory method allows the usage of
+     * additional methods of this interface, e.g., to filter nodes or edges.
      */
-    static <T> Graph<T> of(Function<? super T, ? extends Stream<? extends T>> neighborProvider) {
+    static <T> Graph<T> of(Function<? super T, ? extends Stream<T>> neighborProvider) {
         return neighborProvider::apply;
     }
 
     /**
      * Wraps the given map as a graph. Changes in the map are reflected in the returned graph.
      */
-    static <T> Graph<T> of(Map<? super T, ? extends Collection<? extends T>> map) {
+    static <T> Graph<T> of(Map<? super T, ? extends Collection<T>> map) {
         return u -> map.get(u).stream();
     }
 

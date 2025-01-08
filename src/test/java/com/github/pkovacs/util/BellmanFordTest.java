@@ -1,5 +1,6 @@
 package com.github.pkovacs.util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +56,16 @@ class BellmanFordTest extends AbstractShortestPathTest {
         assertTrue(paths.containsKey(42));
         assertEquals(12, paths.get(42).dist());
         assertEquals(List.of(84, 77, 70, 63, 56, 49, 42), paths.get(42).nodes());
+    }
+
+    @Test
+    void testGenericParameters2() {
+        assertEquals(1, BellmanFord.findPaths(c -> Stream.of(new Edge<>(List.of(42), 0)),
+                List.of(42)).size());
+        assertEquals(1, BellmanFord.findPaths(c -> Stream.of(new Edge<>(new ArrayList<>(List.of(42)), 0)),
+                List.of(42)).size());
+        assertEquals(1, BellmanFord.<List<Integer>>findPaths(c -> Stream.of(new Edge<>(List.of(42), 0)),
+                new ArrayList<>(List.of(42))).size());
     }
 
 }

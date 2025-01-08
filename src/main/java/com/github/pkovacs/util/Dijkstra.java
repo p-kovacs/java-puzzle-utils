@@ -119,6 +119,7 @@ public final class Dijkstra {
             queue.add(path);
         });
 
+        var decreased = new HashSet<T>();
         var processed = new HashSet<T>();
         while (!queue.isEmpty()) {
             var prev = queue.poll();
@@ -126,18 +127,21 @@ public final class Dijkstra {
             if (targetPredicate.test(prevNode)) {
                 return Optional.of(prev);
             }
-            if (!processed.add(prevNode)) {
+            if (decreased.contains(prevNode) && !processed.add(prevNode)) {
                 continue;
             }
 
             graph.edges(prevNode).forEach(edge -> {
                 var node = edge.end();
-                long dist = prev.dist() + edge.weight();
                 var current = results.get(node);
+                long dist = prev.dist() + edge.weight();
                 if (current == null || dist < current.dist()) {
                     var path = new Path<>(node, dist, prev);
                     results.put(node, path);
                     queue.add(path);
+                    if (current != null) {
+                        decreased.add(node);
+                    }
                 }
             });
         }

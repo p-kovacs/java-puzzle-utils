@@ -125,13 +125,13 @@ public class Utils {
      * Reads the sections from the given input file. Sections are groups of lines separated by one or more blank lines.
      */
     public static List<List<String>> readSections(Path path) {
-        return findSections(readString(path));
+        return collectSections(readString(path));
     }
 
     /**
-     * Finds the sections in the given string. Sections are groups of lines separated by one or more blank lines.
+     * Collects the sections of the given string. Sections are groups of lines separated by one or more blank lines.
      */
-    public static List<List<String>> findSections(String input) {
+    public static List<List<String>> collectSections(String input) {
         return Arrays.stream(convertLineSeparators(input).split("\n\n+"))
                 .map(section -> List.of(section.split("\n")))
                 .toList();

@@ -28,23 +28,23 @@ class UtilsTest extends Utils {
     @Test
     void testSections() {
         String input = "a\nb c d\ne\n\n\n\nf g\nh\n\ni j k";
-        var sections = findSections(input);
+        var sections = collectSections(input);
 
         assertEquals(3, sections.size());
         assertEquals(List.of("a", "b c d", "e"), sections.get(0));
         assertEquals(List.of("f g", "h"), sections.get(1));
         assertEquals(List.of("i j k"), sections.get(2));
 
-        assertEquals(3, findSections(input + "\n").size());
-        assertEquals(3, findSections(input + "\n\n\n\n").size());
+        assertEquals(3, collectSections(input + "\n").size());
+        assertEquals(3, collectSections(input + "\n\n\n\n").size());
 
         String inputWin = "a\r\nb c d\r\ne\r\n\r\nf g\r\nh\r\n\r\ni j k";
-        assertEquals(sections, findSections(inputWin));
+        assertEquals(sections, collectSections(inputWin));
 
         assertEquals(List.of(List.of("a", "b c d", "e", "f g", "h", "i j k")),
-                findSections(input.lines().filter(s -> !s.isEmpty()).collect(joining("\n"))));
+                collectSections(input.lines().filter(s -> !s.isEmpty()).collect(joining("\n"))));
         assertEquals(List.of(List.of("a.b c d.e.f g.h.i j k")),
-                findSections(input.lines().filter(s -> !s.isEmpty()).collect(joining("."))));
+                collectSections(input.lines().filter(s -> !s.isEmpty()).collect(joining("."))));
     }
 
     @Test

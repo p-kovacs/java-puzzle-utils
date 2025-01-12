@@ -883,6 +883,63 @@ public class Utils {
     }
 
     /**
+     * Checks if the given {@code index} is within the closed range {@code [0..(size - 1)]}.
+     */
+    public static boolean isValidIndex(long index, long size) {
+        checkRange(0L, size - 1);
+        return index >= 0 && index < size;
+    }
+
+    /**
+     * Checks if the given index is valid for the given collection.
+     */
+    public static boolean isValidIndex(long index, Collection<?> collection) {
+        return isValidIndex(index, collection.size());
+    }
+
+    /**
+     * Checks if the given index is valid for the given array.
+     */
+    public static <T> boolean isValidIndex(long index, T[] array) {
+        return isValidIndex(index, array.length);
+    }
+
+    /**
+     * Checks if the given index is valid for the given array.
+     */
+    public static boolean isValidIndex(long index, int[] array) {
+        return isValidIndex(index, array.length);
+    }
+
+    /**
+     * Checks if the given index is valid for the given array.
+     */
+    public static boolean isValidIndex(long index, long[] array) {
+        return isValidIndex(index, array.length);
+    }
+
+    /**
+     * Checks if the given index is valid for the given array.
+     */
+    public static boolean isValidIndex(long index, byte[] array) {
+        return isValidIndex(index, array.length);
+    }
+
+    /**
+     * Checks if the given index is valid for the given array.
+     */
+    public static boolean isValidIndex(long index, char[] array) {
+        return isValidIndex(index, array.length);
+    }
+
+    /**
+     * Checks if the given index is valid for the character sequence.
+     */
+    public static boolean isValidIndex(long index, CharSequence s) {
+        return isValidIndex(index, s.length());
+    }
+
+    /**
      * Returns true if the given {@code value} is within the closed range {@code [min..max]}.
      */
     public static <T extends Comparable<T>> boolean isInRange(T value, T min, T max) {

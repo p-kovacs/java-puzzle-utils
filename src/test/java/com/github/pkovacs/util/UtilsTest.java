@@ -402,9 +402,28 @@ class UtilsTest extends Utils {
         assertEquals(Long.MIN_VALUE + 100, constrainToRange(Long.MIN_VALUE, Long.MIN_VALUE + 100, 0));
         assertEquals(Long.MAX_VALUE - 100, constrainToRange(Long.MAX_VALUE, 0, Long.MAX_VALUE - 100));
 
+        assertTrue(isValidIndex(0, 42));
+        assertTrue(isValidIndex(41, 42));
+        assertFalse(isValidIndex(-1, 42));
+        assertFalse(isValidIndex(42, 42));
+
+        assertTrue(isValidIndex(0, new int[] { 1, 2, 3 }));
+        assertTrue(isValidIndex(2, new int[] { 1, 2, 3 }));
+        assertFalse(isValidIndex(3, new int[] { 1, 2, 3 }));
+        assertTrue(isValidIndex(0, List.of(1, 2, 3)));
+        assertTrue(isValidIndex(2, new int[] { 1, 2, 3 }));
+        assertFalse(isValidIndex(3, new int[] { 1, 2, 3 }));
+
         assertTrue(isInRange('k', 'a', 'z'));
+        assertTrue(isInRange('a', 'a', 'z'));
+        assertTrue(isInRange('z', 'a', 'z'));
+        assertFalse(isInRange('A', 'a', 'z'));
         assertTrue(isInRange(5, 3, 8));
+        assertTrue(isInRange(3, 3, 8));
+        assertTrue(isInRange(8, 3, 8));
+        assertFalse(isInRange(10, 3, 8));
         assertTrue(isInRange(3.0, Math.E, Math.PI));
+        assertFalse(isInRange(4.0, Math.E, Math.PI));
     }
 
     @Test

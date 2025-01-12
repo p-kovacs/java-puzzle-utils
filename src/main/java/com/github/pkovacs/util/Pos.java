@@ -41,7 +41,7 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the x coordinate (or column index).
+     * Returns the x coordinate.
      *
      * @apiNote You can also use the public final field {@link #x} directly, but this method is practical when
      *         used as a method reference: {@code Pos::x}.
@@ -51,13 +51,31 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Returns the y coordinate (or row index).
+     * Returns the y coordinate.
      *
      * @apiNote You can also use the public final field {@link #y} directly, but this method is practical when
      *         used as a method reference: {@code Pos::y}.
      */
     public long y() {
         return y;
+    }
+
+    /**
+     * Returns the x coordinate as an {@code int} value.
+     *
+     * @throws ArithmeticException if the x coordinate overflows an int
+     */
+    public int xInt() {
+        return Math.toIntExact(x);
+    }
+
+    /**
+     * Returns the y coordinate as an {@code int} value.
+     *
+     * @throws ArithmeticException if the y coordinate overflows an int
+     */
+    public int yInt() {
+        return Math.toIntExact(y);
     }
 
     /**
@@ -97,12 +115,7 @@ public final class Pos implements Comparable<Pos> {
      * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir#mirrorVertically()}.
      */
     public Pos neighbor(Dir dir) {
-        return switch (dir) {
-            case N -> new Pos(x, y - 1);
-            case E -> new Pos(x + 1, y);
-            case S -> new Pos(x, y + 1);
-            case W -> new Pos(x - 1, y);
-        };
+        return plus(dir, 1);
     }
 
     /**
@@ -113,16 +126,7 @@ public final class Pos implements Comparable<Pos> {
      * If the y-axis is directed <i>upward</i> (to the north), then you can use {@link Dir8#mirrorVertically()}.
      */
     public Pos neighbor8(Dir8 dir) {
-        return switch (dir) {
-            case N -> new Pos(x, y - 1);
-            case NE -> new Pos(x + 1, y - 1);
-            case E -> new Pos(x + 1, y);
-            case SE -> new Pos(x + 1, y + 1);
-            case S -> new Pos(x, y + 1);
-            case SW -> new Pos(x - 1, y + 1);
-            case W -> new Pos(x - 1, y);
-            case NW -> new Pos(x - 1, y - 1);
-        };
+        return plus(dir, 1);
     }
 
     /**
@@ -312,6 +316,13 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
+     * Creates a new position by adding the given other position vector to this one.
+     */
+    public Pos plus(Pos other) {
+        return new Pos(x + other.x, y + other.y);
+    }
+
+    /**
      * Creates a new position by adding the given delta values to the coordinates of this position vector.
      */
     public Pos plus(long dx, long dy) {
@@ -319,10 +330,31 @@ public final class Pos implements Comparable<Pos> {
     }
 
     /**
-     * Creates a new position by adding the given other position vector to this one.
+     * Creates a new position by adding the given number of steps in the given direction.
      */
-    public Pos plus(Pos other) {
-        return new Pos(x + other.x, y + other.y);
+    public Pos plus(Dir dir, long count) {
+        return switch (dir) {
+            case N -> new Pos(x, y - count);
+            case E -> new Pos(x + count, y);
+            case S -> new Pos(x, y + count);
+            case W -> new Pos(x - count, y);
+        };
+    }
+
+    /**
+     * Creates a new position by adding the given number of steps in the given direction.
+     */
+    public Pos plus(Dir8 dir, long count) {
+        return switch (dir) {
+            case N -> new Pos(x, y - count);
+            case NE -> new Pos(x + count, y - count);
+            case E -> new Pos(x + count, y);
+            case SE -> new Pos(x + count, y + count);
+            case S -> new Pos(x, y + count);
+            case SW -> new Pos(x - count, y + count);
+            case W -> new Pos(x - count, y);
+            case NW -> new Pos(x - count, y - count);
+        };
     }
 
     /**

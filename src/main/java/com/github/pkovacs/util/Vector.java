@@ -81,6 +81,33 @@ public final class Vector implements Comparable<Vector> {
     }
 
     /**
+     * Returns the x coordinate as an {@code int} value.
+     *
+     * @throws ArithmeticException if the x coordinate overflows an int
+     */
+    public int xInt() {
+        return Math.toIntExact(x);
+    }
+
+    /**
+     * Returns the y coordinate as an {@code int} value.
+     *
+     * @throws ArithmeticException if the y coordinate overflows an int
+     */
+    public int yInt() {
+        return Math.toIntExact(y);
+    }
+
+    /**
+     * Returns the z coordinate as an {@code int} value.
+     *
+     * @throws ArithmeticException if the z coordinate overflows an int
+     */
+    public int zInt() {
+        return Math.toIntExact(z);
+    }
+
+    /**
      * Returns a new vector with the given x coordinate and the original y and z coordinates of this vector.
      */
     public Vector withX(long newX) {

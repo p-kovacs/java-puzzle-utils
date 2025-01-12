@@ -16,11 +16,21 @@ class PosTest {
         var a = p(42, 12);
         var b = p(12, 42);
         var c = p(12, 42);
+        var d = p(Long.MAX_VALUE, Long.MIN_VALUE);
 
         assertEquals(42, a.x);
         assertEquals(42, a.x());
+        assertEquals(42, a.xInt());
         assertEquals(12, a.y);
         assertEquals(12, a.y());
+        assertEquals(12, a.yInt());
+        assertEquals(Long.MAX_VALUE, d.x);
+        assertEquals(Long.MAX_VALUE, d.x());
+        assertThrows(ArithmeticException.class, () -> d.xInt());
+        assertEquals(Long.MIN_VALUE, d.y);
+        assertEquals(Long.MIN_VALUE, d.y());
+        assertThrows(ArithmeticException.class, () -> d.yInt());
+
         assertNotEquals(a, b);
         assertEquals(b, c);
 
@@ -153,12 +163,23 @@ class PosTest {
 
         assertEquals(p(-42, -12), a.opposite());
         assertEquals(p(52, 32), a.plus(b));
-        assertEquals(p(52, 32), a.plus((int) b.x, (int) b.y));
+        assertEquals(p(52, 32), a.plus(b.x, b.y));
         assertEquals(p(52, 32), b.plus(a));
-        assertEquals(p(52, 32), b.plus((int) a.x, (int) a.y));
+        assertEquals(p(52, 32), b.plus(a.x, a.y));
         assertEquals(p(32, -8), a.minus(b));
         assertEquals(p(-32, 8), b.minus(a));
         assertEquals(b.plus(a.opposite()), b.minus(a));
+
+        assertEquals(p(42, 2), a.plus(Dir.N, 10));
+        assertEquals(p(42, 2), a.plus(Dir.S, -10));
+        assertEquals(p(-8, 12), a.plus(Dir.W, 50));
+        assertEquals(a, a.plus(Dir.E, 0));
+        assertEquals(p(42, 2), a.plus(Dir8.N, 10));
+        assertEquals(p(42, 2), a.plus(Dir8.S, -10));
+        assertEquals(p(-8, 62), a.plus(Dir8.SW, 50));
+        assertEquals(p(50, 20), a.plus(Dir8.SE, 8));
+        assertEquals(p(40, 10), a.plus(Dir8.NW, 2));
+        assertEquals(a, a.plus(Dir8.NE, 0));
 
         assertEquals(p(420, 120), a.multiply(10));
         assertEquals(p(-84, -24), a.multiply(-2));

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VectorTest {
@@ -14,13 +15,26 @@ class VectorTest {
     void testBasicMethods() {
         var a = Vector.ORIGIN;
         var b = v(42, 12, 314);
+        var c = v(Long.MAX_VALUE, Long.MAX_VALUE / 2, Long.MIN_VALUE);
 
         assertEquals(42, b.x);
-        assertEquals(12, b.y);
-        assertEquals(314, b.z);
         assertEquals(42, b.x());
+        assertEquals(42, b.xInt());
+        assertEquals(12, b.y);
         assertEquals(12, b.y());
+        assertEquals(12, b.yInt());
+        assertEquals(314, b.z);
         assertEquals(314, b.z());
+        assertEquals(314, b.zInt());
+        assertEquals(Long.MAX_VALUE, c.x);
+        assertEquals(Long.MAX_VALUE, c.x());
+        assertThrows(ArithmeticException.class, () -> c.xInt());
+        assertEquals(Long.MAX_VALUE / 2, c.y);
+        assertEquals(Long.MAX_VALUE / 2, c.y());
+        assertThrows(ArithmeticException.class, () -> c.yInt());
+        assertEquals(Long.MIN_VALUE, c.z);
+        assertEquals(Long.MIN_VALUE, c.z());
+        assertThrows(ArithmeticException.class, () -> c.zInt());
 
         assertEquals(b, new Vector(b.x, b.y, b.z));
         assertNotEquals(b, new Vector(42, 12, 23));

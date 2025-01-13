@@ -787,6 +787,33 @@ public class Utils {
     }
 
     /**
+     * Returns the first argument raised to the power of the second argument.
+     *
+     * @throws IllegalArgumentException if the exponent (the second argument) is negative
+     */
+    public static long pow(long a, long b) {
+        if (b < 0) {
+            throw new IllegalArgumentException("Negative exponent.");
+        }
+
+        if (a >= 0 && a <= 2) {
+            return switch ((int) a) {
+                case 0 -> (b == 0) ? 1 : 0;
+                case 1 -> 1;
+                case 2 -> 1L << b;
+                default -> throw new AssertionError();
+            };
+        }
+
+        long r = 1;
+        for (; b != 0; b >>= 1) {
+            r *= ((b & 1) == 0) ? 1 : a;
+            a *= a;
+        }
+        return r;
+    }
+
+    /**
      * Returns the <i>greatest common divisor</i> (GCD) of the given two non-negative {@code long} values.
      *
      * @throws IllegalArgumentException if {@code a < 0} or {@code b < 0}

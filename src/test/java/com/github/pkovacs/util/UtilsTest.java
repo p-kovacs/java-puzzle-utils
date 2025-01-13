@@ -411,6 +411,57 @@ class UtilsTest extends Utils {
     }
 
     @Test
+    void testPow() {
+        assertEquals(1, pow(0, 0));
+        assertEquals(0, pow(0, 1));
+        assertEquals(0, pow(0, 1024));
+        assertThrows(IllegalArgumentException.class, () -> pow(0, -1));
+
+        assertEquals(1, pow(1, 0));
+        assertEquals(1, pow(1, 1));
+        assertEquals(1, pow(1, 1024));
+        assertThrows(IllegalArgumentException.class, () -> pow(1, -1));
+
+        assertEquals(1, pow(2, 0));
+        assertEquals(2, pow(2, 1));
+        assertEquals(4, pow(2, 2));
+        assertEquals(32, pow(2, 5));
+        assertEquals(256, pow(2, 8));
+        assertEquals(4096, pow(2, 12));
+        assertEquals(0x40000000000L, pow(2, 42));
+        assertThrows(IllegalArgumentException.class, () -> pow(2, -1));
+
+        assertEquals(1, pow(3, 0));
+        assertEquals(3, pow(3, 1));
+        assertEquals(9, pow(3, 2));
+        assertEquals(243, pow(3, 5));
+        assertEquals(6561, pow(3, 8));
+        assertEquals(531441, pow(3, 12));
+        assertEquals(205891132094649L, pow(3, 30));
+        assertThrows(IllegalArgumentException.class, () -> pow(3, -1));
+
+        assertEquals(1, pow(10, 0));
+        assertEquals(10, pow(10, 1));
+        assertEquals(100, pow(10, 2));
+        assertEquals(1000, pow(10, 3));
+        assertEquals(10000, pow(10, 4));
+        assertEquals(100000, pow(10, 5));
+        assertEquals(1000000, pow(10, 6));
+        assertEquals(10000000, pow(10, 7));
+        assertEquals(100000000, pow(10, 8));
+        assertEquals(1000000000, pow(10, 9));
+        assertEquals(10000000000L, pow(10, 10));
+        assertEquals(100000000000L, pow(10, 11));
+        assertEquals(1000000000000L, pow(10, 12));
+        assertEquals(10000000000000L, pow(10, 13));
+        assertEquals(100000000000000L, pow(10, 14));
+        assertEquals(1000000000000000L, pow(10, 15));
+        assertEquals(10000000000000000L, pow(10, 16));
+        assertEquals(100000000000000000L, pow(10, 17));
+        assertEquals(1000000000000000000L, pow(10, 18));
+    }
+
+    @Test
     void testRangeMethods() {
         assertEquals(0, constrainIndex(0, 5));
         assertEquals(2, constrainIndex(2, 5));

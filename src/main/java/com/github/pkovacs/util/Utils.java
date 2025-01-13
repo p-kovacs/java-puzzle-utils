@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  *     {@link #chunked(List, int)} and {@link #windowed(List, int)} to enumerate certain sublists of lists.
  * </li>
  * <li>
- *     <b>Arrays and Matrices.</b> For example, {@link #deepCopyOf} for matrices of primitive types.
+ *     <b>Arrays.</b> For example, {@link #reverse} and {@link #deepCopyOf} methods.
  * </li>
  * <li>
  *     <b>Math.</b> Simple util methods like the ones provided by {@link Math} and Guava's {@code LongMath}.
@@ -592,7 +592,105 @@ public class Utils {
         return Collections.unmodifiableMap(inverse);
     }
 
-    // **************************************** ARRAYS AND MATRICES ****************************************
+    // **************************************** ARRAYS ****************************************
+
+    /**
+     * Reverses the given {@code byte} array.
+     */
+    public static void reverse(byte[] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        for (int i = 0, j = array.length - 1; i < j; i++, j--) {
+            byte tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverses the given {@code int} array.
+     */
+    public static void reverse(int[] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        for (int i = 0, j = array.length - 1; i < j; i++, j--) {
+            int tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverses the given {@code long} array.
+     */
+    public static void reverse(long[] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        for (int i = 0, j = array.length - 1; i < j; i++, j--) {
+            long tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverses the given {@code double} array.
+     */
+    public static void reverse(double[] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        for (int i = 0, j = array.length - 1; i < j; i++, j--) {
+            double tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverses the given {@code char} array.
+     */
+    public static void reverse(char[] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        for (int i = 0, j = array.length - 1; i < j; i++, j--) {
+            char tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverses the given {@code boolean} array.
+     */
+    public static void reverse(boolean[] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        for (int i = 0, j = array.length - 1; i < j; i++, j--) {
+            boolean tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverses the given array.
+     */
+    public static <T> void reverse(T[] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        for (int i = 0, j = array.length - 1; i < j; i++, j--) {
+            T tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
 
     /**
      * Returns a deep copy of the given {@code byte} matrix.

@@ -245,7 +245,38 @@ class UtilsTest extends Utils {
         assertEquals(Map.of(), inverse(Map.of()));
     }
 
-    // **************************************** ARRAYS AND MATRICES ****************************************
+    // **************************************** ARRAYS ****************************************
+
+    @Test
+    void testReverse() {
+        byte[] a = { 1, 2, -3, 5 };
+        reverse(a);
+        assertArrayEquals(new byte[] { 5, -3, 2, 1 }, a);
+
+        int[] b = { 1, 2, -3, 5 };
+        reverse(b);
+        assertArrayEquals(new int[] { 5, -3, 2, 1 }, b);
+
+        long[] c = { 1, 2, -3, 5 };
+        reverse(c);
+        assertArrayEquals(new long[] { 5, -3, 2, 1 }, c);
+
+        double[] d = { 1.0, 2.5, -3.14 };
+        reverse(d);
+        assertArrayEquals(new double[] { -3.14, 2.5, 1.0 }, d);
+
+        char[] e = "hello".toCharArray();
+        reverse(e);
+        assertArrayEquals("olleh".toCharArray(), e);
+
+        boolean[] f = { true, true, false, true, false };
+        reverse(f);
+        assertArrayEquals(new boolean[] { false, true, false, true, true }, f);
+
+        String[] g = { "hello", "world", "!" };
+        reverse(g);
+        assertArrayEquals(new String[] { "!", "world", "hello" }, g);
+    }
 
     @Test
     void testDeepCopyOf() {

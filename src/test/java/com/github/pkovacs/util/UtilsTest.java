@@ -248,27 +248,41 @@ class UtilsTest extends Utils {
     // **************************************** ARRAYS AND MATRICES ****************************************
 
     @Test
-    void testDeepCopy() {
+    void testDeepCopyOf() {
         int[][] a = { { 0, 1, 2, 3, 4 }, {}, { Integer.MIN_VALUE, Integer.MAX_VALUE } };
-        int[][] b = deepCopy(a);
+        int[][] b = deepCopyOf(a);
 
         assertTrue(Arrays.deepEquals(a, b));
         assertNotSame(a, b);
         assertNotSame(a[0], b[0]);
 
         long[][] c = { { 0, 1, 2, 3, 4 }, {}, { Long.MIN_VALUE, Long.MAX_VALUE } };
-        long[][] d = deepCopy(c);
+        long[][] d = deepCopyOf(c);
 
         assertTrue(Arrays.deepEquals(c, d));
         assertNotSame(c, d);
         assertNotSame(c[0], d[0]);
 
+        double[][] e = { { 0, 1.0, 2.1, 3.14 }, {}, { Double.MIN_VALUE, Double.MAX_VALUE, Double.NaN } };
+        double[][] f = deepCopyOf(e);
+
+        assertTrue(Arrays.deepEquals(e, f));
+        assertNotSame(e, f);
+        assertNotSame(e[0], f[0]);
+
         char[][] x = { "hello".toCharArray(), "".toCharArray(), "okay".toCharArray() };
-        char[][] y = deepCopy(x);
+        char[][] y = deepCopyOf(x);
 
         assertTrue(Arrays.deepEquals(x, y));
         assertNotSame(x, y);
         assertNotSame(x[0], y[0]);
+
+        boolean[][] b1 = { { true, false }, {}, { false, true, false } };
+        boolean[][] b2 = deepCopyOf(b1);
+
+        assertTrue(Arrays.deepEquals(b1, b2));
+        assertNotSame(b1, b2);
+        assertNotSame(b1[0], b2[0]);
     }
 
     // **************************************** MATH ****************************************

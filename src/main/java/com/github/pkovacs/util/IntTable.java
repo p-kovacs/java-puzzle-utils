@@ -45,7 +45,7 @@ public final class IntTable extends AbstractTable<Integer> {
             throw new IllegalArgumentException("Rows must have the same length.");
         }
 
-        this.data = Utils.deepCopy(data);
+        this.data = Utils.deepCopyOf(data);
     }
 
     /**

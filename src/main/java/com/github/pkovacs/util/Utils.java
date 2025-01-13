@@ -41,7 +41,7 @@ import java.util.stream.Stream;
  *     {@link #chunked(List, int)} and {@link #windowed(List, int)} to enumerate certain sublists of lists.
  * </li>
  * <li>
- *     <b>Arrays and Matrices.</b> For example, {@link #deepCopy} for matrices of various primitive types.
+ *     <b>Arrays and Matrices.</b> For example, {@link #deepCopyOf} for matrices of primitive types.
  * </li>
  * <li>
  *     <b>Math.</b> Simple util methods like the ones provided by {@link Math} and Guava's {@code LongMath}.
@@ -573,10 +573,22 @@ public class Utils {
     // **************************************** ARRAYS AND MATRICES ****************************************
 
     /**
+     * Returns a deep copy of the given {@code byte} matrix.
+     * The "rows" might have different sizes, but they must not be null.
+     */
+    public static byte[][] deepCopyOf(byte[][] matrix) {
+        var result = new byte[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = matrix[i].clone();
+        }
+        return result;
+    }
+
+    /**
      * Returns a deep copy of the given {@code int} matrix.
      * The "rows" might have different sizes, but they must not be null.
      */
-    public static int[][] deepCopy(int[][] matrix) {
+    public static int[][] deepCopyOf(int[][] matrix) {
         var result = new int[matrix.length][];
         for (int i = 0; i < matrix.length; i++) {
             result[i] = matrix[i].clone();
@@ -588,7 +600,7 @@ public class Utils {
      * Returns a deep copy of the given {@code long} matrix.
      * The "rows" might have different sizes, but they must not be null.
      */
-    public static long[][] deepCopy(long[][] matrix) {
+    public static long[][] deepCopyOf(long[][] matrix) {
         var result = new long[matrix.length][];
         for (int i = 0; i < matrix.length; i++) {
             result[i] = matrix[i].clone();
@@ -597,11 +609,11 @@ public class Utils {
     }
 
     /**
-     * Returns a deep copy of the given {@code byte} matrix.
+     * Returns a deep copy of the given {@code double} matrix.
      * The "rows" might have different sizes, but they must not be null.
      */
-    public static byte[][] deepCopy(byte[][] matrix) {
-        var result = new byte[matrix.length][];
+    public static double[][] deepCopyOf(double[][] matrix) {
+        var result = new double[matrix.length][];
         for (int i = 0; i < matrix.length; i++) {
             result[i] = matrix[i].clone();
         }
@@ -612,8 +624,20 @@ public class Utils {
      * Returns a deep copy of the given {@code char} matrix.
      * The "rows" might have different sizes, but they must not be null.
      */
-    public static char[][] deepCopy(char[][] matrix) {
+    public static char[][] deepCopyOf(char[][] matrix) {
         var result = new char[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            result[i] = matrix[i].clone();
+        }
+        return result;
+    }
+
+    /**
+     * Returns a deep copy of the given {@code boolean} matrix.
+     * The "rows" might have different sizes, but they must not be null.
+     */
+    public static boolean[][] deepCopyOf(boolean[][] matrix) {
+        var result = new boolean[matrix.length][];
         for (int i = 0; i < matrix.length; i++) {
             result[i] = matrix[i].clone();
         }

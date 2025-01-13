@@ -334,6 +334,32 @@ class UtilsTest extends Utils {
     }
 
     @Test
+    void testDoubles() {
+        double[] x = { 3.14, 2.5, 1 };
+        double[] y = { 3.14, Double.POSITIVE_INFINITY, 2.5, Double.MIN_VALUE };
+
+        assertEquals(List.of(3.14, 2.5, 1.0), listOf(x));
+        assertEquals(Set.of(3.14, 2.5, 1.0), setOf(x));
+        assertEquals(2, streamOf(x).filter(d -> d > 2 && d < 4).count());
+
+        assertEquals(1, min(3.14, 2.5, 1));
+        assertEquals(1, min(x));
+        assertEquals(1, min(listOf(x)));
+        assertEquals(Double.MIN_VALUE, min(y));
+        assertEquals(Double.MIN_VALUE, min(listOf(y)));
+        assertEquals(3.14, max(3.14, 2.5, 1));
+        assertEquals(3.14, max(x));
+        assertEquals(3.14, max(listOf(x)));
+        assertEquals(Double.POSITIVE_INFINITY, max(y));
+        assertEquals(Double.POSITIVE_INFINITY, max(listOf(y)));
+
+        assertThrows(NoSuchElementException.class, () -> min(new double[0]));
+        assertThrows(NoSuchElementException.class, () -> max(new double[0]));
+        assertThrows(NoSuchElementException.class, () -> min(new ArrayList<Double>()));
+        assertThrows(NoSuchElementException.class, () -> max(new ArrayList<Double>()));
+    }
+
+    @Test
     void testChars() {
         char[] x = { 'h', 'e', 'l', 'l', 'o' };
 
@@ -379,6 +405,9 @@ class UtilsTest extends Utils {
         assertEquals(Long.MAX_VALUE, abs(Long.MIN_VALUE + 1));
         assertEquals(Integer.MAX_VALUE + 1L, abs((long) Integer.MIN_VALUE));
         assertThrows(ArithmeticException.class, () -> abs(Long.MIN_VALUE));
+
+        assertEquals(3.14, abs(3.14));
+        assertEquals(3.14, abs(-3.14));
     }
 
     @Test

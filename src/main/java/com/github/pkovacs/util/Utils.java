@@ -20,6 +20,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -408,20 +409,6 @@ public class Utils {
     }
 
     /**
-     * Returns the given {@code int} values as an unmodifiable set.
-     */
-    public static Set<Integer> setOf(int... ints) {
-        return Arrays.stream(ints).boxed().collect(Collectors.toUnmodifiableSet());
-    }
-
-    /**
-     * Returns the given {@code int} values as an {@link IntStream}.
-     */
-    public static IntStream streamOf(int... ints) {
-        return Arrays.stream(ints);
-    }
-
-    /**
      * Returns the given {@code long} values as an unmodifiable list.
      */
     public static List<Long> listOf(long... longs) {
@@ -429,17 +416,10 @@ public class Utils {
     }
 
     /**
-     * Returns the given {@code long} values as an unmodifiable set.
+     * Returns the given {@code double} values as an unmodifiable list.
      */
-    public static Set<Long> setOf(long... longs) {
-        return Arrays.stream(longs).boxed().collect(Collectors.toUnmodifiableSet());
-    }
-
-    /**
-     * Returns the given {@code long} values as a {@link LongStream}.
-     */
-    public static LongStream streamOf(long... longs) {
-        return Arrays.stream(longs);
+    public static List<Double> listOf(double... doubles) {
+        return Arrays.stream(doubles).boxed().toList();
     }
 
     /**
@@ -450,10 +430,52 @@ public class Utils {
     }
 
     /**
+     * Returns the given {@code int} values as an unmodifiable set.
+     */
+    public static Set<Integer> setOf(int... ints) {
+        return Arrays.stream(ints).boxed().collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Returns the given {@code long} values as an unmodifiable set.
+     */
+    public static Set<Long> setOf(long... longs) {
+        return Arrays.stream(longs).boxed().collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Returns the given {@code double} values as an unmodifiable set.
+     */
+    public static Set<Double> setOf(double... doubles) {
+        return Arrays.stream(doubles).boxed().collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
      * Returns the given {@code char} values as an unmodifiable set.
      */
     public static Set<Character> setOf(char... chars) {
         return streamOf(chars).collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Returns the given {@code int} values as an {@link IntStream}.
+     */
+    public static IntStream streamOf(int... ints) {
+        return Arrays.stream(ints);
+    }
+
+    /**
+     * Returns the given {@code long} values as a {@link LongStream}.
+     */
+    public static LongStream streamOf(long... longs) {
+        return Arrays.stream(longs);
+    }
+
+    /**
+     * Returns the given {@code double} values as a {@link DoubleStream}.
+     */
+    public static DoubleStream streamOf(double... doubles) {
+        return Arrays.stream(doubles);
     }
 
     /**
@@ -665,6 +687,15 @@ public class Utils {
     }
 
     /**
+     * Returns the minimum of the given {@code double} values.
+     *
+     * @throws NoSuchElementException if no numbers are given
+     */
+    public static double min(double... doubles) {
+        return streamOf(doubles).min().orElseThrow();
+    }
+
+    /**
      * Returns the minimum of the given {@code char} values.
      *
      * @throws NoSuchElementException if no characters are given
@@ -701,6 +732,15 @@ public class Utils {
     }
 
     /**
+     * Returns the maximum of the given {@code double} values.
+     *
+     * @throws NoSuchElementException if no numbers are given
+     */
+    public static double max(double... doubles) {
+        return streamOf(doubles).max().orElseThrow();
+    }
+
+    /**
      * Returns the maximum of the given {@code char} values.
      *
      * @throws NoSuchElementException if no characters are given
@@ -719,7 +759,7 @@ public class Utils {
     }
 
     /**
-     * Returns the absolute value of an {@code int} value.
+     * Returns the absolute value of the given {@code int} value.
      * This is just a shorthand for {@link Math#absExact(int)}.
      *
      * @throws ArithmeticException if the argument is {@link Integer#MIN_VALUE}
@@ -729,13 +769,21 @@ public class Utils {
     }
 
     /**
-     * Returns the absolute value of a {@code long} value.
+     * Returns the absolute value of the given {@code long} value.
      * This is just a shorthand for {@link Math#absExact(long)}.
      *
      * @throws ArithmeticException if the argument is {@link Long#MIN_VALUE}
      */
     public static long abs(long value) {
         return Math.absExact(value);
+    }
+
+    /**
+     * Returns the absolute value of the given {@code double} value.
+     * This is just a shorthand for {@link Math#abs(double)}.
+     */
+    public static double abs(double value) {
+        return Math.abs(value);
     }
 
     /**

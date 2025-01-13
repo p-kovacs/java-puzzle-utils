@@ -3,9 +3,9 @@
 Various utilities, data structures, and algorithms written in Java for solving coding puzzles like
 [Advent of Code](https://adventofcode.com/).
 
-Compatibility: Java 21+
-
 However, Java is not the best language for coding puzzles. Consider using Kotlin instead. :)
+
+Compatibility: Java 21+
 
 ## Cheat sheet
 
@@ -21,16 +21,16 @@ which can be practical for solving coding puzzles (besides the tools provided in
     * switch expressions (Java 14+)
 * Collections
     * sequenced collections: first/last element and reversed view (Java 21+)
-    * `List.of()`, `Set.of()`, `Map.of()`
+    * `List.of`, `Set.of`, `Map.of`
     * `LinkedHashSet`, `LinkedHashMap`
     * `NavigableSet` (e.g. `TreeSet`)
     * `Collections.rotate(List, int)`
 * Streams
     * stream API
-    * `Stream::toList` (Java 16+)
+    * `toList` method of `Stream` (Java 16+)
 * Other
     * `Math.clamp`, `Math.floorDiv`, `Math.floorMod`
-    * `Arrays.mismatch()`
+    * `Arrays.mismatch`, `Arrays.setAll`
 
 ### Guava
 
